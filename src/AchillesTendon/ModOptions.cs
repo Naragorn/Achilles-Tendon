@@ -73,7 +73,7 @@ namespace AchillesTendon
 
         // ---- Debug ----------------------------------------------------------
 
-        [ModOption("Debug Logging", "Logs every player hit on an NPC (and, with Apply To Player, NPC hits on you) (part, angle, damage type, verdict) to the game log.")]
+        [ModOption("Debug Logging", "Logs every player hit on an NPC (and, with Apply To Player, NPC hits on you) with part, angle, damage type and verdict, plus collapse/release and a one-line note for skipped hits, to the game log.")]
         [ModOptionCategory(DebugCategory, 2)]
         [ModOptionOrder(0)]
         public static bool DebugLogging = false;

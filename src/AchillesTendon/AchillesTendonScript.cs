@@ -72,8 +72,14 @@ namespace AchillesTendon
             {
                 return;
             }
-            if (creature == null || hit == null || !hit.damageStruct.active || hit.damageStruct.damage <= 0f)
+            if (creature == null || hit == null)
             {
+                return;
+            }
+            if (!hit.damageStruct.active || hit.damageStruct.damage <= 0f)
+            {
+                ModLog.Verbose("skip (inactive or no damage) | target=" + GameAdapters.Label(creature)
+                    + " | active=" + hit.damageStruct.active + " damage=" + hit.damageStruct.damage);
                 return;
             }
 
@@ -96,9 +102,11 @@ namespace AchillesTendon
             var result = HeelHitClassifier.Classify(input, settings);
 
             // NPC vs NPC, and NPC hits on the player while Apply To Player is
-            // off, are out of scope: stay silent.
+            // off, are out of scope: only a one-line note with Debug Logging.
             if (result.Rejection == HeelHitRejection.NotPlayerVsNpc)
             {
+                ModLog.Verbose("skip (NotPlayerVsNpc) | target=" + GameAdapters.Label(creature)
+                    + " | attacker=" + (attacker != null ? GameAdapters.Label(attacker) : "unknown"));
                 return;
             }
 

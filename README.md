@@ -32,7 +32,7 @@ Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_
 |---|---|
 | 1. Project setup, SDK check, mod loads, debug logging, Mod Menu skeleton | built, **not yet tested in game** |
 | 2. Heel hit-zone detection, debug visualization, logging | built, **not yet tested in game** |
-| 3. Collapse | built: NPC falls and is held on the ground; **only the headless smoke test ran, not yet tested in game**. Attacking from the ground is step 4 (see below) |
+| 3. Collapse | built; **headless-tested** with BasHarness (`harness/step3-*.txt`: slash on the heel from behind -> NPC down and still down after 30 s; mod off -> stays down or stands up per Stand Up When Disabled; blunt and frontal hits refused). **Not yet tested in the headset** (real weapon contact, physics, look). Attacking from the ground is step 4 (see below) |
 | 4. Ground fighting | not started |
 | 5. Bleed-out | not started |
 | 6. Player hardcore mode | detection built (`Apply To Player`, default off), **not yet tested in game**; effects follow with steps 3-5 |
@@ -161,6 +161,6 @@ tools/harness.sh                                             # headless in-game 
 # other install path:  -p:BasDir="/path/to/Blade & Sorcery"
 ```
 
-Headless tests use [BasHarness](https://github.com/Naragorn/BasHarness) (expected next to this repo): it starts the game with a mock HMD in a mirrored install with its own Mods folder, prefix and options, so the real install is not touched. It checks loading, options and logs; it cannot fight yet, so hits and the collapse still need the headset.
+Headless tests use [BasHarness](https://github.com/Naragorn/BasHarness) (expected next to this repo): it starts the game with a mock HMD in a mirrored install with its own Mods folder, prefix and options, so the real install is not touched. It checks loading, options, logs and synthetic hits (`hit-npc`: a hit through `Creature.Damage` at the part's position, no physics contact), so real weapon contact, the zone placement on the model and the look of the collapse still need the headset. Scenarios in one run share the prefix and the game keeps option values across them, so each scenario sets the options it depends on.
 
 Log: `<prefix>/drive_c/users/steamuser/AppData/LocalLow/Warpfrog/BladeAndSorcery/Player.log` (Proton) - all lines start with `[AchillesTendon]`.

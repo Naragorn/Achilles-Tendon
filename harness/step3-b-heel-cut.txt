@@ -1,0 +1,42 @@
+# Step 3: a slash on the heel from behind knocks the NPC down, it stays down,
+# turning the mod off lets it stand up (or not, per Stand Up When Disabled).
+wait-level
+# Scenarios in one run share the harness prefix, and the game keeps option values
+# across them, so every scenario sets the options it depends on.
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Stand Up When Disabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Max Hit Angle" 110
+
+# NPC turns its back to the player (HumanDummy keeps that facing).
+spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] HEEL HIT
+expect-log [AchillesTendon] COLLAPSE
+expect-npc state Destabilized within=1
+
+# The game would stand it up after its knockout time; the hold must prevent that.
+wait 30
+expect-npc state Destabilized within=0.1
+
+# Mod off with Stand Up When Disabled off: stays down.
+set-option AchillesTendon "Stand Up When Disabled" false
+set-option AchillesTendon "Achilles Tendon Enabled" false
+wait 10
+expect-npc state Destabilized within=0.1
+
+# Back on, then off with Stand Up When Disabled on: released and stands up.
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Stand Up When Disabled" true
+wait 1
+mark
+set-option AchillesTendon "Achilles Tendon Enabled" false
+expect-log [AchillesTendon] RELEASE
+expect-npc state Alive within=20
+
+# Leave the mod on for the scenarios after this one.
+set-option AchillesTendon "Achilles Tendon Enabled" true
+expect-no-log Exception
+quit
