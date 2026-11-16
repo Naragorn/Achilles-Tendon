@@ -126,7 +126,7 @@ Settings from the spec that belong to later steps (`bleedOutDuration`, `groundFi
 
 Pure logic in `src/AchillesTendon/Logic`, unit-tested without the game. Checks in this order; the first failing one is the reason in the log:
 
-1. `NotPlayerVsNpc` - attacker must be the player and the target an NPC; with `Apply To Player` on, an NPC hitting the player counts too. NPC vs NPC, the player hitting themself and hits from an unknown source never count (these hits are not logged)
+1. `NotPlayerVsNpc` - attacker must be the player and the target an NPC; with `Apply To Player` on, an NPC hitting the player counts too. NPC vs NPC and hits from an unknown source never count (with `Debug Logging` only a one-line `skip (NotPlayerVsNpc)` note). A creature hitting itself (`SelfHit`, checked before this, e.g. a lying NPC touching its own body with its weapon, or the player hitting themself) never counts and is not logged at all
 2. `NotLegPart` - hit part is `LeftLeg/RightLeg/LeftFoot/RightFoot`
 3. `NoAnkle` - the foot part on that side exists
 4. `DamageTypeNotAllowed` - per "Allowed Damage Types" (blunt never counts)

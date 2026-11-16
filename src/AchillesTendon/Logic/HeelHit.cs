@@ -35,8 +35,14 @@ namespace AchillesTendon.Logic
         None,
 
         /// <summary>
+        /// The creature hit itself (attacker = target), e.g. a lying NPC whose own
+        /// weapon touches its body. Never counts and is not logged.
+        /// </summary>
+        SelfHit,
+
+        /// <summary>
         /// Neither player-hits-NPC nor (with ApplyToPlayer) NPC-hits-player:
-        /// NPC vs NPC, the player hitting themself, or NPC hits on the player
+        /// NPC vs NPC, or NPC hits on the player
         /// while ApplyToPlayer is off.
         /// </summary>
         NotPlayerVsNpc,
@@ -77,6 +83,10 @@ namespace AchillesTendon.Logic
     {
         public bool AttackerIsPlayer;
         public bool TargetIsPlayer;
+
+        /// <summary>True if the attacking creature is the hit creature itself.</summary>
+        public bool AttackerIsTarget;
+
         public LegSide Side;
         public HitDamageType DamageType;
         public Vec3 ContactPoint;
@@ -194,6 +204,10 @@ namespace AchillesTendon.Logic
         private static HeelHitRejection FirstRejection(
             HeelHitInput input, HeelHitSettings settings, HeelHitResult measured, bool isLeg)
         {
+            if (input.AttackerIsTarget)
+            {
+                return HeelHitRejection.SelfHit;
+            }
             if (!IsEligiblePair(input, settings))
             {
                 return HeelHitRejection.NotPlayerVsNpc;

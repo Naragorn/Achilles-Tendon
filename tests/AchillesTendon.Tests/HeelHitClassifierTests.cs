@@ -248,6 +248,41 @@ namespace AchillesTendon.Tests
         }
 
         [Fact]
+        public void Npc_hitting_itself_is_a_self_hit()
+        {
+            // A lying NPC whose own weapon touches its own body: attacker = target.
+            var input = HeelSlashFromBehind();
+            input.AttackerIsPlayer = false;
+            input.AttackerIsTarget = true;
+
+            Assert.Equal(HeelHitRejection.SelfHit, HeelHitClassifier.Classify(input, Settings()).Rejection);
+        }
+
+        [Fact]
+        public void Player_hitting_itself_is_a_self_hit_even_with_apply_to_player()
+        {
+            var input = HeelSlashFromBehind();
+            input.TargetIsPlayer = true;
+            input.AttackerIsTarget = true;
+
+            Assert.Equal(
+                HeelHitRejection.SelfHit,
+                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+        }
+
+        [Fact]
+        public void Self_hit_check_wins_over_every_later_check()
+        {
+            var input = HeelSlashFromBehind();
+            input.AttackerIsPlayer = false;
+            input.AttackerIsTarget = true;
+            input.Side = LegSide.None;
+            input.DamageType = HitDamageType.Blunt;
+
+            Assert.Equal(HeelHitRejection.SelfHit, HeelHitClassifier.Classify(input, Settings()).Rejection);
+        }
+
+        [Fact]
         public void Player_check_wins_over_every_later_check()
         {
             var input = HeelSlashFromBehind();

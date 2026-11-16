@@ -119,6 +119,7 @@ namespace AchillesTendon
             {
                 AttackerIsPlayer = attacker != null && attacker.isPlayer,
                 TargetIsPlayer = target.isPlayer,
+                AttackerIsTarget = attacker != null && attacker == target,
                 Side = side,
                 DamageType = ToHitDamageType(hit.damageStruct.damageType),
                 ContactPoint = ToVec3(hit.contactPoint),

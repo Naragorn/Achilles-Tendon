@@ -101,6 +101,13 @@ namespace AchillesTendon
             var settings = ModOptions.CurrentHeelHitSettings();
             var result = HeelHitClassifier.Classify(input, settings);
 
+            // A creature hitting itself (a lying NPC touching its own body with its
+            // weapon) is frequent and never relevant: dropped without a log line.
+            if (result.Rejection == HeelHitRejection.SelfHit)
+            {
+                return;
+            }
+
             // NPC vs NPC, and NPC hits on the player while Apply To Player is
             // off, are out of scope: only a one-line note with Debug Logging.
             if (result.Rejection == HeelHitRejection.NotPlayerVsNpc)
