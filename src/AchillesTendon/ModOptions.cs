@@ -18,6 +18,7 @@ namespace AchillesTendon
     public static class ModOptions
     {
         private const string TendonCategory = "Achilles Tendon";
+        private const string PlayerCategory = "Player Hardcore Mode";
         private const string DebugCategory = "Debug";
 
         // ---- Achilles Tendon ------------------------------------------------
@@ -58,25 +59,32 @@ namespace AchillesTendon
         [ModOptionOrder(5)]
         public static AllowedDamageTypes AllowedDamageTypes = AllowedDamageTypes.SlashAndPierce;
 
+        // ---- Player Hardcore Mode -------------------------------------------
+
+        [ModOption("Apply To Player", "Hardcore: NPC hits on your own heel count too, with the same rules (zone, angle, damage type). Off by default.")]
+        [ModOptionCategory(PlayerCategory, 1)]
+        [ModOptionOrder(0)]
+        public static bool ApplyToPlayer = false;
+
         // ---- Debug ----------------------------------------------------------
 
-        [ModOption("Debug Logging", "Logs every player hit on an NPC leg (part, angle, damage type, verdict) to the game log.")]
-        [ModOptionCategory(DebugCategory, 1)]
+        [ModOption("Debug Logging", "Logs every player hit on an NPC (and, with Apply To Player, NPC hits on you) (part, angle, damage type, verdict) to the game log.")]
+        [ModOptionCategory(DebugCategory, 2)]
         [ModOptionOrder(0)]
         public static bool DebugLogging = false;
 
-        [ModOption("Show Heel Zones", "Draws the heel zone of every NPC as a sphere.")]
-        [ModOptionCategory(DebugCategory, 1)]
+        [ModOption("Show Heel Zones", "Draws the heel zone of every NPC (and yours, with Apply To Player) as a sphere.")]
+        [ModOptionCategory(DebugCategory, 2)]
         [ModOptionOrder(1)]
         public static bool ShowHeelZones = false;
 
         [ModOption("Show Hit Markers", "Marks each leg hit: green = heel hit, red = miss.")]
-        [ModOptionCategory(DebugCategory, 1)]
+        [ModOptionCategory(DebugCategory, 2)]
         [ModOptionOrder(2)]
         public static bool ShowHitMarkers = false;
 
         [ModOption("Hit Marker Duration", "How long a hit marker stays visible.", nameof(HitMarkerDurationValues))]
-        [ModOptionCategory(DebugCategory, 1)]
+        [ModOptionCategory(DebugCategory, 2)]
         [ModOptionOrder(3)]
         [ModOptionSlider]
         public static float HitMarkerDuration = OptionSpecs.HitMarkerDuration.Default;
@@ -90,6 +98,7 @@ namespace AchillesTendon
                 ZoneHeightOffset = HeelZoneHeightOffset,
                 MaxHitAngle = MaxHitAngle,
                 AllowedDamageTypes = AllowedDamageTypes,
+                ApplyToPlayer = ApplyToPlayer,
             };
         }
 

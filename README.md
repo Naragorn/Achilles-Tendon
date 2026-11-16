@@ -45,9 +45,11 @@ Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_
 | 3. Collapse | not started |
 | 4. Ground fighting | not started |
 | 5. Bleed-out | not started |
-| 6. Player hardcore mode | not started |
+| 6. Player hardcore mode | detection built (`Apply To Player`, default off), **not yet tested in game**; effects follow with steps 3-5 |
 
 Step 2 only detects and reports heel hits. It does not change the fight.
+
+**Player hardcore mode** (`Apply To Player`, default off): the same heel check runs when an NPC hits the player, with the same zone, angle and damage type rules. For now that means only log lines and markers, like for NPCs; collapse and bleed-out for the player come with steps 3-5. In practice it will rarely trigger, because NPCs do not aim at heels - a heel cut on the player only happens by chance, e.g. a low sweep from behind.
 
 ## Versions
 
@@ -92,6 +94,8 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | The NPC's `transform.forward` is where the body faces | "Behind" and the attack angle depend on it | Spheres behind the heels, angle ≈ 0° from behind |
 | Lower leg = `LeftLeg/RightLeg` with `section=Lower` | Only logged for now, the zone check does not depend on it | Log line `section=` on calf hits |
 | One of the shaders `Sprites/Default`, `Universal Render Pipeline/Unlit`, `Unlit/Color` exists in the build | Debug spheres need a visible material | Log line `Debug markers use shader: ...` |
+| NPC weapons collide with the player's leg/foot parts at all | Without that, `Apply To Player` never fires. The game puts standing player parts on layer `Avatar` (`RagdollPart.RefreshLayer`); which layers collide is set in Unity's physics matrix, not in the DLL | With Apply To Player + Debug Logging on, let an NPC hit your legs and look for `target=` lines naming the player |
+| The player creature's `transform.forward` follows the body in VR | The attack angle on the player depends on it | Player heel zone spheres (Show Heel Zones) sit behind your real heels |
 | `impactVelocity` direction | Its sign convention is not documented; logged as `impactVelAngle` for comparison only | Compare it with `angleFromBehind` in the log |
 | `item.lastHandler` stays set after a throw | Thrown knives count as player hits | Throw a dagger at a heel |
 | A bow-shot arrow resolves to the player as attacker | The "Paris / Jara" shot should count | Shoot an arrow at a heel |
@@ -114,18 +118,19 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Heel Zone Height Offset | 3 cm | -5-15 cm |
 | | Max Hit Angle (0 = straight behind, 90 = side) | 110° | 30-180° |
 | | Allowed Damage Types | Slash and Pierce | Slash and Pierce / Slash only / Pierce only |
+| Player Hardcore Mode | Apply To Player | off | |
 | Debug | Debug Logging | off | |
-| | Show Heel Zones | off | |
+| | Show Heel Zones (NPCs; also yours with Apply To Player) | off | |
 | | Show Hit Markers | off | |
 | | Hit Marker Duration | 5 s | 1-30 s |
 
-Settings from the spec that belong to later steps (`bleedOutDuration`, `groundFightingEnabled`, `applyToPlayer`) are added with their features, so the menu has no options that do nothing yet.
+Settings from the spec that belong to later steps (`bleedOutDuration`, `groundFightingEnabled`) are added with their features, so the menu has no options that do nothing yet.
 
 ## How a heel hit is decided
 
 Pure logic in `src/AchillesTendon/Logic`, unit-tested without the game. Checks in this order; the first failing one is the reason in the log:
 
-1. `NotPlayerVsNpc` - attacker must be the player, target an NPC (these hits are not logged)
+1. `NotPlayerVsNpc` - attacker must be the player and the target an NPC; with `Apply To Player` on, an NPC hitting the player counts too. NPC vs NPC, the player hitting themself and hits from an unknown source never count (these hits are not logged)
 2. `NotLegPart` - hit part is `LeftLeg/RightLeg/LeftFoot/RightFoot`
 3. `NoAnkle` - the foot part on that side exists
 4. `DamageTypeNotAllowed` - per "Allowed Damage Types" (blunt never counts)

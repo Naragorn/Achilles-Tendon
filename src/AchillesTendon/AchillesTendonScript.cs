@@ -84,7 +84,8 @@ namespace AchillesTendon
             var settings = ModOptions.CurrentHeelHitSettings();
             var result = HeelHitClassifier.Classify(input, settings);
 
-            // NPC vs NPC and hits on the player are out of scope: stay silent.
+            // NPC vs NPC, and NPC hits on the player while Apply To Player is
+            // off, are out of scope: stay silent.
             if (result.Rejection == HeelHitRejection.NotPlayerVsNpc)
             {
                 return;

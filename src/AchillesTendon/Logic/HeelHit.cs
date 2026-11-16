@@ -33,6 +33,12 @@ namespace AchillesTendon.Logic
     public enum HeelHitRejection
     {
         None,
+
+        /// <summary>
+        /// Neither player-hits-NPC nor (with ApplyToPlayer) NPC-hits-player:
+        /// NPC vs NPC, the player hitting themself, or NPC hits on the player
+        /// while ApplyToPlayer is off.
+        /// </summary>
         NotPlayerVsNpc,
         NotLegPart,
         NoAnkle,
@@ -58,6 +64,12 @@ namespace AchillesTendon.Logic
         public float MaxHitAngle;
 
         public AllowedDamageTypes AllowedDamageTypes;
+
+        /// <summary>
+        /// Player hardcore mode: NPC hits on the player's heel count too.
+        /// Off: only player-vs-NPC hits count.
+        /// </summary>
+        public bool ApplyToPlayer;
     }
 
     /// <summary>One hit, as plain values taken from the game.</summary>
@@ -172,10 +184,17 @@ namespace AchillesTendon.Logic
             return result;
         }
 
+        private static bool IsEligiblePair(HeelHitInput input, HeelHitSettings settings)
+        {
+            var playerHitsNpc = input.AttackerIsPlayer && !input.TargetIsPlayer;
+            var npcHitsPlayer = !input.AttackerIsPlayer && input.TargetIsPlayer && input.HasAttackerPosition;
+            return playerHitsNpc || (settings.ApplyToPlayer && npcHitsPlayer);
+        }
+
         private static HeelHitRejection FirstRejection(
             HeelHitInput input, HeelHitSettings settings, HeelHitResult measured, bool isLeg)
         {
-            if (!input.AttackerIsPlayer || input.TargetIsPlayer)
+            if (!IsEligiblePair(input, settings))
             {
                 return HeelHitRejection.NotPlayerVsNpc;
             }

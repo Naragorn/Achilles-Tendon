@@ -12,7 +12,8 @@ namespace AchillesTendon.Tests
 
         private static HeelHitSettings Settings(
             AllowedDamageTypes allowed = AllowedDamageTypes.SlashAndPierce,
-            float maxHitAngle = 110f)
+            float maxHitAngle = 110f,
+            bool applyToPlayer = false)
         {
             return new HeelHitSettings
             {
@@ -21,7 +22,17 @@ namespace AchillesTendon.Tests
                 ZoneHeightOffset = 0.03f,
                 MaxHitAngle = maxHitAngle,
                 AllowedDamageTypes = allowed,
+                ApplyToPlayer = applyToPlayer,
             };
+        }
+
+        /// <summary>An NPC slashes the player's left heel from directly behind.</summary>
+        private static HeelHitInput NpcSlashesPlayerHeel()
+        {
+            var input = HeelSlashFromBehind();
+            input.AttackerIsPlayer = false;
+            input.TargetIsPlayer = true;
+            return input;
         }
 
         /// <summary>Player slashes the left heel of an NPC from directly behind.</summary>
@@ -255,6 +266,73 @@ namespace AchillesTendon.Tests
             input.AttackerPosition = new Vec3(0f, 0f, 1f);
 
             Assert.Equal(HeelHitRejection.OutsideHeelZone, HeelHitClassifier.Classify(input, Settings()).Rejection);
+        }
+        [Fact]
+        public void Npc_hitting_the_player_heel_is_rejected_by_default()
+        {
+            Assert.Equal(
+                HeelHitRejection.NotPlayerVsNpc,
+                HeelHitClassifier.Classify(NpcSlashesPlayerHeel(), Settings()).Rejection);
+        }
+
+        [Fact]
+        public void Npc_hitting_the_player_heel_counts_with_apply_to_player()
+        {
+            var result = HeelHitClassifier.Classify(NpcSlashesPlayerHeel(), Settings(applyToPlayer: true));
+
+            Assert.True(result.IsHeelHit);
+        }
+
+        [Fact]
+        public void Apply_to_player_runs_the_same_checks_for_the_player()
+        {
+            var input = NpcSlashesPlayerHeel();
+            input.DamageType = HitDamageType.Blunt;
+
+            Assert.Equal(
+                HeelHitRejection.DamageTypeNotAllowed,
+                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+        }
+
+        [Fact]
+        public void Hit_on_the_player_from_an_unknown_source_is_not_an_npc_hit()
+        {
+            // No resolvable attacker (trap, falling object, lost handler): it is
+            // not an NPC hit, so it is out of scope like NPC vs NPC.
+            var input = NpcSlashesPlayerHeel();
+            input.HasAttackerPosition = false;
+
+            Assert.Equal(
+                HeelHitRejection.NotPlayerVsNpc,
+                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+        }
+
+        [Fact]
+        public void Player_hitting_own_heel_is_rejected_even_with_apply_to_player()
+        {
+            var input = HeelSlashFromBehind();
+            input.TargetIsPlayer = true;
+
+            Assert.Equal(
+                HeelHitRejection.NotPlayerVsNpc,
+                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+        }
+
+        [Fact]
+        public void Npc_vs_npc_is_rejected_even_with_apply_to_player()
+        {
+            var input = HeelSlashFromBehind();
+            input.AttackerIsPlayer = false;
+
+            Assert.Equal(
+                HeelHitRejection.NotPlayerVsNpc,
+                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+        }
+
+        [Fact]
+        public void Player_hitting_an_npc_still_counts_with_apply_to_player()
+        {
+            Assert.True(HeelHitClassifier.Classify(HeelSlashFromBehind(), Settings(applyToPlayer: true)).IsHeelHit);
         }
     }
 }
