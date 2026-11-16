@@ -155,17 +155,35 @@ namespace AchillesTendon.Tests
         }
 
         [Fact]
-        public void Crawling_npc_screams_but_does_not_stiffen_arms_or_swing()
+        public void Crawling_npc_swings_with_the_upper_body_only_and_keeps_its_arms()
         {
-            // Crawling it stands as a ragdoll and its own AI attacks; our lying-only parts stay off.
+            // Crawling it is a standing ragdoll: full arm pins already, and a full-body
+            // attack clip would raise it upright, so the swing goes to the upper-body layer.
             var input = Ready();
             input.IsCrawling = true;
 
             var d = GroundFightRules.Decide(input);
 
             Assert.False(d.StrongArms);
-            Assert.False(d.Attack);
+            Assert.True(d.Attack);
+            Assert.True(d.UpperBodyOnly);
             Assert.True(d.Scream);
+        }
+
+        [Fact]
+        public void Lying_npc_swings_with_the_whole_body()
+        {
+            Assert.False(GroundFightRules.Decide(Ready()).UpperBodyOnly);
+        }
+
+        [Fact]
+        public void Crawling_npc_with_ground_attacks_off_does_not_swing()
+        {
+            var input = Ready();
+            input.IsCrawling = true;
+            input.AttacksOn = false;
+
+            Assert.False(GroundFightRules.Decide(input).Attack);
         }
     }
 }

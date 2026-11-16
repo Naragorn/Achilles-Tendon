@@ -21,6 +21,9 @@ namespace AchillesTendon
     {
         private readonly HashSet<Creature> crippled = new HashSet<Creature>();
         private readonly HashSet<Creature> crawling = new HashSet<Creature>();
+
+        // Crawling NPCs whose own melee AI we switched off, with the value to restore.
+        private readonly Dictionary<Creature, bool> meleeBefore = new Dictionary<Creature, bool>();
         private readonly List<Creature> scratch = new List<Creature>();
 
         public bool IsCrippled(Creature creature) => crippled.Contains(creature);
@@ -83,6 +86,7 @@ namespace AchillesTendon
                             StopCrawl(creature);
                         }
                         crawling.Remove(creature);
+                        meleeBefore.Remove(creature);
                         crippled.Remove(creature);
                         break;
                 }
@@ -102,6 +106,7 @@ namespace AchillesTendon
             }
             crippled.Clear();
             crawling.Clear();
+            meleeBefore.Clear();
         }
 
         private static CrippledCreatureState StateOf(Creature creature)
@@ -145,6 +150,25 @@ namespace AchillesTendon
             creature.locomotion.SetAllSpeedModifiers(this, ModOptions.CrawlSpeed);
             creature.ragdoll.forcePhysic.Add(this);
             crawling.Add(creature);
+            // The AI's own attack clips move the whole body and raise a crawling NPC
+            // upright (headless pictures), so its melee is off while crawling; swings come
+            // from GroundFightController on the upper-body layer (Ground Attacks).
+            var melee = Melee(creature);
+            if (melee != null && !meleeBefore.ContainsKey(creature))
+            {
+                meleeBefore[creature] = melee.meleeEnabled;
+            }
+            if (melee != null)
+            {
+                melee.meleeEnabled = false;
+            }
+        }
+
+        private static BrainModuleMelee Melee(Creature creature)
+        {
+            return creature.brain != null && creature.brain.instance != null
+                ? creature.brain.instance.GetModule<BrainModuleMelee>(autoAddModuleIfMissing: false)
+                : null;
         }
 
         private void StopCrawl(Creature creature)
@@ -157,6 +181,15 @@ namespace AchillesTendon
             creature.animator.SetFloat(Brain.hashInjured, 0f);
             creature.locomotion.RemoveSpeedModifier(this);
             creature.ragdoll.forcePhysic.Remove(this);
+            if (meleeBefore.TryGetValue(creature, out var enabled))
+            {
+                var melee = Melee(creature);
+                if (melee != null)
+                {
+                    melee.meleeEnabled = enabled;
+                }
+                meleeBefore.Remove(creature);
+            }
         }
 
         // The controller instance is the modifier key, so only its own hold is removed.

@@ -14,6 +14,9 @@ set-option AchillesTendon "Crawl Body Height" 0.2
 set-option AchillesTendon "Bleed-Out Enabled" false
 set-option AchillesTendon "Ground Fighting Enabled" true
 set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Range" 4
+set-option AchillesTendon "Ground Attack Interval" 2
 
 # A real fighter (HumanMedium brain) with a sword, back turned, 3 m away.
 spawn-npc HumanMale distance=3 facing=180 brain=HumanMedium
@@ -34,6 +37,15 @@ wait 2
 screenshot 04-crawl-7s of=npc distance=2.5 height=1.0 angle=45
 wait 2
 screenshot 05-crawl-9s of=npc distance=2.5 height=1.0 angle=135
+# Its own melee AI is off while crawling; swings come on the upper-body layer.
+expect-log upper body | clip=
+screenshot 05a-swing of=npc distance=2.5 height=1.0 angle=90
+wait 0.25
+screenshot 05b-swing of=npc distance=2.5 height=1.0 angle=90
+wait 0.25
+screenshot 05c-swing of=npc distance=2.5 height=1.0 angle=90
+wait 0.25
+screenshot 05d-swing of=npc distance=2.5 height=1.0 angle=90
 expect-npc state Alive within=0.1
 expect-no-log Exception
 # The harness logs its own step lines; a new mark keeps "expect-no-log Exception" from matching them.

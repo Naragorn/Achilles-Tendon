@@ -126,7 +126,7 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Blood Pulse Interval (between drips and bleed log lines) | 2 s | 0.5-10 s |
 | Ground Fighting | Ground Fighting Enabled | on | |
 | | Arm Strength (arm pins of a lying NPC; x1 = the game's own limp value) | x1 | x1-x10 |
-| | Ground Attacks (experimental, no visible swing yet) | off | |
+| | Ground Attacks (crawling: upper-body swings; lying flat: experimental, no visible swing) | on | |
 | | Ground Attack Range | 1.8 m | 0.5-4 m |
 | | Ground Attack Interval | 3 s | 1-10 s |
 | | Screaming (pain cry, the voice's `hit` dialog) | on | |
@@ -166,7 +166,9 @@ A heel hit on a living NPC knocks it down and holds it there (`CrippleController
 
 **Downed Pose = Crawl (default):** the table above applies to Lie Flat. With Crawl the NPC is not knocked over: it stays a standing ragdoll (`Alive`), and every frame gets the animator settings the game itself uses for a burning NPC that drops (`SetAnimatorHeightRatio(Crawl Body Height)`, animator float `Injured = 1`), plus a locomotion speed modifier (Crawl Speed) and `ragdoll.forcePhysic`. In the game's `Human` animator controller (read from `animations_assets_all.bundle`), a low `Height` and `Injured` blend the idle states into `Laying`/`LayingInjured` and the moving states into `Crawling`/`CrawlBackwards`. A knocked-down NPC is left to get up by itself and goes back into the crawl. Switching the pose live works both ways (`harness/step3-e-crawl.txt`). Full suite 9/9 PASS on 2026-11-16.
 
-Headless pictures (2026-11-16): the NPC drops low (sitting/kneeling, weapon in hand) and its own AI keeps attacking; **each attack animation raises it upright** for the swing, and at times it hangs in a sitting pose slightly above the ground. A clear crawl movement was not visible in the stills. Not yet judged in the headset.
+While crawling, the NPC's own melee AI is switched off (`BrainModuleMelee.meleeEnabled = false`, restored afterwards): its attack clips move the whole body and raised it upright in the first headless pictures. Instead, Ground Attacks plays one of its attack clips on the **upper-body layer** (`Creature.PlayUpperAnimation`) when you are in reach.
+
+Headless pictures (2026-11-16, `harness/step3-e-crawl.txt`): the NPC stays low the whole time (kneeling or sitting, sword in hand), swings with the upper body, and moves towards the player (logged distance 3.1 m -> 1.3 m over about 12 s). Full suite 9/9 PASS. At times it hangs in a sitting pose slightly above the ground (cause not checked). Not yet judged in the headset.
 
 Turning the mod off in the game's mod list (`ScriptDisable`) or unloading it releases every NPC. The player is never knocked down yet: that is step 6.
 

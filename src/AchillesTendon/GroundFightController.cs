@@ -106,14 +106,14 @@ namespace AchillesTendon
                 if (decision.Attack)
                 {
                     fighter.LastAttackTime = time;
-                    Attack(creature, fighter);
+                    Attack(creature, fighter, decision.UpperBodyOnly);
                 }
                 if (decision.Scream)
                 {
                     fighter.LastScreamTime = time;
                     Scream(creature);
                 }
-                if (ModOptions.GroundAttacks && !isCrawling(creature) && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
+                if (ModOptions.GroundAttacks && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
                 {
                     fighter.NoClipLogged = true;
                     ModLog.Verbose("GROUND ATTACK skipped | " + GameAdapters.Label(creature) + " | no attack animations (no weapon in a melee stance when cut)");
@@ -196,12 +196,21 @@ namespace AchillesTendon
             }
         }
 
-        private static void Attack(Creature creature, Fighter fighter)
+        private static void Attack(Creature creature, Fighter fighter, bool upperBodyOnly)
         {
             var clip = fighter.AttackClips[Random.Range(0, fighter.AttackClips.Count)];
-            creature.PlayAnimation(clip, loop: false);
-            fighter.StartedAnimation = true;
-            ModLog.Verbose("GROUND ATTACK | " + GameAdapters.Label(creature) + " | clip=" + clip.name
+            if (upperBodyOnly)
+            {
+                // The upper-body layer the game uses e.g. for reaching for a door while standing
+                // (BrainModuleMove); it does not set isPlayingDynamicAnimation.
+                creature.PlayUpperAnimation(clip, loop: false);
+            }
+            else
+            {
+                creature.PlayAnimation(clip, loop: false);
+                fighter.StartedAnimation = true;
+            }
+            ModLog.Verbose("GROUND ATTACK | " + GameAdapters.Label(creature) + " | " + (upperBodyOnly ? "upper body" : "full body") + " | clip=" + clip.name
                 + " | distance=" + DistanceToPlayer(creature).ToString("0.0#", System.Globalization.CultureInfo.InvariantCulture) + " m");
         }
 

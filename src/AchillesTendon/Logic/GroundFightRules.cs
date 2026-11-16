@@ -36,6 +36,10 @@ namespace AchillesTendon.Logic
         public bool StrongArms;
 
         public bool Attack;
+
+        /// <summary>Crawl pose: play the swing on the upper-body layer so the legs stay down.</summary>
+        public bool UpperBodyOnly;
+
         public bool Scream;
     }
 
@@ -50,8 +54,8 @@ namespace AchillesTendon.Logic
             return new GroundFightDecision
             {
                 StrongArms = !input.IsCrawling,
-                Attack = !input.IsCrawling
-                    && input.AttacksOn
+                UpperBodyOnly = input.IsCrawling,
+                Attack = input.AttacksOn
                     && input.HasAttackClip
                     && !input.IsPlayingAnimation
                     && input.DistanceToPlayer <= input.AttackRange
