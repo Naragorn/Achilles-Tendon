@@ -1,0 +1,20 @@
+# Step 3, collapse: what can be checked headless with BasHarness hit-npc.
+# hit-npc always deals Blunt damage, so this covers the refusal path:
+# a blunt heel hit is classified, logged as a miss, and the NPC stays up.
+# The positive path (slash on the heel -> Destabilized, stays down) needs a damage
+# type option on hit-npc.
+wait-level
+set-option AchillesTendon "Debug Logging" true
+# hit-npc gives no control over where the player stands relative to the NPC's back;
+# the angle check is not what this scenario tests.
+set-option AchillesTendon "Max Hit Angle" 180
+
+spawn-npc HumanMale distance=2 brain=HumanDummy
+mark
+hit-npc LeftFoot
+expect-log [AchillesTendon] miss (DamageTypeNotAllowed)
+wait 3
+expect-npc state Alive within=0.1
+
+expect-no-log Exception
+quit
