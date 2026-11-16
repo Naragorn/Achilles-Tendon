@@ -1,12 +1,40 @@
 # Heel of Achilles
 
-Blade & Sorcery mod: cutting an enemy's Achilles tendon takes them down. They can no longer stand, keep fighting from the ground and slowly bleed out.
+Blade & Sorcery mod: cutting an enemy's Achilles tendon makes them fall. They can no longer stand, keep fighting from the ground and slowly bleed out.
 
-Inspired by Achilles and Krishna (felled by the hunter Jara's arrow): the precise expert strike instead of raw force.
+Inspired by two heroes who fell to a single strike at the one weak point of their body: **Achilles** (Greek) and **Krishna** (Indian). The idea of the mod is the same: the precise expert strike instead of raw force.
 
 Every feature can be toggled and tuned in the in-game Mod Menu.
 
 Full implementation spec: [`CLAUDE.md`](CLAUDE.md).
+
+## Background: two myths, one weak point
+
+### Achilles - the heel
+
+- His mother, the sea goddess Thetis, dipped the infant Achilles in the river Styx to make him invulnerable. She held him by the heel, so that spot stayed dry and mortal.
+- In the Trojan War he was the strongest and fastest fighter. He died when the Trojan prince Paris hit that heel with an arrow, guided by the god Apollo.
+- The tendon above the heel is named after him (Achilles tendon), and "Achilles' heel" became the word for a fatal weak spot in great strength.
+- Note: Homer's *Iliad* does not tell his death or the heel. The dipping in the Styx is first told explicitly by the Roman poet Statius (*Achilleid* 1.133-134), and the oldest sources speak of the ankle (Latin *talus*) rather than the heel.
+
+### Krishna - the sole of the foot
+
+- In the Indian epic *Mahabharata*, the sage Durvasa granted Krishna a boon: his whole body would be invulnerable except for his feet (*Anushasana Parva*, 13.159).
+- At the end of his life, after his own clan had destroyed itself (*Mausala Parva*, Book 16), Krishna sat in deep meditation in the forest.
+- A hunter named Jara (Sanskrit "old age") saw the red marks of Krishna's foot through the bushes, took it for a deer and shot. The arrowhead was forged from a piece of iron from the cursed club that had destroyed his clan. The arrow pierced the sole of the foot.
+- Jara begged forgiveness; Krishna comforted him and then left the world. (The *Bhagavata Purana* 11.30 tells the same death.)
+
+### What the mod takes from them
+
+| Myth | In the mod |
+|---|---|
+| An almost unbeatable hero falls to one hit at one small spot | Any NPC, no matter how strong, falls after one cut at the heel |
+| Precision, not force, decides (an arrow, not a duel) | Only a hit inside the small heel zone counts; how hard you hit does not matter |
+| Paris and Jara strike from hiding or from the side, not face to face | The hit must come from behind or from the side (Max Hit Angle) |
+| Both die slowly from the wound, not instantly | The enemy collapses, fights on from the ground and bleeds out over time (later steps) |
+| Both are hit by an arrow, a piercing wound | Slash **and** pierce count; blunt never does |
+
+Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_heel), [Statius, *Achilleid* 1 (Theoi)](https://www.theoi.com/Text/StatiusAchilleid1A.html), [Ancient World Magazine: Origins of a hero's weak point](https://www.ancientworldmagazine.com/articles/achilles-heel-origins-heros-weak-point/), [Mausala Parva (Wikipedia)](https://en.wikipedia.org/wiki/Mausala_Parva), [W. Doniger, *Mahabharata* Book 16 (Oxford, 2022)](https://doi.org/10.1093/oso/9780197553398.003.0003), [Jara (mahapurana.com)](https://www.mahapurana.com/hindu-mythology/jara-jaras-hunter-killed-krishna/).
 
 ## Status
 
@@ -66,6 +94,7 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | One of the shaders `Sprites/Default`, `Universal Render Pipeline/Unlit`, `Unlit/Color` exists in the build | Debug spheres need a visible material | Log line `Debug markers use shader: ...` |
 | `impactVelocity` direction | Its sign convention is not documented; logged as `impactVelAngle` for comparison only | Compare it with `angleFromBehind` in the log |
 | `item.lastHandler` stays set after a throw | Thrown knives count as player hits | Throw a dagger at a heel |
+| A bow-shot arrow resolves to the player as attacker | The "Paris / Jara" shot should count | Shoot an arrow at a heel |
 
 ### Engine behaviours found that shape the code
 
