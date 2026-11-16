@@ -6,8 +6,6 @@
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
-*.csproj
-*.sln
 *.user
 *.pidb
 *.booproj
@@ -24,3 +22,6 @@ crashlytics-buildid.txt
 bin/
 *.dll
 !**/Plugins/**/*.dll
+
+# Packaged mod folder (build output)
+dist/
