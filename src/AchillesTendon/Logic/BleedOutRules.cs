@@ -63,6 +63,17 @@ namespace AchillesTendon.Logic
     {
         public const int NoPulseYet = -1;
 
+        /// <summary>How far the bleed-out has run, 0 (fresh cut) to 1 (dead).</summary>
+        public static float Progress(float elapsed, float duration)
+        {
+            if (duration <= 0f)
+            {
+                return 1f;
+            }
+            var progress = elapsed / duration;
+            return progress < 0f ? 0f : progress > 1f ? 1f : progress;
+        }
+
         /// <summary>
         /// Health drains linearly from whatever it is now to zero at the end of the
         /// duration. Extra damage (the player finishing it off) and healing simply

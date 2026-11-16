@@ -107,6 +107,29 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float BloodPulseInterval = OptionSpecs.BleedPulseInterval.Default;
 
+        [ModOption("Weakening", "The NPC gets weaker as it bleeds: it crawls slower, screams less often and near the end only breathes heavily. Off: full strength until death.")]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(4)]
+        public static bool Weakening = true;
+
+        [ModOption("Weakest Crawl Speed", "Crawl speed reached at the moment of death, in percent of Crawl Speed. 100 % = no slowdown.", nameof(WeakestCrawlSpeedValues))]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(5)]
+        [ModOptionSlider]
+        public static float WeakestCrawlSpeed = OptionSpecs.WeakestCrawlSpeed.Default;
+
+        [ModOption("Scream Slowdown", "How much longer the pause between screams is at the moment of death. x1 = no slowdown.", nameof(ScreamSlowdownValues))]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(6)]
+        [ModOptionSlider]
+        public static float ScreamSlowdown = OptionSpecs.ScreamSlowdown.Default;
+
+        [ModOption("Gasping From", "From this point of the bleed-out on, screams turn into heavy breathing. 100 % = never.", nameof(GaspingFromValues))]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(7)]
+        [ModOptionSlider]
+        public static float GaspingFrom = OptionSpecs.GaspingFrom.Default;
+
         // ---- Ground Fighting (step 4, experimental) --------------------------
 
         [ModOption("Ground Fighting Enabled", "NPCs with a cut tendon fight on from the ground: screams, and (experimental) stronger arms and swings. Off: they just lie there.")]
@@ -208,6 +231,12 @@ namespace AchillesTendon
         public static ModOptionParameter[] BleedOutDurationValues() => ToParameters(OptionSpecs.BleedOutDuration);
 
         public static ModOptionParameter[] BloodPulseIntervalValues() => ToParameters(OptionSpecs.BleedPulseInterval);
+
+        public static ModOptionParameter[] WeakestCrawlSpeedValues() => ToParameters(OptionSpecs.WeakestCrawlSpeed);
+
+        public static ModOptionParameter[] ScreamSlowdownValues() => ToParameters(OptionSpecs.ScreamSlowdown);
+
+        public static ModOptionParameter[] GaspingFromValues() => ToParameters(OptionSpecs.GaspingFrom);
 
         public static ModOptionParameter[] ArmStrengthValues() => ToParameters(OptionSpecs.ArmStrength);
 

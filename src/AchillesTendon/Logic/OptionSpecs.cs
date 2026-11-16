@@ -12,6 +12,9 @@ namespace AchillesTendon.Logic
         Seconds,
         Meters,
         Multiplier,
+
+        /// <summary>Stored as 0..1, shown in percent.</summary>
+        Percent,
     }
 
     /// <summary>
@@ -64,6 +67,8 @@ namespace AchillesTendon.Logic
                     return ((decimal)value).ToString("0.0#", culture) + " m";
                 case OptionUnit.Multiplier:
                     return "x" + ((decimal)value).ToString("0.0#", culture);
+                case OptionUnit.Percent:
+                    return ((decimal)value * 100m).ToString("0.#", culture) + " %";
                 default:
                     return ((decimal)value).ToString("0.#", culture) + " s";
             }
@@ -109,6 +114,15 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec ScreamInterval =
             new FloatOptionSpec("Scream Interval", 2f, 30f, 1f, 6f, OptionUnit.Seconds);
 
+        public static readonly FloatOptionSpec WeakestCrawlSpeed =
+            new FloatOptionSpec("Weakest Crawl Speed", 0.05f, 1f, 0.05f, 0.25f, OptionUnit.Percent);
+
+        public static readonly FloatOptionSpec ScreamSlowdown =
+            new FloatOptionSpec("Scream Slowdown", 1f, 5f, 0.5f, 3f, OptionUnit.Multiplier);
+
+        public static readonly FloatOptionSpec GaspingFrom =
+            new FloatOptionSpec("Gasping From", 0.5f, 1f, 0.05f, 0.75f, OptionUnit.Percent);
+
         public static readonly FloatOptionSpec HitMarkerDuration =
             new FloatOptionSpec("Hit Marker Duration", 1f, 30f, 1f, 5f, OptionUnit.Seconds);
 
@@ -122,6 +136,9 @@ namespace AchillesTendon.Logic
             CrawlBodyHeight,
             BleedOutDuration,
             BleedPulseInterval,
+            WeakestCrawlSpeed,
+            ScreamSlowdown,
+            GaspingFrom,
             ArmStrength,
             GroundAttackRange,
             GroundAttackInterval,

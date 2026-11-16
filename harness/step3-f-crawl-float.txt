@@ -1,0 +1,63 @@
+# Diagnosis of the "floating sit" in the crawl pose: pictures every 0.5 s while the
+# crawling NPC approaches, matched by time with the CRAWL POSE lines (Debug Logging:
+# animator state, transition, Speed, hips height). Ground Attacks off to isolate the pose.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Attacks" false
+set-option AchillesTendon "Screaming" false
+
+spawn-npc HumanMale distance=4 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log down to the injured/crawl pose
+wait 0.5
+screenshot f01 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f02 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f03 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f04 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f05 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f06 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f07 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f08 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f09 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f10 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f11 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f12 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f13 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f14 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f15 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f16 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f17 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f18 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f19 of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot f20 of=npc distance=2.5 height=0.6 angle=90
+expect-npc state Alive within=0.1
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Screaming" true
+expect-no-log Exception
+quit

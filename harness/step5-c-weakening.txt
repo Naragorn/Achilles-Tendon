@@ -1,0 +1,55 @@
+# Step 5, weakening: a crawling NPC gets weaker as it bleeds. The crawl speed and the
+# scream interval scale with the bleed-out (logged on every pulse), and from Gasping From
+# on its screams turn into heavy breathing ("heavybreath"). Then it dies.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 20
+set-option AchillesTendon "Blood Pulse Interval" 2
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Scream Interval" 2
+set-option AchillesTendon "Weakening" true
+set-option AchillesTendon "Weakest Crawl Speed" 0.25
+set-option AchillesTendon "Scream Slowdown" 2
+set-option AchillesTendon "Gasping From" 0.5
+
+spawn-npc HumanMale distance=3 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+expect-log [AchillesTendon] SCREAM |
+# A fresh cut: full strength.
+expect-log weakening crawl=x1.0 scream interval=x1.0
+# Past half way (10 s of 20): slower, and heavy breathing instead of screams.
+# expect-log looks 10 s ahead, so this window covers 8 s to 18 s after the cut.
+wait 8
+expect-log gasping
+expect-log weakening crawl=x0.
+expect-log [AchillesTendon] GASP |
+expect-npc state Dead within=15
+expect-log [AchillesTendon] BLED OUT
+expect-no-log Exception
+mark
+
+# Weakening off: a second NPC stays at full strength while it bleeds.
+set-option AchillesTendon "Weakening" false
+spawn-npc HumanMale distance=3 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+wait 14
+# Order matters: the harness logs each step line, and neither line contains the other's text.
+expect-no-log gasping
+expect-no-log [AchillesTendon] GASP
+expect-no-log crawl=x0.
+mark
+set-option AchillesTendon "Weakening" true
+expect-no-log Exception
+quit

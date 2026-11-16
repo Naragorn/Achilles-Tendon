@@ -34,7 +34,7 @@ Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_
 | 2. Heel hit-zone detection, debug visualization, logging | built, **not yet tested in game** |
 | 3. Collapse | built; **headless-tested** with BasHarness (`harness/step3-*.txt`: slash on the heel from behind -> NPC down and still down after 30 s; mod off -> stays down or stands up per Stand Up When Disabled; blunt and frontal hits refused). **Not yet tested in the headset** (real weapon contact, physics, look). Attacking from the ground is step 4 (see below) |
 | 4. Ground fighting | **experimental, partly working.** Built: screams (on by default), arm strength and ground attacks (both off by default). Headless test (`harness/step4-a-ground-fight.txt`, pictures with `screenshot of=npc`): 8/8 scenarios PASS on 2026-11-16; screams play; a swing is started, but the pictures show no arm movement, and the game never reports the swing's end. So route A does not swing yet; stronger arm pins only stiffen the arms in the lying pose. Crawling: not built. Details and next routes in `CLAUDE.md` |
-| 5. Bleed-out | built, unit-tested; harness scenarios written (`harness/step5-*.txt`: cut NPC dies after Bleed-Out Duration; Bleed-Out off or Achilles Tendon off pauses it, on again finishes it) and **headless-tested**, 7/7 scenarios PASS on 2026-11-16 (NPC cut at health 49/50 dies after 10 s, `BLED OUT` at 10.0 s; health dropped a bit faster than the pure drain, 28.4 instead of 34.3 at 3 s, most likely impact damage from the falling ragdoll (not checked), which the drain absorbs as designed). **Not yet tested in the headset** (the blood drip's look and placement). Weakening over time is not built yet: a lying NPC does nothing that could get weaker until step 4 |
+| 5. Bleed-out | built, unit-tested; harness scenarios written (`harness/step5-*.txt`: cut NPC dies after Bleed-Out Duration; Bleed-Out off or Achilles Tendon off pauses it, on again finishes it) and **headless-tested**, 7/7 scenarios PASS on 2026-11-16 (NPC cut at health 49/50 dies after 10 s, `BLED OUT` at 10.0 s; health dropped a bit faster than the pure drain, 28.4 instead of 34.3 at 3 s, most likely impact damage from the falling ragdoll (not checked), which the drain absorbs as designed). **Not yet tested in the headset** (the blood drip's look and placement). Weakening (crawls slower, screams less often, heavy breathing near the end) built and unit-tested, **headless-tested** 2026-11-16 (`harness/step5-c-weakening.txt`, PASS: log shows crawl x1.0 -> x0.32 and scream interval x1.0 -> x1.9 over 20 s, `GASP` from 50 %; with Weakening off everything stays x1.0); whether the slower crawl is visible is a headset check |
 | 6. Player hardcore mode | detection built (`Apply To Player`, default off), **not yet tested in game**; effects follow with steps 3-5 |
 
 Step 2 only detects and reports heel hits. It does not change the fight.
@@ -124,6 +124,10 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Bleed-Out Duration (cut to death) | 45 s | 10-180 s |
 | | Blood Effects (drip from the cut heel, stronger towards the end) | on | |
 | | Blood Pulse Interval (between drips and bleed log lines) | 2 s | 0.5-10 s |
+| | Weakening (crawls slower, screams less often, heavy breathing near the end) | on | |
+| | Weakest Crawl Speed (share of Crawl Speed at the moment of death) | 25 % | 5-100 % |
+| | Scream Slowdown (Scream Interval multiplier at the moment of death) | x3 | x1-x5 |
+| | Gasping From (bleed-out share from which screams become the voice's `heavybreath`) | 75 % | 50-100 % |
 | Ground Fighting | Ground Fighting Enabled | on | |
 | | Arm Strength (arm pins of a lying NPC; x1 = the game's own limp value) | x1 | x1-x10 |
 | | Ground Attacks (crawling: upper-body swings; lying flat: experimental, no visible swing). Off: a downed NPC does not attack at all (its own melee AI stays off while crawling) | off | |
@@ -166,6 +170,8 @@ A heel hit on a living NPC knocks it down and holds it there (`CrippleController
 
 **Downed Pose = Crawl (default):** the table above applies to Lie Flat. With Crawl the NPC is not knocked over: it stays a standing ragdoll (`Alive`), and every frame gets the animator settings the game itself uses for a burning NPC that drops (`SetAnimatorHeightRatio(Crawl Body Height)`, animator float `Injured = 1`), plus a locomotion speed modifier (Crawl Speed) and `ragdoll.forcePhysic`. In the game's `Human` animator controller (read from `animations_assets_all.bundle`), a low `Height` and `Injured` blend the idle states into `Laying`/`LayingInjured` and the moving states into `Crawling`/`CrawlBackwards`. A knocked-down NPC is left to get up by itself and goes back into the crawl. Switching the pose live works both ways (`harness/step3-e-crawl.txt`). Full suite 9/9 PASS on 2026-11-16.
 
+**Known issue, the floating sit (cause measured, not fixed yet):** when the crawling NPC is nearly still, the animator flips every 0.25-0.5 s between the sitting idle pose (hips 0.1 m) and the crawl pose (hips 0.3 m), because the AI's small moves keep `Speed` right at the transitions' threshold of 0.1. The physical body cannot follow and hangs in between, sitting in the air. With Debug Logging on, `CRAWL POSE` lines (every 0.5 s per crawling NPC) show the animator state, `Speed`, physical and animated hips and feet; `harness/step3-f-crawl-float.txt` takes a picture every 0.5 s to match them.
+
 While crawling, the NPC's own melee AI is switched off (`BrainModuleMelee.meleeEnabled = false`, restored afterwards): its attack clips move the whole body and raised it upright in the first headless pictures. Instead, Ground Attacks plays one of its attack clips on the **upper-body layer** (`Creature.PlayUpperAnimation`) when you are in reach.
 
 Headless pictures (2026-11-16, `harness/step3-e-crawl.txt`): the NPC stays low the whole time (kneeling or sitting, sword in hand), swings with the upper body, and moves towards the player (logged distance 3.1 m -> 1.3 m over about 12 s). Full suite 9/9 PASS. At times it hangs in a sitting pose slightly above the ground (cause not checked). Not yet judged in the headset.
@@ -187,7 +193,7 @@ Because the drain starts from the current health every frame, extra hits make th
 
 Every Blood Pulse Interval the game's own blood drip plays at the cut, with an intensity that grows from 1/n to 1 over the n pulses. With Debug Logging on, each pulse also logs `BLEED | <npc> | health=.. | t=../.. s`; `BLEED START` and `BLED OUT` mark the start and the end.
 
-Not built yet: the spec's "gets weaker/slower over time". A crippled NPC only lies on the ground until step 4 (ground fighting) gives it something to do, so there is nothing to weaken yet.
+**Weakening** (the spec's "gets weaker/slower over time", `WeakeningRules`, unit-tested): from the bleed-out progress p (elapsed / duration, 0 to 1) the crawl speed is multiplied by a value going linearly from 1 to Weakest Crawl Speed, the scream interval by a value going from 1 to Scream Slowdown, and from p >= Gasping From the scream becomes the voice's `heavybreath` dialog (every human voice in the 1.3.2 catalog has it). Paused bleeding keeps the NPC as weak as it is. The BLEED log line shows the current factors (`weakening crawl=x.. scream interval=x..`, `gasping`); a gasp logs `GASP` instead of `SCREAM`.
 
 ## Build
 

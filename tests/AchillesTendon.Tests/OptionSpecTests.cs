@@ -57,6 +57,8 @@ namespace AchillesTendon.Tests
         [InlineData(OptionUnit.Meters, 2f, "2.0 m")]
         [InlineData(OptionUnit.Multiplier, 4f, "x4.0")]
         [InlineData(OptionUnit.Multiplier, 2.5f, "x2.5")]
+        [InlineData(OptionUnit.Percent, 0.75f, "75 %")]
+        [InlineData(OptionUnit.Percent, 0.05f, "5 %")]
         public void Label(OptionUnit unit, float value, string expected)
         {
             var spec = new FloatOptionSpec("Test", 0f, 1f, 0.1f, 0f, unit);

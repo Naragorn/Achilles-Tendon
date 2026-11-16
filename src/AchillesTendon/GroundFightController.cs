@@ -31,6 +31,9 @@ namespace AchillesTendon
 
         private const string ScreamDialogId = "hit";
 
+        // Every human voice in the catalog (Voices/Voice_Human*.json, 1.3.2) has it.
+        private const string GaspDialogId = "heavybreath";
+
         private sealed class Fighter
         {
             public readonly List<AnimationClip> AttackClips = new List<AnimationClip>();
@@ -60,7 +63,7 @@ namespace AchillesTendon
             ModLog.Verbose("GROUND FIGHT START | " + GameAdapters.Label(creature) + " | attack clips=" + fighter.AttackClips.Count);
         }
 
-        public void Update(float time, System.Func<Creature, bool> isCrippled, System.Func<Creature, bool> isDowned, System.Func<Creature, bool> isCrawling)
+        public void Update(float time, System.Func<Creature, bool> isCrippled, System.Func<Creature, bool> isDowned, System.Func<Creature, bool> isCrawling, System.Func<Creature, Weakening> weakening)
         {
             if (fighters.Count == 0)
             {
@@ -81,6 +84,7 @@ namespace AchillesTendon
                     continue;
                 }
 
+                var weak = weakening(creature);
                 var decision = GroundFightRules.Decide(new GroundFightInput
                 {
                     FeatureOn = ModOptions.TendonEnabled && ModOptions.GroundFightingEnabled,
@@ -95,7 +99,7 @@ namespace AchillesTendon
                     AttackInterval = ModOptions.GroundAttackInterval,
                     ScreamsOn = ModOptions.Screaming,
                     SinceLastScream = time - fighter.LastScreamTime,
-                    ScreamInterval = ModOptions.ScreamInterval,
+                    ScreamInterval = ModOptions.ScreamInterval * weak.ScreamIntervalFactor,
                 });
 
                 ApplyArms(creature, fighter, decision.StrongArms);
@@ -111,7 +115,7 @@ namespace AchillesTendon
                 if (decision.Scream)
                 {
                     fighter.LastScreamTime = time;
-                    Scream(creature);
+                    Scream(creature, weak.Gasping);
                 }
                 if (ModOptions.GroundAttacks && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
                 {
@@ -214,7 +218,7 @@ namespace AchillesTendon
                 + " | distance=" + DistanceToPlayer(creature).ToString("0.0#", System.Globalization.CultureInfo.InvariantCulture) + " m");
         }
 
-        private static void Scream(Creature creature)
+        private static void Scream(Creature creature, bool gasping)
         {
             var speak = creature.brain != null && creature.brain.instance != null
                 ? creature.brain.instance.GetModule<BrainModuleSpeak>(autoAddModuleIfMissing: false)
@@ -223,8 +227,8 @@ namespace AchillesTendon
             {
                 return;
             }
-            speak.Play(ScreamDialogId, abnormalNoise: true);
-            ModLog.Verbose("SCREAM | " + GameAdapters.Label(creature));
+            speak.Play(gasping ? GaspDialogId : ScreamDialogId, abnormalNoise: true);
+            ModLog.Verbose((gasping ? "GASP | " : "SCREAM | ") + GameAdapters.Label(creature));
         }
 
         private static float DistanceToPlayer(Creature creature)

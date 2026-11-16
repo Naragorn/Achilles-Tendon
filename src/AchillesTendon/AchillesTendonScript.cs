@@ -54,7 +54,7 @@ namespace AchillesTendon
         {
             try
             {
-                cripple.Update();
+                cripple.Update(c => WeakeningOf(c).CrawlSpeedFactor);
             }
             catch (Exception ex)
             {
@@ -62,7 +62,7 @@ namespace AchillesTendon
             }
             try
             {
-                bleed.Update(UnityEngine.Time.deltaTime, cripple.IsCrippled);
+                bleed.Update(UnityEngine.Time.deltaTime, cripple.IsCrippled, WeakeningOf);
             }
             catch (Exception ex)
             {
@@ -70,7 +70,7 @@ namespace AchillesTendon
             }
             try
             {
-                groundFight.Update(UnityEngine.Time.time, cripple.IsCrippled, cripple.IsDowned, cripple.IsCrawling);
+                groundFight.Update(UnityEngine.Time.time, cripple.IsCrippled, cripple.IsDowned, cripple.IsCrawling, WeakeningOf);
             }
             catch (Exception ex)
             {
@@ -85,6 +85,22 @@ namespace AchillesTendon
                 ModLog.Error("Debug visualizer failed: " + ex);
                 visualizer.Clear();
             }
+        }
+
+        // Build step 5, "weaker over time": derived from the bleed-out progress each frame,
+        // so changing the menu or pausing the bleed-out applies at once.
+        private Weakening WeakeningOf(Creature creature)
+        {
+            var isBleeding = bleed.TryGetProgress(creature, out var progress);
+            return WeakeningRules.Compute(new WeakeningInput
+            {
+                FeatureOn = ModOptions.Weakening,
+                IsBleeding = isBleeding,
+                Progress = progress,
+                WeakestCrawlSpeed = ModOptions.WeakestCrawlSpeed,
+                ScreamSlowdown = ModOptions.ScreamSlowdown,
+                GaspingFrom = ModOptions.GaspingFrom,
+            });
         }
 
         // OnStart is used because Creature.Damage only raises OnEnd for hits that

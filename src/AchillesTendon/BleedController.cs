@@ -53,8 +53,21 @@ namespace AchillesTendon
                 + Format(ModOptions.BleedOutDuration) + " s to bleed out");
         }
 
+        /// <summary>Bleed-out progress of a bleeding creature, 0 (fresh cut) to 1 (dead); false if it is not bleeding.</summary>
+        public bool TryGetProgress(Creature creature, out float progress)
+        {
+            if (creature != null && bleeding.TryGetValue(creature, out var bleed))
+            {
+                progress = BleedOutRules.Progress(bleed.Elapsed, ModOptions.BleedOutDuration);
+                return true;
+            }
+            progress = 0f;
+            return false;
+        }
+
         /// <param name="isCrippled">Only crippled NPCs bleed; a released one stops for good.</param>
-        public void Update(float deltaTime, System.Func<Creature, bool> isCrippled)
+        /// <param name="weakening">Only for the log line: how weak the creature is now.</param>
+        public void Update(float deltaTime, System.Func<Creature, bool> isCrippled, System.Func<Creature, Weakening> weakening)
         {
             if (bleeding.Count == 0)
             {
@@ -86,7 +99,7 @@ namespace AchillesTendon
                         creature.currentHealth = step.Health;
                         if (step.Pulse)
                         {
-                            Pulse(creature, bleed, step);
+                            Pulse(creature, bleed, step, weakening(creature));
                         }
                         break;
                     case BleedAction.Kill:
@@ -108,12 +121,14 @@ namespace AchillesTendon
             bleeding.Clear();
         }
 
-        private void Pulse(Creature creature, Bleed bleed, BleedStep step)
+        private void Pulse(Creature creature, Bleed bleed, BleedStep step, Weakening weak)
         {
             ModLog.Verbose("BLEED | " + GameAdapters.Label(creature)
                 + " | health=" + Format(step.Health) + "/" + Format(creature.maxHealth)
                 + " | t=" + Format(step.Elapsed) + "/" + Format(ModOptions.BleedOutDuration) + " s"
-                + " | intensity=" + Format(step.PulseIntensity));
+                + " | intensity=" + Format(step.PulseIntensity)
+                + " | weakening crawl=x" + Format2(weak.CrawlSpeedFactor) + " scream interval=x" + Format2(weak.ScreamIntervalFactor)
+                + (weak.Gasping ? " gasping" : string.Empty));
             if (!ModOptions.BloodEffects || bleed.Part == null)
             {
                 return;
@@ -148,5 +163,7 @@ namespace AchillesTendon
         }
 
         private static string Format(float value) => value.ToString("0.#", CultureInfo.InvariantCulture);
+
+        private static string Format2(float value) => value.ToString("0.0#", CultureInfo.InvariantCulture);
     }
 }

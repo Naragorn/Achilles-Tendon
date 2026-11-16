@@ -26,6 +26,10 @@ namespace AchillesTendon
         private readonly Dictionary<Creature, bool> meleeBefore = new Dictionary<Creature, bool>();
         private readonly List<Creature> scratch = new List<Creature>();
 
+        // Debug Logging only: when each crawling NPC last wrote a CRAWL POSE line.
+        private readonly Dictionary<Creature, float> lastPoseLog = new Dictionary<Creature, float>();
+        private const float PoseLogInterval = 0.5f;
+
         public bool IsCrippled(Creature creature) => crippled.Contains(creature);
 
         public void Cripple(Creature creature)
@@ -33,7 +37,7 @@ namespace AchillesTendon
             crippled.Add(creature);
             if (ModOptions.DownedPose == DownedPose.Crawl)
             {
-                Crawl(creature);
+                Crawl(creature, 1f);
                 ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, down to the injured/crawl pose");
             }
             else
@@ -49,7 +53,8 @@ namespace AchillesTendon
         /// <summary>Crippled and either crawling or lying on the ground.</summary>
         public bool IsDowned(Creature creature) => crawling.Contains(creature) || (crippled.Contains(creature) && StateOf(creature).IsDown);
 
-        public void Update()
+        /// <param name="crawlSpeedFactor">Weakening from the bleed-out, multiplies Crawl Speed.</param>
+        public void Update(System.Func<Creature, float> crawlSpeedFactor)
         {
             if (crippled.Count == 0)
             {
@@ -63,7 +68,7 @@ namespace AchillesTendon
                 switch (action)
                 {
                     case CrippleAction.HoldCrawl:
-                        Crawl(creature);
+                        Crawl(creature, crawlSpeedFactor(creature));
                         break;
                     case CrippleAction.HoldDown:
                         StopCrawl(creature);
@@ -87,6 +92,7 @@ namespace AchillesTendon
                         }
                         crawling.Remove(creature);
                         meleeBefore.Remove(creature);
+                        lastPoseLog.Remove(creature);
                         crippled.Remove(creature);
                         break;
                 }
@@ -107,6 +113,7 @@ namespace AchillesTendon
             crippled.Clear();
             crawling.Clear();
             meleeBefore.Clear();
+            lastPoseLog.Clear();
         }
 
         private static CrippledCreatureState StateOf(Creature creature)
@@ -139,15 +146,16 @@ namespace AchillesTendon
         // (Human animator controller, read from animations_assets_all.bundle). The body
         // stays a standing ragdoll, so the AI keeps moving (slowly) and attacking.
         // Re-applied every frame: the game resets Height on state changes and while blocking.
-        private void Crawl(Creature creature)
+        private void Crawl(Creature creature, float speedFactor)
         {
+            LogPose(creature);
             if (creature.brain != null)
             {
                 creature.brain.RemoveNoStandUpModifier(this);
             }
             creature.SetAnimatorHeightRatio(ModOptions.CrawlBodyHeight);
             creature.animator.SetFloat(Brain.hashInjured, 1f);
-            creature.locomotion.SetAllSpeedModifiers(this, ModOptions.CrawlSpeed);
+            creature.locomotion.SetAllSpeedModifiers(this, ModOptions.CrawlSpeed * speedFactor);
             creature.ragdoll.forcePhysic.Add(this);
             crawling.Add(creature);
             // The AI's own attack clips move the whole body and raise a crawling NPC
@@ -164,6 +172,106 @@ namespace AchillesTendon
             }
         }
 
+        // Diagnosis of the "floating sit" (Debug Logging): what the animator's Height was
+        // before this frame's write (another module may have changed it since the last
+        // frame), how high the hips are above the creature's ground point, and which AI
+        // states were active.
+        private void LogPose(Creature creature)
+        {
+            if (!ModOptions.DebugLogging)
+            {
+                return;
+            }
+            var now = UnityEngine.Time.time;
+            if (lastPoseLog.TryGetValue(creature, out var last) && now - last < PoseLogInterval)
+            {
+                return;
+            }
+            lastPoseLog[creature] = now;
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+            var hips = creature.ragdoll.rootPart != null
+                ? creature.ragdoll.rootPart.transform.position.y - creature.transform.position.y
+                : float.NaN;
+            var brain = creature.brain;
+            ModLog.Verbose("CRAWL POSE | " + GameAdapters.Label(creature)
+                + " | height before=" + creature.GetAnimatorHeightRatio().ToString("0.00", ci)
+                + " set=" + ModOptions.CrawlBodyHeight.ToString("0.00", ci)
+                + " | hips=" + hips.ToString("0.00", ci) + " m"
+                + " animated hips=" + AnimatedHeight(creature, creature.ragdoll.rootPart).ToString("0.00", ci)
+                + " feet=" + FootHeights(creature, ci)
+                + " | " + RootPin(creature, ci)
+                + " | under hips: " + UnderHips(creature, ci)
+                + " | grounded=" + creature.locomotion.isGrounded
+                + " | defending=" + (brain != null && brain.isDefending)
+                + " dodging=" + (brain != null && brain.isDodging)
+                + " dynamicAnim=" + creature.isPlayingDynamicAnimation
+                + " block=" + creature.animator.GetFloat(Brain.hashBlock).ToString("0.00", ci)
+                + " | anim state=" + creature.animator.GetCurrentAnimatorStateInfo(0).shortNameHash
+                + " next=" + (creature.animator.IsInTransition(0) ? creature.animator.GetNextAnimatorStateInfo(0).shortNameHash.ToString(ci) : "-")
+                + " transition=" + (creature.animator.IsInTransition(0) ? creature.animator.GetAnimatorTransitionInfo(0).normalizedTime.ToString("0.00", ci) : "-")
+                + " speed=" + creature.animator.GetFloat(Creature.hashSpeed).ToString("0.00", ci)
+                + " strafe=" + creature.animator.GetFloat(Creature.hashStrafe).ToString("0.00", ci)
+                + " | state=" + creature.state);
+        }
+
+        private static string RootPin(Creature creature, System.Globalization.CultureInfo ci)
+        {
+            var root = creature.ragdoll.rootPart;
+            if (root == null || root.bone == null || root.bone.animationJoint == null)
+            {
+                return "root pin none";
+            }
+            var drive = root.bone.animationJoint.yDrive;
+            return "root pin spring=" + drive.positionSpring.ToString("0", ci)
+                + " max=" + drive.maximumForce.ToString("0", ci)
+                + " hipsAttached=" + creature.ragdoll.hipsAttached
+                + " gravity=" + root.physicBody.useGravity
+                + " kinematic=" + root.physicBody.isKinematic;
+        }
+
+        // Every collider straight below the hips down to the ground point, nearest first.
+        private static string UnderHips(Creature creature, System.Globalization.CultureInfo ci)
+        {
+            var root = creature.ragdoll.rootPart;
+            if (root == null)
+            {
+                return "-";
+            }
+            var origin = root.transform.position;
+            var hits = UnityEngine.Physics.RaycastAll(origin, UnityEngine.Vector3.down, 1.5f, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
+            System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+            var text = string.Empty;
+            foreach (var hit in hits)
+            {
+                text += hit.collider.name + "@" + hit.distance.ToString("0.00", ci)
+                    + "[" + UnityEngine.LayerMask.LayerToName(hit.collider.gameObject.layer) + "] ";
+            }
+            return text.Length > 0 ? text : "nothing";
+        }
+
+        private static float AnimatedHeight(Creature creature, RagdollPart part)
+        {
+            return part != null && part.bone != null && part.bone.animation != null
+                ? part.bone.animation.position.y - creature.transform.position.y
+                : float.NaN;
+        }
+
+        // Physical / animated height of each foot above the creature's ground point.
+        private static string FootHeights(Creature creature, System.Globalization.CultureInfo ci)
+        {
+            var text = string.Empty;
+            foreach (var part in creature.ragdoll.parts)
+            {
+                if (part.type == RagdollPart.Type.LeftFoot || part.type == RagdollPart.Type.RightFoot)
+                {
+                    text += (part.type == RagdollPart.Type.LeftFoot ? "L" : " R")
+                        + (part.transform.position.y - creature.transform.position.y).ToString("0.00", ci)
+                        + "/" + AnimatedHeight(creature, part).ToString("0.00", ci);
+                }
+            }
+            return text;
+        }
+
         private static BrainModuleMelee Melee(Creature creature)
         {
             return creature.brain != null && creature.brain.instance != null
@@ -173,6 +281,7 @@ namespace AchillesTendon
 
         private void StopCrawl(Creature creature)
         {
+            lastPoseLog.Remove(creature);
             if (!crawling.Remove(creature))
             {
                 return;
