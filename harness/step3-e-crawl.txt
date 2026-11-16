@@ -1,0 +1,56 @@
+# Step 3, Downed Pose = Crawl: a heel cut drops a fighting NPC into the game's own
+# injured/crawl animations (standing ragdoll, low Height, Injured = 1). It stays alive
+# and its AI keeps moving it, slowly, which the animator plays as crawling.
+# Pictures over time; then Lie Flat knocks it down, Crawl lets it come back to the crawl.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Stand Up When Disabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Crawl Speed" 0.3
+set-option AchillesTendon "Crawl Body Height" 0.2
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+
+# A real fighter (HumanMedium brain) with a sword, back turned, 3 m away.
+spawn-npc HumanMale distance=3 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] HEEL HIT
+expect-log [AchillesTendon] COLLAPSE
+expect-log down to the injured/crawl pose
+expect-npc state Alive within=1
+wait 1
+screenshot 01-crawl-dropping of=npc distance=2.5 height=1.0 angle=90
+wait 2
+screenshot 02-crawl-3s of=npc distance=2.5 height=1.0 angle=90
+wait 2
+screenshot 03-crawl-5s of=npc distance=2.5 height=1.0 angle=90
+wait 2
+screenshot 04-crawl-7s of=npc distance=2.5 height=1.0 angle=45
+wait 2
+screenshot 05-crawl-9s of=npc distance=2.5 height=1.0 angle=135
+expect-npc state Alive within=0.1
+expect-no-log Exception
+# The harness logs its own step lines; a new mark keeps "expect-no-log Exception" from matching them.
+mark
+
+# Lie Flat: knocked down and held.
+set-option AchillesTendon "Downed Pose" LieFlat
+expect-npc state Destabilized within=2
+wait 1
+screenshot 06-lie-flat of=npc distance=2.5 height=1.0 angle=90
+
+# Back to Crawl: the game stands it up, the crawl blend takes it low again.
+set-option AchillesTendon "Downed Pose" Crawl
+expect-npc state Alive within=20
+wait 2
+screenshot 07-back-to-crawl of=npc distance=2.5 height=1.0 angle=90
+
+set-option AchillesTendon "Bleed-Out Enabled" true
+expect-no-log Exception
+quit

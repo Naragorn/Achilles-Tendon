@@ -5,7 +5,8 @@ using ThunderRoad;
 namespace AchillesTendon
 {
     /// <summary>
-    /// Build step 3: a cut tendon knocks the NPC down and keeps it from standing up.
+    /// Build step 3: a cut tendon takes the NPC down for good, either into the game's
+    /// own injured/crawl animations (Downed Pose = Crawl) or flat on the ground (Lie Flat).
     ///
     /// Engine facts this relies on (ThunderRoad.dll 1.3.2, see README):
     /// - Knock-down: the same calls as Creature.PushFallback, CancelGetUp(false)
@@ -19,6 +20,7 @@ namespace AchillesTendon
     internal sealed class CrippleController
     {
         private readonly HashSet<Creature> crippled = new HashSet<Creature>();
+        private readonly HashSet<Creature> crawling = new HashSet<Creature>();
         private readonly List<Creature> scratch = new List<Creature>();
 
         public bool IsCrippled(Creature creature) => crippled.Contains(creature);
@@ -26,9 +28,23 @@ namespace AchillesTendon
         public void Cripple(Creature creature)
         {
             crippled.Add(creature);
-            Collapse(creature);
-            ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, held on the ground");
+            if (ModOptions.DownedPose == DownedPose.Crawl)
+            {
+                Crawl(creature);
+                ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, down to the injured/crawl pose");
+            }
+            else
+            {
+                Collapse(creature);
+                ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, held on the ground");
+            }
         }
+
+        /// <summary>Crippled and in the crawl pose (a standing ragdoll kept low).</summary>
+        public bool IsCrawling(Creature creature) => crawling.Contains(creature);
+
+        /// <summary>Crippled and either crawling or lying on the ground.</summary>
+        public bool IsDowned(Creature creature) => crawling.Contains(creature) || (crippled.Contains(creature) && StateOf(creature).IsDown);
 
         public void Update()
         {
@@ -40,22 +56,33 @@ namespace AchillesTendon
             scratch.AddRange(crippled);
             foreach (var creature in scratch)
             {
-                var action = CrippleRules.Decide(StateOf(creature), ModOptions.TendonEnabled, ModOptions.StandUpWhenDisabled);
+                var action = CrippleRules.Decide(StateOf(creature), ModOptions.TendonEnabled, ModOptions.StandUpWhenDisabled, ModOptions.DownedPose);
                 switch (action)
                 {
+                    case CrippleAction.HoldCrawl:
+                        Crawl(creature);
+                        break;
                     case CrippleAction.HoldDown:
+                        StopCrawl(creature);
                         Hold(creature);
                         break;
                     case CrippleAction.Collapse:
+                        StopCrawl(creature);
                         Collapse(creature);
                         ModLog.Verbose("RE-COLLAPSE | " + GameAdapters.Label(creature) + " | was getting up while crippled");
                         break;
                     case CrippleAction.Release:
+                        StopCrawl(creature);
                         Release(creature);
                         crippled.Remove(creature);
                         ModLog.Verbose("RELEASE | " + GameAdapters.Label(creature) + " | feature off, may stand up");
                         break;
                     case CrippleAction.Forget:
+                        if (creature != null)
+                        {
+                            StopCrawl(creature);
+                        }
+                        crawling.Remove(creature);
                         crippled.Remove(creature);
                         break;
                 }
@@ -69,14 +96,13 @@ namespace AchillesTendon
             {
                 if (creature != null && !creature.isKilled)
                 {
+                    StopCrawl(creature);
                     Release(creature);
                 }
             }
             crippled.Clear();
+            crawling.Clear();
         }
-
-        /// <summary>Lying on the ground and not in the middle of getting up.</summary>
-        public bool IsDown(Creature creature) => StateOf(creature).IsDown;
 
         private static CrippledCreatureState StateOf(Creature creature)
         {
@@ -100,6 +126,37 @@ namespace AchillesTendon
             }
             creature.ragdoll.SetState(Ragdoll.State.Destabilized);
             Hold(creature);
+        }
+
+        // Crawl pose, the same animator settings Burning uses for a burning NPC that drops:
+        // a low Height and Injured = 1 blend the base layer's idle states into
+        // Laying/LayingInjured and its moving states into Crawling/CrawlBackwards
+        // (Human animator controller, read from animations_assets_all.bundle). The body
+        // stays a standing ragdoll, so the AI keeps moving (slowly) and attacking.
+        // Re-applied every frame: the game resets Height on state changes and while blocking.
+        private void Crawl(Creature creature)
+        {
+            if (creature.brain != null)
+            {
+                creature.brain.RemoveNoStandUpModifier(this);
+            }
+            creature.SetAnimatorHeightRatio(ModOptions.CrawlBodyHeight);
+            creature.animator.SetFloat(Brain.hashInjured, 1f);
+            creature.locomotion.SetAllSpeedModifiers(this, ModOptions.CrawlSpeed);
+            creature.ragdoll.forcePhysic.Add(this);
+            crawling.Add(creature);
+        }
+
+        private void StopCrawl(Creature creature)
+        {
+            if (!crawling.Remove(creature))
+            {
+                return;
+            }
+            creature.SetAnimatorHeightRatio(1f);
+            creature.animator.SetFloat(Brain.hashInjured, 0f);
+            creature.locomotion.RemoveSpeedModifier(this);
+            creature.ragdoll.forcePhysic.Remove(this);
         }
 
         // The controller instance is the modifier key, so only its own hold is removed.

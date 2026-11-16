@@ -117,6 +117,9 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Max Hit Angle (0 = straight behind, 90 = side) | 110° | 30-180° |
 | | Allowed Damage Types | Slash and Pierce | Slash and Pierce / Slash only / Pierce only |
 | | Stand Up When Disabled (NPCs with a cut tendon get up when the mod is turned off) | on | |
+| | Downed Pose (Crawl = the game's injured/crawl animations; Lie Flat = ragdoll on the ground) | Crawl | Crawl / Lie Flat |
+| | Crawl Speed (movement while crawling, relative to walking) | x0.3 | x0.05-x1 |
+| | Crawl Body Height (0 = flat, 1 = standing) | x0.2 | x0-x0.6 |
 | Bleed-Out | Bleed-Out Enabled (off pauses the bleeding, on resumes it) | on | |
 | | Bleed-Out Duration (cut to death) | 45 s | 10-180 s |
 | | Blood Effects (drip from the cut heel, stronger towards the end) | on | |
@@ -161,7 +164,9 @@ A heel hit on a living NPC knocks it down and holds it there (`CrippleController
 | Mod on, lying down | keep holding it down |
 | Mod on, up or getting up anyway (e.g. after catching fire) | knock it down again |
 
-The NPC lies flat as a ragdoll. The preferred pose is kneeling or crawling; the game has no crawl animation and only an idle kneel pose, so an own animation is planned (options and decision in `CLAUDE.md`, "Collapse pose").
+**Downed Pose = Crawl (default):** the table above applies to Lie Flat. With Crawl the NPC is not knocked over: it stays a standing ragdoll (`Alive`), and every frame gets the animator settings the game itself uses for a burning NPC that drops (`SetAnimatorHeightRatio(Crawl Body Height)`, animator float `Injured = 1`), plus a locomotion speed modifier (Crawl Speed) and `ragdoll.forcePhysic`. In the game's `Human` animator controller (read from `animations_assets_all.bundle`), a low `Height` and `Injured` blend the idle states into `Laying`/`LayingInjured` and the moving states into `Crawling`/`CrawlBackwards`. A knocked-down NPC is left to get up by itself and goes back into the crawl. Switching the pose live works both ways (`harness/step3-e-crawl.txt`). Full suite 9/9 PASS on 2026-11-16.
+
+Headless pictures (2026-11-16): the NPC drops low (sitting/kneeling, weapon in hand) and its own AI keeps attacking; **each attack animation raises it upright** for the swing, and at times it hangs in a sitting pose slightly above the ground. A clear crawl movement was not visible in the stills. Not yet judged in the headset.
 
 Turning the mod off in the game's mod list (`ScriptDisable`) or unloading it releases every NPC. The player is never knocked down yet: that is step 6.
 

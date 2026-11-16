@@ -8,6 +8,8 @@ set-option AchillesTendon "Stand Up When Disabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
+# These scenarios check the flat ragdoll (Destabilized); the crawl pose has its own.
+set-option AchillesTendon "Downed Pose" LieFlat
 # Step 5 would kill the crippled NPC after 45 s; these scenarios test step 3 only.
 set-option AchillesTendon "Bleed-Out Enabled" false
 

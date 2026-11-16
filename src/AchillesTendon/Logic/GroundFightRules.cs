@@ -9,6 +9,9 @@ namespace AchillesTendon.Logic
         /// <summary>Lying on the ground and not getting up.</summary>
         public bool IsDown;
 
+        /// <summary>Crawl pose: a standing ragdoll whose own AI attacks; no lying-only arm work.</summary>
+        public bool IsCrawling;
+
         public bool AttacksOn;
 
         /// <summary>The creature has attack animations (it held a weapon in a melee stance).</summary>
@@ -46,8 +49,9 @@ namespace AchillesTendon.Logic
             }
             return new GroundFightDecision
             {
-                StrongArms = true,
-                Attack = input.AttacksOn
+                StrongArms = !input.IsCrawling,
+                Attack = !input.IsCrawling
+                    && input.AttacksOn
                     && input.HasAttackClip
                     && !input.IsPlayingAnimation
                     && input.DistanceToPlayer <= input.AttackRange

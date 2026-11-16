@@ -153,5 +153,19 @@ namespace AchillesTendon.Tests
             Assert.True(d.Scream);
             Assert.False(d.Attack);
         }
+
+        [Fact]
+        public void Crawling_npc_screams_but_does_not_stiffen_arms_or_swing()
+        {
+            // Crawling it stands as a ragdoll and its own AI attacks; our lying-only parts stay off.
+            var input = Ready();
+            input.IsCrawling = true;
+
+            var d = GroundFightRules.Decide(input);
+
+            Assert.False(d.StrongArms);
+            Assert.False(d.Attack);
+            Assert.True(d.Scream);
+        }
     }
 }

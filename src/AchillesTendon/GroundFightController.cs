@@ -60,7 +60,7 @@ namespace AchillesTendon
             ModLog.Verbose("GROUND FIGHT START | " + GameAdapters.Label(creature) + " | attack clips=" + fighter.AttackClips.Count);
         }
 
-        public void Update(float time, System.Func<Creature, bool> isCrippled, System.Func<Creature, bool> isDown)
+        public void Update(float time, System.Func<Creature, bool> isCrippled, System.Func<Creature, bool> isDowned, System.Func<Creature, bool> isCrawling)
         {
             if (fighters.Count == 0)
             {
@@ -84,7 +84,8 @@ namespace AchillesTendon
                 var decision = GroundFightRules.Decide(new GroundFightInput
                 {
                     FeatureOn = ModOptions.TendonEnabled && ModOptions.GroundFightingEnabled,
-                    IsDown = isDown(creature),
+                    IsDown = isDowned(creature),
+                    IsCrawling = isCrawling(creature),
                     AttacksOn = ModOptions.GroundAttacks,
                     HasAttackClip = fighter.AttackClips.Count > 0,
                     IsPlayingAnimation = creature.isPlayingDynamicAnimation,
@@ -112,7 +113,7 @@ namespace AchillesTendon
                     fighter.LastScreamTime = time;
                     Scream(creature);
                 }
-                if (ModOptions.GroundAttacks && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
+                if (ModOptions.GroundAttacks && !isCrawling(creature) && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
                 {
                     fighter.NoClipLogged = true;
                     ModLog.Verbose("GROUND ATTACK skipped | " + GameAdapters.Label(creature) + " | no attack animations (no weapon in a melee stance when cut)");

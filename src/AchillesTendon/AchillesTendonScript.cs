@@ -70,7 +70,7 @@ namespace AchillesTendon
             }
             try
             {
-                groundFight.Update(UnityEngine.Time.time, cripple.IsCrippled, cripple.IsDown);
+                groundFight.Update(UnityEngine.Time.time, cripple.IsCrippled, cripple.IsDowned, cripple.IsCrawling);
             }
             catch (Exception ex)
             {

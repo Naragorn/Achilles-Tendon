@@ -66,6 +66,23 @@ namespace AchillesTendon
         [ModOptionOrder(6)]
         public static bool StandUpWhenDisabled = true;
 
+        [ModOption("Downed Pose", "Crawl: the NPC drops into the game's own injured pose and crawls when it moves. Lie Flat: it falls as a ragdoll and lies still.")]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(7)]
+        public static DownedPose DownedPose = DownedPose.Crawl;
+
+        [ModOption("Crawl Speed", "Movement speed while crawling, relative to walking.", nameof(CrawlSpeedValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(8)]
+        [ModOptionSlider]
+        public static float CrawlSpeed = OptionSpecs.CrawlSpeed.Default;
+
+        [ModOption("Crawl Body Height", "How low the crawling body is held. 0 = flat on the ground, 1 = standing.", nameof(CrawlBodyHeightValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(9)]
+        [ModOptionSlider]
+        public static float CrawlBodyHeight = OptionSpecs.CrawlBodyHeight.Default;
+
         // ---- Bleed-Out ------------------------------------------------------
 
         [ModOption("Bleed-Out Enabled", "NPCs with a cut tendon bleed out and die after Bleed-Out Duration. Off: the bleeding pauses (it goes on when turned back on).")]
@@ -183,6 +200,10 @@ namespace AchillesTendon
         public static ModOptionParameter[] HeelZoneHeightOffsetValues() => ToParameters(OptionSpecs.HeelZoneHeightOffset);
 
         public static ModOptionParameter[] MaxHitAngleValues() => ToParameters(OptionSpecs.MaxHitAngle);
+
+        public static ModOptionParameter[] CrawlSpeedValues() => ToParameters(OptionSpecs.CrawlSpeed);
+
+        public static ModOptionParameter[] CrawlBodyHeightValues() => ToParameters(OptionSpecs.CrawlBodyHeight);
 
         public static ModOptionParameter[] BleedOutDurationValues() => ToParameters(OptionSpecs.BleedOutDuration);
 
