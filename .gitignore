@@ -25,3 +25,4 @@ bin/
 
 # Packaged mod folder (build output)
 dist/
+artifacts/

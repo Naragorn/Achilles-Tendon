@@ -32,7 +32,7 @@ Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_
 |---|---|
 | 1. Project setup, SDK check, mod loads, debug logging, Mod Menu skeleton | built, **not yet tested in game** |
 | 2. Heel hit-zone detection, debug visualization, logging | built, **not yet tested in game** |
-| 3. Collapse | not started |
+| 3. Collapse | built: NPC falls and is held on the ground; **only the headless smoke test ran, not yet tested in game**. Attacking from the ground is step 4 (see below) |
 | 4. Ground fighting | not started |
 | 5. Bleed-out | not started |
 | 6. Player hardcore mode | detection built (`Apply To Player`, default off), **not yet tested in game**; effects follow with steps 3-5 |
@@ -75,6 +75,9 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | `Ragdoll.GetPart(Type, Section)` | exists | |
 | Attacker | `sourceColliderGroup.collisionHandler.item.lastHandler.creature`, else `casterHand.mana.creature` | Same chain `Creature.Damage` uses for `lastInteractionCreature`. |
 | Manifest | `Name, Description, Author, ModVersion, GameVersion, Thumbnail` | |
+| Knock down (step 3) | `Ragdoll.CancelGetUp(resetState:false)` + `Ragdoll.SetState(Ragdoll.State.Destabilized)` | Exactly what `Creature.PushFallback` does. `MaxPush`/`TryPush` were not used: they go through `BrainModuleHitReaction`, which may only stagger. |
+| Keep down (step 3) | `Brain.AddNoStandUpModifier(object)` / `RemoveNoStandUpModifier(object)` | The only caller of `Ragdoll.StandUp` is `BrainModuleHitReaction.OnCycle`, and only while `brain.noStandupModifiers` is empty. Electrocute, Grabbed, GravityZone and Floating use the same hold. Removing it lets the game stand the NPC up by itself. |
+| "Is down" | `Creature.state == Destabilized` (ragdoll `Destabilized` or `Inert`) and `!ragdoll.standingUp` | |
 
 ### Assumed - must be confirmed in game
 
@@ -97,6 +100,8 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 - **Option names must be unique per mod** (saved by name). So the toggle is "Achilles Tendon Enabled", not "Enabled"; later features follow the same pattern.
 - **Saved by index**: changing a value range later shifts saved settings. Use the mod page's reset button after updating.
 - **No nullable metadata**: the game rejects `ModOption`s compiled with nullables; the project disables them.
+- **`Brain.Stop` clears every no-stand-up hold** (`ClearNoStandUpModifiers`). It runs on death, despawn and when an NPC catches fire (`Burning`). So the hold is re-applied every frame, and an NPC that started getting up anyway is knocked down again.
+- **The AI does not attack while lying down**: `Creature.state` is `Destabilized` then, and `BrainModuleMelee` drops every attack unless the state is `Alive`. The spec's "keep arms/AI attacking" therefore cannot come from the game's own AI while the NPC lies down; it is built in step 4 (ground fighting).
 
 ## Mod Menu
 
@@ -108,7 +113,8 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Heel Zone Height Offset | 3 cm | -5-15 cm |
 | | Max Hit Angle (0 = straight behind, 90 = side) | 110° | 30-180° |
 | | Allowed Damage Types | Slash and Pierce | Slash and Pierce / Slash only / Pierce only |
-| Player Hardcore Mode | Apply To Player | off | |
+| | Stand Up When Disabled (NPCs with a cut tendon get up when the mod is turned off) | on | |
+| Player Hardcore Mode | Apply To Player (detection only so far; your own collapse is step 6) | off | |
 | Debug | Debug Logging | off | |
 | | Show Heel Zones (NPCs; also yours with Apply To Player) | off | |
 | | Show Hit Markers | off | |
@@ -129,6 +135,20 @@ Pure logic in `src/AchillesTendon/Logic`, unit-tested without the game. Checks i
 
 The attack angle uses the attacker's position, not `impactVelocity`, because the velocity's sign convention is not verified (see above).
 
+## What a heel hit does (step 3)
+
+A heel hit on a living NPC knocks it down and holds it there (`CrippleController`). Every frame, each crippled NPC gets one decision (`CrippleRules.Decide`, unit-tested):
+
+| Situation | Action |
+|---|---|
+| Dead or despawned | forget it (the game already cleared the hold) |
+| Mod off, Stand Up When Disabled on | remove the hold; the game stands it up by itself |
+| Mod off, Stand Up When Disabled off | keep holding it down |
+| Mod on, lying down | keep holding it down |
+| Mod on, up or getting up anyway (e.g. after catching fire) | knock it down again |
+
+Turning the mod off in the game's mod list (`ScriptDisable`) or unloading it releases every NPC. The player is never knocked down yet: that is step 6.
+
 ## Build
 
 Needs the .NET SDK (8.0 used) and the game installed (the build references its DLLs).
@@ -137,7 +157,10 @@ Needs the .NET SDK (8.0 used) and the game installed (the build references its D
 dotnet test                                                  # unit tests (no game needed)
 dotnet build -c Release                                      # mod in dist/AchillesTendon
 dotnet build src/AchillesTendon -c Release -p:DeployToGame=true   # copy into the game's Mods folder
+tools/harness.sh                                             # headless in-game scenarios (harness/*.txt) via BasHarness
 # other install path:  -p:BasDir="/path/to/Blade & Sorcery"
 ```
+
+Headless tests use [BasHarness](https://github.com/Naragorn/BasHarness) (expected next to this repo): it starts the game with a mock HMD in a mirrored install with its own Mods folder, prefix and options, so the real install is not touched. It checks loading, options and logs; it cannot fight yet, so hits and the collapse still need the headset.
 
 Log: `<prefix>/drive_c/users/steamuser/AppData/LocalLow/Warpfrog/BladeAndSorcery/Player.log` (Proton) - all lines start with `[AchillesTendon]`.

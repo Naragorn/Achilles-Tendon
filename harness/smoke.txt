@@ -1,0 +1,32 @@
+# Heel of Achilles: loads headless, its script starts, every Mod Menu option is there
+# with its default, options apply live, the level runs without exceptions.
+# Run: tools/harness.sh harness/smoke.txt
+wait-level
+expect-log [ModManager][ModOption][AchillesTendon] Loaded 12 ModOptions
+expect-log [AchillesTendon] Loaded Heel of Achilles
+expect-log [ModManager][ThunderScript][AchillesTendon] Loaded ThunderScript: AchillesTendon.AchillesTendonScript
+expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
+
+# Achilles Tendon group (step 3 adds Stand Up When Disabled)
+option-exists AchillesTendon "Achilles Tendon Enabled" category="Achilles Tendon" type=Boolean save=true
+option-exists AchillesTendon "Stand Up When Disabled" category="Achilles Tendon" type=Boolean save=true tooltip="get up again"
+option-exists AchillesTendon "Apply To Player" category="Player Hardcore Mode" type=Boolean save=true
+option-exists AchillesTendon "Debug Logging" category=Debug type=Boolean save=true
+
+# Defaults
+expect-option AchillesTendon "Achilles Tendon Enabled" true
+expect-option AchillesTendon "Stand Up When Disabled" true
+expect-option AchillesTendon "Apply To Player" false
+expect-option AchillesTendon "Debug Logging" false
+
+# Live toggles reach the static fields
+set-option AchillesTendon "Stand Up When Disabled" false
+expect-option AchillesTendon "Stand Up When Disabled" false
+set-option AchillesTendon "Achilles Tendon Enabled" false
+expect-option AchillesTendon "Achilles Tendon Enabled" false
+set-option AchillesTendon "Achilles Tendon Enabled" true
+wait 3
+
+expect-no-log Exception
+screenshot achilles-arena
+quit

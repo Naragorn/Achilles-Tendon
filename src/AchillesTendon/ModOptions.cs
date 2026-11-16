@@ -25,7 +25,7 @@ namespace AchillesTendon
 
         // The game saves options by name per mod, so each feature's on/off toggle
         // needs a unique name; a plain "Enabled" in every category would collide.
-        [ModOption("Achilles Tendon Enabled", "Turns heel hit detection on or off.")]
+        [ModOption("Achilles Tendon Enabled", "Turns the mod on or off: heel hit detection and the collapse of NPCs with a cut tendon.")]
         [ModOptionCategory(TendonCategory, 0)]
         [ModOptionOrder(0)]
         public static bool TendonEnabled = true;
@@ -58,6 +58,11 @@ namespace AchillesTendon
         [ModOptionCategory(TendonCategory, 0)]
         [ModOptionOrder(5)]
         public static AllowedDamageTypes AllowedDamageTypes = AllowedDamageTypes.SlashAndPierce;
+
+        [ModOption("Stand Up When Disabled", "When Achilles Tendon is turned off, NPCs with a cut tendon get up again. Off: they stay down.")]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(6)]
+        public static bool StandUpWhenDisabled = true;
 
         // ---- Player Hardcore Mode -------------------------------------------
 

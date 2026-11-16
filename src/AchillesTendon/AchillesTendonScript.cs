@@ -8,12 +8,13 @@ namespace AchillesTendon
     /// Entry point. The game's ModManager creates one instance of every
     /// ThunderScript subclass in a mod DLL and calls ScriptLoaded, then Enable.
     ///
-    /// Build step 2: detects heel hits and reports them (log + markers).
-    /// It does not change the fight yet; collapse comes in step 3.
+    /// Detects heel hits, reports them (log + markers) and cripples the NPC
+    /// (build step 3: it falls and cannot stand up again).
     /// </summary>
     public sealed class AchillesTendonScript : ThunderScript
     {
         private readonly DebugVisualizer visualizer = new DebugVisualizer();
+        private readonly CrippleController cripple = new CrippleController();
 
         public override void ScriptLoaded(ModManager.ModData modData)
         {
@@ -31,6 +32,7 @@ namespace AchillesTendon
         {
             EventManager.onCreatureHit -= OnCreatureHit;
             visualizer.Clear();
+            cripple.ReleaseAll();
             ModLog.Info("Disabled");
         }
 
@@ -38,10 +40,19 @@ namespace AchillesTendon
         {
             EventManager.onCreatureHit -= OnCreatureHit;
             visualizer.Clear();
+            cripple.ReleaseAll();
         }
 
         public override void ScriptUpdate()
         {
+            try
+            {
+                cripple.Update();
+            }
+            catch (Exception ex)
+            {
+                ModLog.Error("Cripple update failed: " + ex);
+            }
             try
             {
                 visualizer.Update();
@@ -112,6 +123,11 @@ namespace AchillesTendon
             if (input.Side != LegSide.None)
             {
                 visualizer.AddHitMarker(hit.contactPoint, result.IsHeelHit);
+            }
+
+            if (CrippleRules.ShouldCripple(result, creature.isPlayer, creature.isKilled, cripple.IsCrippled(creature)))
+            {
+                cripple.Cripple(creature);
             }
         }
     }
