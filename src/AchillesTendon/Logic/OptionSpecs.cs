@@ -79,6 +79,12 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec MaxHitAngle =
             new FloatOptionSpec("Max Hit Angle", 30f, 180f, 5f, 110f, OptionUnit.Degrees);
 
+        public static readonly FloatOptionSpec BleedOutDuration =
+            new FloatOptionSpec("Bleed-Out Duration", 10f, 180f, 5f, 45f, OptionUnit.Seconds);
+
+        public static readonly FloatOptionSpec BleedPulseInterval =
+            new FloatOptionSpec("Blood Pulse Interval", 0.5f, 10f, 0.5f, 2f, OptionUnit.Seconds);
+
         public static readonly FloatOptionSpec HitMarkerDuration =
             new FloatOptionSpec("Hit Marker Duration", 1f, 30f, 1f, 5f, OptionUnit.Seconds);
 
@@ -88,6 +94,8 @@ namespace AchillesTendon.Logic
             HeelZoneBackOffset,
             HeelZoneHeightOffset,
             MaxHitAngle,
+            BleedOutDuration,
+            BleedPulseInterval,
             HitMarkerDuration,
         };
     }

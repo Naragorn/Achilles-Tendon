@@ -33,8 +33,8 @@ Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_
 | 1. Project setup, SDK check, mod loads, debug logging, Mod Menu skeleton | built, **not yet tested in game** |
 | 2. Heel hit-zone detection, debug visualization, logging | built, **not yet tested in game** |
 | 3. Collapse | built; **headless-tested** with BasHarness (`harness/step3-*.txt`: slash on the heel from behind -> NPC down and still down after 30 s; mod off -> stays down or stands up per Stand Up When Disabled; blunt and frontal hits refused). **Not yet tested in the headset** (real weapon contact, physics, look). Attacking from the ground is step 4 (see below) |
-| 4. Ground fighting | not started |
-| 5. Bleed-out | not started |
+| 4. Ground fighting | not started (researched; on hold, see `CLAUDE.md`) |
+| 5. Bleed-out | built, unit-tested; harness scenarios written (`harness/step5-*.txt`: cut NPC dies after Bleed-Out Duration; Bleed-Out off or Achilles Tendon off pauses it, on again finishes it) but **not yet run**. **Not yet tested in the headset** (the blood drip's look and placement). Weakening over time is not built yet: a lying NPC does nothing that could get weaker until step 4 |
 | 6. Player hardcore mode | detection built (`Apply To Player`, default off), **not yet tested in game**; effects follow with steps 3-5 |
 
 Step 2 only detects and reports heel hits. It does not change the fight.
@@ -77,6 +77,8 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | Manifest | `Name, Description, Author, ModVersion, GameVersion, Thumbnail` | |
 | Knock down (step 3) | `Ragdoll.CancelGetUp(resetState:false)` + `Ragdoll.SetState(Ragdoll.State.Destabilized)` | Exactly what `Creature.PushFallback` does. `MaxPush`/`TryPush` were not used: they go through `BrainModuleHitReaction`, which may only stagger. |
 | Keep down (step 3) | `Brain.AddNoStandUpModifier(object)` / `RemoveNoStandUpModifier(object)` | The only caller of `Ragdoll.StandUp` is `BrainModuleHitReaction.OnCycle`, and only while `brain.noStandupModifiers` is empty. Electrocute, Grabbed, GravityZone and Floating use the same hold. Removing it lets the game stand the NPC up by itself. |
+| Bleed drain (step 5) | `Creature.currentHealth` setter, `Creature.Kill()` | The setter raises the health-change event. `Creature.Damage` was not used: it multiplies the damage (`GetDamageMultiplier`, `physicsOffDamageMult`), which would distort the duration, and raises `onCreatureHit` every tick. `Kill()` is the game's own kill (Energy, 99999). |
+| Blood (step 5) | `Catalog.GetData<EffectData>("PenetrationDeepBleeding")`, `EffectData.Spawn(position, rotation, parent, ...)`, `EffectInstance.SetIntensity/Play/End` | The drip a deep stab leaves when the blade comes out (`Damager.cs`; `HumanMale` uses it on the legs). Its particle runs on the `End` step, so each pulse is Spawn, Play, End. Tagged `sensitiveContent: Blood`, so the game's blood setting applies. The game has no bleeding status of its own (only Burning, Electrocute, Floating, Slowed, Speed). |
 | "Is down" | `Creature.state == Destabilized` (ragdoll `Destabilized` or `Inert`) and `!ragdoll.standingUp` | |
 
 ### Assumed - must be confirmed in game
@@ -114,13 +116,17 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Max Hit Angle (0 = straight behind, 90 = side) | 110° | 30-180° |
 | | Allowed Damage Types | Slash and Pierce | Slash and Pierce / Slash only / Pierce only |
 | | Stand Up When Disabled (NPCs with a cut tendon get up when the mod is turned off) | on | |
+| Bleed-Out | Bleed-Out Enabled (off pauses the bleeding, on resumes it) | on | |
+| | Bleed-Out Duration (cut to death) | 45 s | 10-180 s |
+| | Blood Effects (drip from the cut heel, stronger towards the end) | on | |
+| | Blood Pulse Interval (between drips and bleed log lines) | 2 s | 0.5-10 s |
 | Player Hardcore Mode | Apply To Player (detection only so far; your own collapse is step 6) | off | |
 | Debug | Debug Logging | off | |
 | | Show Heel Zones (NPCs; also yours with Apply To Player) | off | |
 | | Show Hit Markers | off | |
 | | Hit Marker Duration | 5 s | 1-30 s |
 
-Settings from the spec that belong to later steps (`bleedOutDuration`, `groundFightingEnabled`) are added with their features, so the menu has no options that do nothing yet.
+Settings from the spec that belong to later steps (`groundFightingEnabled`) are added with their features, so the menu has no options that do nothing yet.
 
 ## How a heel hit is decided
 
@@ -150,6 +156,23 @@ A heel hit on a living NPC knocks it down and holds it there (`CrippleController
 The NPC lies flat as a ragdoll. The preferred pose is kneeling or crawling; the game has no crawl animation and only an idle kneel pose, so an own animation is planned (options and decision in `CLAUDE.md`, "Collapse pose").
 
 Turning the mod off in the game's mod list (`ScriptDisable`) or unloading it releases every NPC. The player is never knocked down yet: that is step 6.
+
+## Bleed-out (step 5)
+
+Every crippled NPC bleeds out (`BleedController`). Each frame, one decision per NPC (`BleedOutRules.Step`, unit-tested):
+
+| Situation | Action |
+|---|---|
+| Dead (e.g. finished off by the player) or despawned, or no longer crippled (released) | forget it |
+| Bleed-Out Enabled off, or Achilles Tendon Enabled off | pause: no drain, the elapsed time is kept |
+| Bleed-Out Duration reached (also when the slider is moved below the elapsed time) or no health left | kill it |
+| Otherwise | drain health linearly from its current value to zero at the end of the duration |
+
+Because the drain starts from the current health every frame, extra hits make the NPC die sooner and healing simply refills what drains away; it still dies at the end of the duration. All values are read every frame, so slider changes apply live.
+
+Every Blood Pulse Interval the game's own blood drip plays at the cut, with an intensity that grows from 1/n to 1 over the n pulses. With Debug Logging on, each pulse also logs `BLEED | <npc> | health=.. | t=../.. s`; `BLEED START` and `BLED OUT` mark the start and the end.
+
+Not built yet: the spec's "gets weaker/slower over time". A crippled NPC only lies on the ground until step 4 (ground fighting) gives it something to do, so there is nothing to weaken yet.
 
 ## Build
 

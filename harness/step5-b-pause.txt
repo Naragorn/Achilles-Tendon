@@ -1,0 +1,38 @@
+# Step 5: turning Bleed-Out off pauses the bleeding (the NPC lives on, still down);
+# turning it back on finishes it. Achilles Tendon off pauses it too.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Stand Up When Disabled" false
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 10
+set-option AchillesTendon "Blood Effects" false
+set-option AchillesTendon "Blood Pulse Interval" 1
+
+spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] BLEED START
+wait 2
+
+# Bleed-Out off: no death long past the duration.
+set-option AchillesTendon "Bleed-Out Enabled" false
+wait 15
+expect-npc state Destabilized within=0.1
+
+# Achilles Tendon off (stays down, Stand Up When Disabled off) also pauses it.
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Achilles Tendon Enabled" false
+wait 12
+expect-npc state Destabilized within=0.1
+
+# Both on again: the remaining ~8 s run out.
+set-option AchillesTendon "Achilles Tendon Enabled" true
+expect-npc state Dead within=12
+expect-log [AchillesTendon] BLED OUT
+
+set-option AchillesTendon "Stand Up When Disabled" true
+expect-no-log Exception
+quit

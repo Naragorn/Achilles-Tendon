@@ -18,6 +18,7 @@ namespace AchillesTendon
     public static class ModOptions
     {
         private const string TendonCategory = "Achilles Tendon";
+        private const string BleedCategory = "Bleed-Out";
         private const string PlayerCategory = "Player Hardcore Mode";
         private const string DebugCategory = "Debug";
 
@@ -64,32 +65,56 @@ namespace AchillesTendon
         [ModOptionOrder(6)]
         public static bool StandUpWhenDisabled = true;
 
+        // ---- Bleed-Out ------------------------------------------------------
+
+        [ModOption("Bleed-Out Enabled", "NPCs with a cut tendon bleed out and die after Bleed-Out Duration. Off: the bleeding pauses (it goes on when turned back on).")]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(0)]
+        public static bool BleedOutEnabled = true;
+
+        [ModOption("Bleed-Out Duration", "Seconds from the cut to death. Health drains evenly; hitting the NPC still kills it sooner.", nameof(BleedOutDurationValues))]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(1)]
+        [ModOptionSlider]
+        public static float BleedOutDuration = OptionSpecs.BleedOutDuration.Default;
+
+        [ModOption("Blood Effects", "Blood drips from the cut heel, growing stronger towards the end. The game's own blood setting still applies.")]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(2)]
+        public static bool BloodEffects = true;
+
+        [ModOption("Blood Pulse Interval", "Seconds between blood drips (and bleed log lines with Debug Logging).", nameof(BloodPulseIntervalValues))]
+        [ModOptionCategory(BleedCategory, 1)]
+        [ModOptionOrder(3)]
+        [ModOptionSlider]
+        public static float BloodPulseInterval = OptionSpecs.BleedPulseInterval.Default;
+
         // ---- Player Hardcore Mode -------------------------------------------
 
         [ModOption("Apply To Player", "Hardcore: NPC hits on your own heel count too, with the same rules (zone, angle, damage type). Off by default.")]
-        [ModOptionCategory(PlayerCategory, 1)]
+        [ModOptionCategory(PlayerCategory, 2)]
         [ModOptionOrder(0)]
         public static bool ApplyToPlayer = false;
 
         // ---- Debug ----------------------------------------------------------
 
-        [ModOption("Debug Logging", "Logs every player hit on an NPC (and, with Apply To Player, NPC hits on you) with part, angle, damage type and verdict, plus collapse/release and a one-line note for skipped hits, to the game log.")]
-        [ModOptionCategory(DebugCategory, 2)]
+        [ModOption("Debug Logging", "Logs every player hit on an NPC (and, with Apply To Player, NPC hits on you) with part, angle, damage type and verdict, plus collapse/release, bleed-out pulses and a one-line note for skipped hits, to the game log.")]
+        [ModOptionCategory(DebugCategory, 3)]
         [ModOptionOrder(0)]
         public static bool DebugLogging = false;
 
         [ModOption("Show Heel Zones", "Draws the heel zone of every NPC (and yours, with Apply To Player) as a sphere.")]
-        [ModOptionCategory(DebugCategory, 2)]
+        [ModOptionCategory(DebugCategory, 3)]
         [ModOptionOrder(1)]
         public static bool ShowHeelZones = false;
 
         [ModOption("Show Hit Markers", "Marks each leg hit: green = heel hit, red = miss.")]
-        [ModOptionCategory(DebugCategory, 2)]
+        [ModOptionCategory(DebugCategory, 3)]
         [ModOptionOrder(2)]
         public static bool ShowHitMarkers = false;
 
         [ModOption("Hit Marker Duration", "How long a hit marker stays visible.", nameof(HitMarkerDurationValues))]
-        [ModOptionCategory(DebugCategory, 2)]
+        [ModOptionCategory(DebugCategory, 3)]
         [ModOptionOrder(3)]
         [ModOptionSlider]
         public static float HitMarkerDuration = OptionSpecs.HitMarkerDuration.Default;
@@ -116,6 +141,10 @@ namespace AchillesTendon
         public static ModOptionParameter[] HeelZoneHeightOffsetValues() => ToParameters(OptionSpecs.HeelZoneHeightOffset);
 
         public static ModOptionParameter[] MaxHitAngleValues() => ToParameters(OptionSpecs.MaxHitAngle);
+
+        public static ModOptionParameter[] BleedOutDurationValues() => ToParameters(OptionSpecs.BleedOutDuration);
+
+        public static ModOptionParameter[] BloodPulseIntervalValues() => ToParameters(OptionSpecs.BleedPulseInterval);
 
         public static ModOptionParameter[] HitMarkerDurationValues() => ToParameters(OptionSpecs.HitMarkerDuration);
 

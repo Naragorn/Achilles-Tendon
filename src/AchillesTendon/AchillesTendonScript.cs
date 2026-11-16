@@ -9,12 +9,14 @@ namespace AchillesTendon
     /// ThunderScript subclass in a mod DLL and calls ScriptLoaded, then Enable.
     ///
     /// Detects heel hits, reports them (log + markers) and cripples the NPC
-    /// (build step 3: it falls and cannot stand up again).
+    /// (build step 3: it falls and cannot stand up again), then it bleeds out
+    /// (build step 5).
     /// </summary>
     public sealed class AchillesTendonScript : ThunderScript
     {
         private readonly DebugVisualizer visualizer = new DebugVisualizer();
         private readonly CrippleController cripple = new CrippleController();
+        private readonly BleedController bleed = new BleedController();
 
         public override void ScriptLoaded(ModManager.ModData modData)
         {
@@ -33,6 +35,7 @@ namespace AchillesTendon
             EventManager.onCreatureHit -= OnCreatureHit;
             visualizer.Clear();
             cripple.ReleaseAll();
+            bleed.Clear();
             ModLog.Info("Disabled");
         }
 
@@ -41,6 +44,7 @@ namespace AchillesTendon
             EventManager.onCreatureHit -= OnCreatureHit;
             visualizer.Clear();
             cripple.ReleaseAll();
+            bleed.Clear();
         }
 
         public override void ScriptUpdate()
@@ -52,6 +56,14 @@ namespace AchillesTendon
             catch (Exception ex)
             {
                 ModLog.Error("Cripple update failed: " + ex);
+            }
+            try
+            {
+                bleed.Update(UnityEngine.Time.deltaTime, cripple.IsCrippled);
+            }
+            catch (Exception ex)
+            {
+                ModLog.Error("Bleed update failed: " + ex);
             }
             try
             {
@@ -143,6 +155,8 @@ namespace AchillesTendon
             if (CrippleRules.ShouldCripple(result, creature.isPlayer, creature.isKilled, cripple.IsCrippled(creature)))
             {
                 cripple.Cripple(creature);
+                // Tracked even with Bleed-Out off: it is paused then and starts when turned on.
+                bleed.Start(creature, part, hit.contactPoint);
             }
         }
     }

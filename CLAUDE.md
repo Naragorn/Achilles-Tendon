@@ -62,6 +62,11 @@ Separate mod. Realistic crippling hit: a cut to the Achilles tendon takes the en
   - **D: lie flat** (current state). No cost, but it is not the preferred pose.
 - **Plan: we most likely build our own animation (C).** Alternative: ask someone for one, e.g. in the B&S modding Discord or elsewhere. Revisit this together with step 4 (ground fighting).
 
+**Step 4 (ground fighting): researched, on hold (Nadi, 2026-11-16)**
+- Read in `ThunderRoad.dll` 1.3.2: in `Destabilized` the animator stays on and drives the joints through rotation pins (`Ragdoll.SetState`); pins can be set per body part (`Ragdoll.SetPinForce(..., partTypes)`); electrocution animates a lying NPC the same way (`BrainModuleElectrocute`). The weapon stays in hand (`RagdollHand.OnRagdollStateChange` re-attaches it). Screams: `BrainModuleSpeak.Play(dialogId, ...)`. The navmesh agent is off while lying (`Brain`), so crawling needs physics. Every human body part has `sliceForceKill: true`: a foot cut clean off kills.
+- Routes: **A** animated arms on the lying ragdoll (stronger arm pins + the NPC's own attack clip), small-medium, recommended; **B** physics swings/crawl, medium; **C** kneel while `Alive`, medium; **D** own animations, large. The open question for A (does the animator let a dynamic clip through while falling) needs one in-game test.
+- Existing mod with crawling / "go down for good": **Realistic Deaths (1.3) by pineapple54** (nexusmods.com/bladeandsorcery/mods/14774). Idea: trigger its crawl for our crippled NPCs instead of building our own, or ask the author. Not checked yet whether it has a public API.
+
 ---
 
 ## Build order
