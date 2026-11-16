@@ -147,6 +147,8 @@ A heel hit on a living NPC knocks it down and holds it there (`CrippleController
 | Mod on, lying down | keep holding it down |
 | Mod on, up or getting up anyway (e.g. after catching fire) | knock it down again |
 
+The NPC lies flat as a ragdoll. The preferred pose is kneeling or crawling; the game has no crawl animation and only an idle kneel pose, so an own animation is planned (options and decision in `CLAUDE.md`, "Collapse pose").
+
 Turning the mod off in the game's mod list (`ScriptDisable`) or unloading it releases every NPC. The player is never knocked down yet: that is step 6.
 
 ## Build

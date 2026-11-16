@@ -49,6 +49,19 @@ Separate mod. Realistic crippling hit: a cut to the Achilles tendon takes the en
 
 **Config:** `heelZoneSize`, `maxHitAngle`, `allowedDamageTypes`, `bleedOutDuration`, `groundFightingEnabled`, `applyToPlayer`.
 
+**Collapse pose: decision (Nadi, 2026-11-16)**
+- Preferred pose for a crippled NPC: **on its knees / crawling**, not lying flat.
+- **For now (option D): it lies flat.** Step 3 knocks the NPC down as a full ragdoll (`Ragdoll.State.Destabilized`) and holds it there. That stays as the fallback in any case.
+- What the game offers (checked in `ThunderRoad.dll` 1.3.2 and the animation catalog `StreamingAssets/Default/bas.jsondb`, 26 `AnimationData` entries):
+  - Kneeling: only `HumanIdleExamineKneel` (KneelingStart / ExamineKneel loop / KneelingEnd), an idle "examine the ground" pose, not a combat pose. Playable through `Creature.PlayAnimation(id)`.
+  - Crawling: none. No crawl animation in the catalog, and no "crawl" or "kneel" identifier in `ThunderRoad.dll`.
+- Options, with cost:
+  - **A: kneel with the game's own kneel animation.** The NPC stays `Alive`, movement is blocked and the kneel loop plays. Cost: medium. Risk: it is an examine pose, and attack animations or the AI may override it. Plus: while `Alive`, the melee AI might keep attacking.
+  - **B: crawl through physics**, with forces on the hands and torso of the lying ragdoll pulling it toward the player. Cost: large. Risk: it may look janky, and only the headset can judge it.
+  - **C: own kneel/crawl animations**, built with the Unity SDK, shipped in an asset bundle and wired into the animator. Cost: very large.
+  - **D: lie flat** (current state). No cost, but it is not the preferred pose.
+- **Plan: we most likely build our own animation (C).** Alternative: ask someone for one, e.g. in the B&S modding Discord or elsewhere. Revisit this together with step 4 (ground fighting).
+
 ---
 
 ## Build order
