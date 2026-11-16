@@ -90,7 +90,7 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | NPC weapons collide with the player's leg/foot parts at all | Without that, `Apply To Player` never fires. The game puts standing player parts on layer `Avatar` (`RagdollPart.RefreshLayer`); which layers collide is set in Unity's physics matrix, not in the DLL | With Apply To Player + Debug Logging on, let an NPC hit your legs and look for `target=` lines naming the player |
 | The player creature's `transform.forward` follows the body in VR | The attack angle on the player depends on it | Player heel zone spheres (Show Heel Zones) sit behind your real heels |
 | `impactVelocity` direction | Its sign convention is not documented; logged as `impactVelAngle` for comparison only | Compare it with `angleFromBehind` in the log |
-| `item.lastHandler` stays set after a throw | Thrown knives count as player hits | Throw a dagger at a heel |
+| `item.lastHandler` stays set after a real throw | Thrown knives count as player hits. Headless (`harness/step3-d-attackers.txt`) only shows that the mod resolves the player when `lastHandler` is set (the harness sets it itself); a held dagger (real `RagdollHand.Grab`) and a spell (`casterHand`) also resolve to the player | Throw a dagger at a heel |
 | A bow-shot arrow resolves to the player as attacker | The "Paris / Jara" shot should count | Shoot an arrow at a heel |
 
 ### Engine behaviours found that shape the code
