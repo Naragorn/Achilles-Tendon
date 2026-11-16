@@ -120,10 +120,10 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float ArmStrength = OptionSpecs.ArmStrength.Default;
 
-        [ModOption("Ground Attacks", "A downed NPC swings its weapon at you when you are in reach (its own attack animations; needs a weapon). Crawling: upper body only, its own melee AI is off. Lying flat: experimental, no visible swing yet.")]
+        [ModOption("Ground Attacks", "Off by default. A downed NPC swings its weapon at you when you are in reach (its own attack animations; needs a weapon). Crawling: upper body only. Lying flat: experimental, no visible swing yet. A crawling NPC never uses its own melee AI, so with this off it does not attack.")]
         [ModOptionCategory(GroundCategory, 2)]
         [ModOptionOrder(2)]
-        public static bool GroundAttacks = true;
+        public static bool GroundAttacks = false;
 
         [ModOption("Ground Attack Range", "How close you must be for a lying NPC to swing at you.", nameof(GroundAttackRangeValues))]
         [ModOptionCategory(GroundCategory, 2)]

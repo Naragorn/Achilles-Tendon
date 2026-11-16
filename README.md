@@ -126,7 +126,7 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Blood Pulse Interval (between drips and bleed log lines) | 2 s | 0.5-10 s |
 | Ground Fighting | Ground Fighting Enabled | on | |
 | | Arm Strength (arm pins of a lying NPC; x1 = the game's own limp value) | x1 | x1-x10 |
-| | Ground Attacks (crawling: upper-body swings; lying flat: experimental, no visible swing) | on | |
+| | Ground Attacks (crawling: upper-body swings; lying flat: experimental, no visible swing). Off: a downed NPC does not attack at all (its own melee AI stays off while crawling) | off | |
 | | Ground Attack Range | 1.8 m | 0.5-4 m |
 | | Ground Attack Interval | 3 s | 1-10 s |
 | | Screaming (pain cry, the voice's `hit` dialog) | on | |

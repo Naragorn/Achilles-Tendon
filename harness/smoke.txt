@@ -43,7 +43,7 @@ expect-option AchillesTendon "Blood Effects" true
 expect-option AchillesTendon "Blood Pulse Interval" 2
 expect-option AchillesTendon "Ground Fighting Enabled" true
 expect-option AchillesTendon "Arm Strength" 1
-expect-option AchillesTendon "Ground Attacks" true
+expect-option AchillesTendon "Ground Attacks" false
 expect-option AchillesTendon "Ground Attack Range" 1.8
 expect-option AchillesTendon "Ground Attack Interval" 3
 expect-option AchillesTendon "Screaming" true
