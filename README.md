@@ -24,16 +24,6 @@ Full implementation spec: [`CLAUDE.md`](CLAUDE.md).
 - A hunter named Jara (Sanskrit "old age") saw the red marks of Krishna's foot through the bushes, took it for a deer and shot. The arrowhead was forged from a piece of iron from the cursed club that had destroyed his clan. The arrow pierced the sole of the foot.
 - Jara begged forgiveness; Krishna comforted him and then left the world. (The *Bhagavata Purana* 11.30 tells the same death.)
 
-### What the mod takes from them
-
-| Myth | In the mod |
-|---|---|
-| An almost unbeatable hero falls to one hit at one small spot | Any NPC, no matter how strong, falls after one cut at the heel |
-| Precision, not force, decides (an arrow, not a duel) | Only a hit inside the small heel zone counts; how hard you hit does not matter |
-| Paris and Jara strike from hiding or from the side, not face to face | The hit must come from behind or from the side (Max Hit Angle) |
-| Both die slowly from the wound, not instantly | The enemy collapses, fights on from the ground and bleeds out over time (later steps) |
-| Both are hit by an arrow, a piercing wound | Slash **and** pierce count; blunt never does |
-
 Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_heel), [Statius, *Achilleid* 1 (Theoi)](https://www.theoi.com/Text/StatiusAchilleid1A.html), [Ancient World Magazine: Origins of a hero's weak point](https://www.ancientworldmagazine.com/articles/achilles-heel-origins-heros-weak-point/), [Mausala Parva (Wikipedia)](https://en.wikipedia.org/wiki/Mausala_Parva), [W. Doniger, *Mahabharata* Book 16 (Oxford, 2022)](https://doi.org/10.1093/oso/9780197553398.003.0003), [Jara (mahapurana.com)](https://www.mahapurana.com/hindu-mythology/jara-jaras-hunter-killed-krishna/).
 
 ## Status
