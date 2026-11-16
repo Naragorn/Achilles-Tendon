@@ -10,6 +10,8 @@ namespace AchillesTendon.Logic
         Centimeters,
         Degrees,
         Seconds,
+        Meters,
+        Multiplier,
     }
 
     /// <summary>
@@ -58,6 +60,10 @@ namespace AchillesTendon.Logic
                     return ((decimal)value * 100m).ToString("0.#", culture) + " cm";
                 case OptionUnit.Degrees:
                     return ((decimal)value).ToString("0.#", culture) + "°";
+                case OptionUnit.Meters:
+                    return ((decimal)value).ToString("0.0#", culture) + " m";
+                case OptionUnit.Multiplier:
+                    return "x" + ((decimal)value).ToString("0.0#", culture);
                 default:
                     return ((decimal)value).ToString("0.#", culture) + " s";
             }
@@ -85,6 +91,18 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec BleedPulseInterval =
             new FloatOptionSpec("Blood Pulse Interval", 0.5f, 10f, 0.5f, 2f, OptionUnit.Seconds);
 
+        public static readonly FloatOptionSpec ArmStrength =
+            new FloatOptionSpec("Arm Strength", 1f, 10f, 0.5f, 1f, OptionUnit.Multiplier);
+
+        public static readonly FloatOptionSpec GroundAttackRange =
+            new FloatOptionSpec("Ground Attack Range", 0.5f, 4f, 0.1f, 1.8f, OptionUnit.Meters);
+
+        public static readonly FloatOptionSpec GroundAttackInterval =
+            new FloatOptionSpec("Ground Attack Interval", 1f, 10f, 0.5f, 3f, OptionUnit.Seconds);
+
+        public static readonly FloatOptionSpec ScreamInterval =
+            new FloatOptionSpec("Scream Interval", 2f, 30f, 1f, 6f, OptionUnit.Seconds);
+
         public static readonly FloatOptionSpec HitMarkerDuration =
             new FloatOptionSpec("Hit Marker Duration", 1f, 30f, 1f, 5f, OptionUnit.Seconds);
 
@@ -96,6 +114,10 @@ namespace AchillesTendon.Logic
             MaxHitAngle,
             BleedOutDuration,
             BleedPulseInterval,
+            ArmStrength,
+            GroundAttackRange,
+            GroundAttackInterval,
+            ScreamInterval,
             HitMarkerDuration,
         };
     }

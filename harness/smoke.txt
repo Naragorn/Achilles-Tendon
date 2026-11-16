@@ -4,7 +4,7 @@
 # Checks the defaults, so it must be the first scenario of a run (fresh prefix);
 # scenarios in one run share the prefix and the game keeps option values.
 wait-level
-expect-log [ModManager][ModOption][AchillesTendon] Loaded 16 ModOptions
+expect-log [ModManager][ModOption][AchillesTendon] Loaded 23 ModOptions
 expect-log [AchillesTendon] Loaded Heel of Achilles
 expect-log [ModManager][ThunderScript][AchillesTendon] Loaded ThunderScript: AchillesTendon.AchillesTendonScript
 expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
@@ -17,6 +17,14 @@ option-exists AchillesTendon "Bleed-Out Enabled" category="Bleed-Out" type=Boole
 option-exists AchillesTendon "Bleed-Out Duration" category="Bleed-Out" type=Single save=true
 option-exists AchillesTendon "Blood Effects" category="Bleed-Out" type=Boolean save=true
 option-exists AchillesTendon "Blood Pulse Interval" category="Bleed-Out" type=Single save=true
+# Ground Fighting group (step 4, experimental)
+option-exists AchillesTendon "Ground Fighting Enabled" category="Ground Fighting" type=Boolean save=true
+option-exists AchillesTendon "Arm Strength" category="Ground Fighting" type=Single save=true
+option-exists AchillesTendon "Ground Attacks" category="Ground Fighting" type=Boolean save=true
+option-exists AchillesTendon "Ground Attack Range" category="Ground Fighting" type=Single save=true
+option-exists AchillesTendon "Ground Attack Interval" category="Ground Fighting" type=Single save=true
+option-exists AchillesTendon "Screaming" category="Ground Fighting" type=Boolean save=true
+option-exists AchillesTendon "Scream Interval" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Apply To Player" category="Player Hardcore Mode" type=Boolean save=true
 option-exists AchillesTendon "Debug Logging" category=Debug type=Boolean save=true
 
@@ -27,6 +35,13 @@ expect-option AchillesTendon "Bleed-Out Enabled" true
 expect-option AchillesTendon "Bleed-Out Duration" 45
 expect-option AchillesTendon "Blood Effects" true
 expect-option AchillesTendon "Blood Pulse Interval" 2
+expect-option AchillesTendon "Ground Fighting Enabled" true
+expect-option AchillesTendon "Arm Strength" 1
+expect-option AchillesTendon "Ground Attacks" false
+expect-option AchillesTendon "Ground Attack Range" 1.8
+expect-option AchillesTendon "Ground Attack Interval" 3
+expect-option AchillesTendon "Screaming" true
+expect-option AchillesTendon "Scream Interval" 6
 expect-option AchillesTendon "Apply To Player" false
 expect-option AchillesTendon "Debug Logging" false
 

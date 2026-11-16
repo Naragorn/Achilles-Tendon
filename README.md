@@ -33,7 +33,7 @@ Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_
 | 1. Project setup, SDK check, mod loads, debug logging, Mod Menu skeleton | built, **not yet tested in game** |
 | 2. Heel hit-zone detection, debug visualization, logging | built, **not yet tested in game** |
 | 3. Collapse | built; **headless-tested** with BasHarness (`harness/step3-*.txt`: slash on the heel from behind -> NPC down and still down after 30 s; mod off -> stays down or stands up per Stand Up When Disabled; blunt and frontal hits refused). **Not yet tested in the headset** (real weapon contact, physics, look). Attacking from the ground is step 4 (see below) |
-| 4. Ground fighting | not started (researched; on hold, see `CLAUDE.md`) |
+| 4. Ground fighting | **experimental, partly working.** Built: screams (on by default), arm strength and ground attacks (both off by default). Headless test (`harness/step4-a-ground-fight.txt`, pictures with `screenshot of=npc`): 8/8 scenarios PASS on 2026-11-16; screams play; a swing is started, but the pictures show no arm movement, and the game never reports the swing's end. So route A does not swing yet; stronger arm pins only stiffen the arms in the lying pose. Crawling: not built. Details and next routes in `CLAUDE.md` |
 | 5. Bleed-out | built, unit-tested; harness scenarios written (`harness/step5-*.txt`: cut NPC dies after Bleed-Out Duration; Bleed-Out off or Achilles Tendon off pauses it, on again finishes it) and **headless-tested**, 7/7 scenarios PASS on 2026-11-16 (NPC cut at health 49/50 dies after 10 s, `BLED OUT` at 10.0 s; health dropped a bit faster than the pure drain, 28.4 instead of 34.3 at 3 s, most likely impact damage from the falling ragdoll (not checked), which the drain absorbs as designed). **Not yet tested in the headset** (the blood drip's look and placement). Weakening over time is not built yet: a lying NPC does nothing that could get weaker until step 4 |
 | 6. Player hardcore mode | detection built (`Apply To Player`, default off), **not yet tested in game**; effects follow with steps 3-5 |
 
@@ -79,6 +79,7 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | Keep down (step 3) | `Brain.AddNoStandUpModifier(object)` / `RemoveNoStandUpModifier(object)` | The only caller of `Ragdoll.StandUp` is `BrainModuleHitReaction.OnCycle`, and only while `brain.noStandupModifiers` is empty. Electrocute, Grabbed, GravityZone and Floating use the same hold. Removing it lets the game stand the NPC up by itself. |
 | Bleed drain (step 5) | `Creature.currentHealth` setter, `Creature.Kill()` | The setter raises the health-change event. `Creature.Damage` was not used: it multiplies the damage (`GetDamageMultiplier`, `physicsOffDamageMult`), which would distort the duration, and raises `onCreatureHit` every tick. `Kill()` is the game's own kill (Energy, 99999). |
 | Blood (step 5) | `Catalog.GetData<EffectData>("PenetrationDeepBleeding")`, `EffectData.Spawn(position, rotation, parent, ...)`, `EffectInstance.SetIntensity/Play/End` | The drip a deep stab leaves when the blade comes out (`Damager.cs`; `HumanMale` uses it on the legs). Its particle runs on the `End` step, so each pulse is Spawn, Play, End. Tagged `sensitiveContent: Blood`, so the game's blood setting applies. The game has no bleeding status of its own (only Burning, Electrocute, Floating, Slowed, Speed). |
+| Ground fighting (step 4) | `RagdollPart.bone.SetPinRotationForce` on the arm parts, `Creature.PlayAnimation(AnimationClip, loop:false)`, `BrainModuleSpeak.Play("hit", true)`; attack clips from `BrainModuleMelee.meleeIdle.attackMotions`, else `BrainModuleStance.GetStanceDataFromEquipment().AllStanceNodes()` | Lying pin value: `springRotationForce * destabilizedGroundSpringRotationMultiplier` (`Ragdoll.OnFallEvent`). `PlayAnimation` is what `BrainModuleMelee` uses for its own attacks. A target-less NPC (HumanDummy) holds its weapon in a plain idle pose, hence the stance fallback (23 clips found for a short sword). |
 | "Is down" | `Creature.state == Destabilized` (ragdoll `Destabilized` or `Inert`) and `!ragdoll.standingUp` | |
 
 ### Assumed - must be confirmed in game
@@ -120,13 +121,20 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Bleed-Out Duration (cut to death) | 45 s | 10-180 s |
 | | Blood Effects (drip from the cut heel, stronger towards the end) | on | |
 | | Blood Pulse Interval (between drips and bleed log lines) | 2 s | 0.5-10 s |
+| Ground Fighting | Ground Fighting Enabled | on | |
+| | Arm Strength (arm pins of a lying NPC; x1 = the game's own limp value) | x1 | x1-x10 |
+| | Ground Attacks (experimental, no visible swing yet) | off | |
+| | Ground Attack Range | 1.8 m | 0.5-4 m |
+| | Ground Attack Interval | 3 s | 1-10 s |
+| | Screaming (pain cry, the voice's `hit` dialog) | on | |
+| | Scream Interval | 6 s | 2-30 s |
 | Player Hardcore Mode | Apply To Player (detection only so far; your own collapse is step 6) | off | |
 | Debug | Debug Logging | off | |
 | | Show Heel Zones (NPCs; also yours with Apply To Player) | off | |
 | | Show Hit Markers | off | |
 | | Hit Marker Duration | 5 s | 1-30 s |
 
-Settings from the spec that belong to later steps (`groundFightingEnabled`) are added with their features, so the menu has no options that do nothing yet.
+Every option above does something; the spec's `groundFightingEnabled` is "Ground Fighting Enabled".
 
 ## How a heel hit is decided
 

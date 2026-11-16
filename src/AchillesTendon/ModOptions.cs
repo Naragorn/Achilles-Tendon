@@ -19,6 +19,7 @@ namespace AchillesTendon
     {
         private const string TendonCategory = "Achilles Tendon";
         private const string BleedCategory = "Bleed-Out";
+        private const string GroundCategory = "Ground Fighting";
         private const string PlayerCategory = "Player Hardcore Mode";
         private const string DebugCategory = "Debug";
 
@@ -89,32 +90,73 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float BloodPulseInterval = OptionSpecs.BleedPulseInterval.Default;
 
+        // ---- Ground Fighting (step 4, experimental) --------------------------
+
+        [ModOption("Ground Fighting Enabled", "NPCs with a cut tendon fight on from the ground: screams, and (experimental) stronger arms and swings. Off: they just lie there.")]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(0)]
+        public static bool GroundFightingEnabled = true;
+
+        [ModOption("Arm Strength", "How hard the arms of a lying NPC follow its animation. x1 = the game's own value for a lying body (limp, default). Higher values stiffen the arms.", nameof(ArmStrengthValues))]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(1)]
+        [ModOptionSlider]
+        public static float ArmStrength = OptionSpecs.ArmStrength.Default;
+
+        [ModOption("Ground Attacks", "Experimental, off by default: a lying NPC tries to swing its weapon at you when you are in reach (its own attack animations; needs a weapon). Headless tests show no visible swing yet.")]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(2)]
+        public static bool GroundAttacks = false;
+
+        [ModOption("Ground Attack Range", "How close you must be for a lying NPC to swing at you.", nameof(GroundAttackRangeValues))]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(3)]
+        [ModOptionSlider]
+        public static float GroundAttackRange = OptionSpecs.GroundAttackRange.Default;
+
+        [ModOption("Ground Attack Interval", "Seconds between two swings from the ground.", nameof(GroundAttackIntervalValues))]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(4)]
+        [ModOptionSlider]
+        public static float GroundAttackInterval = OptionSpecs.GroundAttackInterval.Default;
+
+        [ModOption("Screaming", "A lying NPC cries out in pain now and then.")]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(5)]
+        public static bool Screaming = true;
+
+        [ModOption("Scream Interval", "Seconds between two screams.", nameof(ScreamIntervalValues))]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(6)]
+        [ModOptionSlider]
+        public static float ScreamInterval = OptionSpecs.ScreamInterval.Default;
+
         // ---- Player Hardcore Mode -------------------------------------------
 
         [ModOption("Apply To Player", "Hardcore: NPC hits on your own heel count too, with the same rules (zone, angle, damage type). Off by default.")]
-        [ModOptionCategory(PlayerCategory, 2)]
+        [ModOptionCategory(PlayerCategory, 3)]
         [ModOptionOrder(0)]
         public static bool ApplyToPlayer = false;
 
         // ---- Debug ----------------------------------------------------------
 
         [ModOption("Debug Logging", "Logs every player hit on an NPC (and, with Apply To Player, NPC hits on you) with part, angle, damage type and verdict, plus collapse/release, bleed-out pulses and a one-line note for skipped hits, to the game log.")]
-        [ModOptionCategory(DebugCategory, 3)]
+        [ModOptionCategory(DebugCategory, 4)]
         [ModOptionOrder(0)]
         public static bool DebugLogging = false;
 
         [ModOption("Show Heel Zones", "Draws the heel zone of every NPC (and yours, with Apply To Player) as a sphere.")]
-        [ModOptionCategory(DebugCategory, 3)]
+        [ModOptionCategory(DebugCategory, 4)]
         [ModOptionOrder(1)]
         public static bool ShowHeelZones = false;
 
         [ModOption("Show Hit Markers", "Marks each leg hit: green = heel hit, red = miss.")]
-        [ModOptionCategory(DebugCategory, 3)]
+        [ModOptionCategory(DebugCategory, 4)]
         [ModOptionOrder(2)]
         public static bool ShowHitMarkers = false;
 
         [ModOption("Hit Marker Duration", "How long a hit marker stays visible.", nameof(HitMarkerDurationValues))]
-        [ModOptionCategory(DebugCategory, 3)]
+        [ModOptionCategory(DebugCategory, 4)]
         [ModOptionOrder(3)]
         [ModOptionSlider]
         public static float HitMarkerDuration = OptionSpecs.HitMarkerDuration.Default;
@@ -145,6 +187,14 @@ namespace AchillesTendon
         public static ModOptionParameter[] BleedOutDurationValues() => ToParameters(OptionSpecs.BleedOutDuration);
 
         public static ModOptionParameter[] BloodPulseIntervalValues() => ToParameters(OptionSpecs.BleedPulseInterval);
+
+        public static ModOptionParameter[] ArmStrengthValues() => ToParameters(OptionSpecs.ArmStrength);
+
+        public static ModOptionParameter[] GroundAttackRangeValues() => ToParameters(OptionSpecs.GroundAttackRange);
+
+        public static ModOptionParameter[] GroundAttackIntervalValues() => ToParameters(OptionSpecs.GroundAttackInterval);
+
+        public static ModOptionParameter[] ScreamIntervalValues() => ToParameters(OptionSpecs.ScreamInterval);
 
         public static ModOptionParameter[] HitMarkerDurationValues() => ToParameters(OptionSpecs.HitMarkerDuration);
 

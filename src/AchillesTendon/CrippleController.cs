@@ -75,6 +75,9 @@ namespace AchillesTendon
             crippled.Clear();
         }
 
+        /// <summary>Lying on the ground and not in the middle of getting up.</summary>
+        public bool IsDown(Creature creature) => StateOf(creature).IsDown;
+
         private static CrippledCreatureState StateOf(Creature creature)
         {
             if (creature == null || !Creature.allActive.Contains(creature))

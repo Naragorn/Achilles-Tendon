@@ -17,6 +17,7 @@ namespace AchillesTendon
         private readonly DebugVisualizer visualizer = new DebugVisualizer();
         private readonly CrippleController cripple = new CrippleController();
         private readonly BleedController bleed = new BleedController();
+        private readonly GroundFightController groundFight = new GroundFightController();
 
         public override void ScriptLoaded(ModManager.ModData modData)
         {
@@ -36,6 +37,7 @@ namespace AchillesTendon
             visualizer.Clear();
             cripple.ReleaseAll();
             bleed.Clear();
+            groundFight.Clear();
             ModLog.Info("Disabled");
         }
 
@@ -45,6 +47,7 @@ namespace AchillesTendon
             visualizer.Clear();
             cripple.ReleaseAll();
             bleed.Clear();
+            groundFight.Clear();
         }
 
         public override void ScriptUpdate()
@@ -64,6 +67,14 @@ namespace AchillesTendon
             catch (Exception ex)
             {
                 ModLog.Error("Bleed update failed: " + ex);
+            }
+            try
+            {
+                groundFight.Update(UnityEngine.Time.time, cripple.IsCrippled, cripple.IsDown);
+            }
+            catch (Exception ex)
+            {
+                ModLog.Error("Ground fight update failed: " + ex);
             }
             try
             {
@@ -154,6 +165,8 @@ namespace AchillesTendon
 
             if (CrippleRules.ShouldCripple(result, creature.isPlayer, creature.isKilled, cripple.IsCrippled(creature)))
             {
+                // Captured before the collapse: the attack clips come from the standing stance.
+                groundFight.Start(creature);
                 cripple.Cripple(creature);
                 // Tracked even with Bleed-Out off: it is paused then and starts when turned on.
                 bleed.Start(creature, part, hit.contactPoint);
