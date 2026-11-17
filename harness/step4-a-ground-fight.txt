@@ -14,6 +14,7 @@ set-option AchillesTendon "Bleed-Out Enabled" false
 set-option AchillesTendon "Ground Fighting Enabled" true
 set-option AchillesTendon "Arm Strength" 4
 set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
 set-option AchillesTendon "Ground Attack Range" 4
 set-option AchillesTendon "Ground Attack Interval" 2
 set-option AchillesTendon "Screaming" true

@@ -4,7 +4,7 @@
 # Checks the defaults, so it must be the first scenario of a run (fresh prefix);
 # scenarios in one run share the prefix and the game keeps option values.
 wait-level
-expect-log [ModManager][ModOption][AchillesTendon] Loaded 36 ModOptions
+expect-log [ModManager][ModOption][AchillesTendon] Loaded 37 ModOptions
 expect-log [AchillesTendon] Loaded Heel of Achilles
 expect-log [ModManager][ThunderScript][AchillesTendon] Loaded ThunderScript: AchillesTendon.AchillesTendonScript
 expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
@@ -32,6 +32,7 @@ option-exists AchillesTendon "Gasping From" category="Bleed-Out" type=Single sav
 option-exists AchillesTendon "Ground Fighting Enabled" category="Ground Fighting" type=Boolean save=true
 option-exists AchillesTendon "Arm Strength" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Ground Attacks" category="Ground Fighting" type=Boolean save=true
+option-exists AchillesTendon "Ground Attack Chance" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Ground Attack Range" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Ground Attack Interval" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Screaming" category="Ground Fighting" type=Boolean save=true
@@ -61,7 +62,8 @@ expect-option AchillesTendon "Scream Slowdown" 3
 expect-option AchillesTendon "Gasping From" 0.75
 expect-option AchillesTendon "Ground Fighting Enabled" true
 expect-option AchillesTendon "Arm Strength" 1
-expect-option AchillesTendon "Ground Attacks" false
+expect-option AchillesTendon "Ground Attacks" true
+expect-option AchillesTendon "Ground Attack Chance" 0.75
 expect-option AchillesTendon "Ground Attack Range" 1.8
 expect-option AchillesTendon "Ground Attack Interval" 3
 expect-option AchillesTendon "Screaming" true

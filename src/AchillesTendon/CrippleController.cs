@@ -33,6 +33,12 @@ namespace AchillesTendon
         private readonly Dictionary<Creature, float> lastPoseLog = new Dictionary<Creature, float>();
         private const float PoseLogInterval = 0.5f;
 
+        // Debug Logging only: crippled NPCs that died, watched for DeathWatchSeconds (DEATH POSE).
+        private readonly Dictionary<Creature, float> deathWatch = new Dictionary<Creature, float>();
+        private readonly Dictionary<Creature, float> deathLastLog = new Dictionary<Creature, float>();
+        private readonly List<Creature> deathScratch = new List<Creature>();
+        private const float DeathWatchSeconds = 6f;
+
         public bool IsCrippled(Creature creature) => crippled.Contains(creature);
 
         public void Cripple(Creature creature)
@@ -59,6 +65,7 @@ namespace AchillesTendon
         /// <param name="crawlSpeedFactor">Weakening from the bleed-out, multiplies Crawl Speed.</param>
         public void Update(System.Func<Creature, float> crawlSpeedFactor)
         {
+            LogDeathPoses();
             if (crippled.Count == 0)
             {
                 return;
@@ -91,6 +98,11 @@ namespace AchillesTendon
                     case CrippleAction.Forget:
                         if (creature != null)
                         {
+                            if (ModOptions.DebugLogging && creature.isKilled)
+                            {
+                                deathWatch[creature] = UnityEngine.Time.time;
+                                deathLastLog[creature] = float.NegativeInfinity;
+                            }
                             StopCrawl(creature);
                         }
                         crawling.Remove(creature);
@@ -286,6 +298,77 @@ namespace AchillesTendon
                 + " gait=" + (!ModOptions.SteadyCrawlPose ? "game" : gaitMoving.Contains(creature) ? "moving" : "still")
                 + " | state=" + creature.state);
             ModLog.Verbose("CRAWL BODY | " + GameAdapters.Label(creature) + " | " + BodySupport(creature, ci));
+        }
+
+        // Diagnosis of a dead crippled NPC hanging stiffly above the ground (2026-11-17):
+        // ragdoll state, animator, and per part the lowest collider point above the terrain
+        // (cm), vertical velocity and the animation pin's rotation spring.
+        private void LogDeathPoses()
+        {
+            if (deathWatch.Count == 0)
+            {
+                return;
+            }
+            var now = UnityEngine.Time.time;
+            deathScratch.Clear();
+            deathScratch.AddRange(deathWatch.Keys);
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+            foreach (var creature in deathScratch)
+            {
+                var since = now - deathWatch[creature];
+                if (creature == null || since > DeathWatchSeconds)
+                {
+                    deathWatch.Remove(creature);
+                    deathLastLog.Remove(creature);
+                    continue;
+                }
+                if (now - deathLastLog[creature] < PoseLogInterval)
+                {
+                    continue;
+                }
+                deathLastLog[creature] = now;
+                var ragdoll = creature.ragdoll;
+                var ground = TerrainBelow(creature);
+                var text = "DEATH POSE | " + GameAdapters.Label(creature) + " | t=" + since.ToString("0.0", ci) + " s"
+                    + " | ragdoll=" + ragdoll.state + " animator=" + creature.animator.enabled
+                    + " heightRatio=" + creature.GetAnimatorHeightRatio().ToString("0.00", ci)
+                    + " | terrain=" + ground.ToString("0.00", ci) + " creatureY=" + creature.transform.position.y.ToString("0.00", ci) + " | ";
+                foreach (var part in ragdoll.parts)
+                {
+                    var joint = part.bone != null ? part.bone.animationJoint : null;
+                    text += part.type + " low=" + (LowestPoint(part.colliderGroup != null ? part.colliderGroup.colliders : null, ground) * 100f).ToString("0", ci)
+                        + " vy=" + (part.physicBody != null ? part.physicBody.velocity.y.ToString("0.00", ci) : "-")
+                        + " pin=" + (joint != null && joint.gameObject.activeInHierarchy ? joint.slerpDrive.positionSpring.ToString("0", ci) : "off")
+                        + (part.physicBody != null && part.physicBody.isKinematic ? " kin" : string.Empty) + "; ";
+                }
+                ModLog.Verbose(text);
+            }
+        }
+
+        // Height of the first collider below the hips that does not belong to the creature.
+        private static float TerrainBelow(Creature creature)
+        {
+            var root = creature.ragdoll.rootPart;
+            if (root == null)
+            {
+                return creature.transform.position.y;
+            }
+            var hits = UnityEngine.Physics.RaycastAll(root.transform.position + UnityEngine.Vector3.up, UnityEngine.Vector3.down, 5f, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
+            var best = float.NaN;
+            var bestDistance = float.PositiveInfinity;
+            foreach (var hit in hits)
+            {
+                if (hit.collider.GetComponentInParent<Creature>() == creature || hit.collider.attachedRigidbody != null)
+                {
+                    continue;
+                }
+                if (hit.distance < bestDistance)
+                {
+                    bestDistance = hit.distance;
+                    best = hit.point.y;
+                }
+            }
+            return float.IsNaN(best) ? creature.transform.position.y : best;
         }
 
         // Diagnosis of the slow sink after a crawl stops (Debug Logging): per body part the

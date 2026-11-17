@@ -43,6 +43,9 @@ namespace AchillesTendon
             public float AppliedArmStrength;
             public bool NoClipLogged;
 
+            /// <summary>Ground Attack Chance, rolled when the tendon was cut.</summary>
+            public bool IsAttacker;
+
             /// <summary>We started a swing; it is stopped when the NPC leaves ground fighting.</summary>
             public bool StartedAnimation;
         }
@@ -59,8 +62,13 @@ namespace AchillesTendon
             }
             var fighter = new Fighter();
             CaptureAttackClips(creature, fighter.AttackClips);
+            var roll = Random.value;
+            fighter.IsAttacker = GroundFightRules.IsAttacker(ModOptions.GroundAttackChance, roll);
             fighters[creature] = fighter;
-            ModLog.Verbose("GROUND FIGHT START | " + GameAdapters.Label(creature) + " | attack clips=" + fighter.AttackClips.Count);
+            ModLog.Verbose("GROUND FIGHT START | " + GameAdapters.Label(creature) + " | attack clips=" + fighter.AttackClips.Count
+                + " | attacker=" + (fighter.IsAttacker ? "yes" : "no")
+                + " (roll " + roll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                + ", chance " + OptionSpecs.GroundAttackChance.Label(ModOptions.GroundAttackChance) + ")");
         }
 
         public void Update(float time, System.Func<Creature, bool> isCrippled, System.Func<Creature, bool> isDowned, System.Func<Creature, bool> isCrawling, System.Func<Creature, Weakening> weakening)
@@ -91,6 +99,7 @@ namespace AchillesTendon
                     IsDown = isDowned(creature),
                     IsCrawling = isCrawling(creature),
                     AttacksOn = ModOptions.GroundAttacks,
+                    IsAttacker = fighter.IsAttacker,
                     HasAttackClip = fighter.AttackClips.Count > 0,
                     IsPlayingAnimation = creature.isPlayingDynamicAnimation,
                     DistanceToPlayer = DistanceToPlayer(creature),
@@ -117,7 +126,7 @@ namespace AchillesTendon
                     fighter.LastScreamTime = time;
                     Scream(creature, weak.Gasping);
                 }
-                if (ModOptions.GroundAttacks && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
+                if (ModOptions.GroundAttacks && fighter.IsAttacker && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
                 {
                     fighter.NoClipLogged = true;
                     ModLog.Verbose("GROUND ATTACK skipped | " + GameAdapters.Label(creature) + " | no attack animations (no weapon in a melee stance when cut)");

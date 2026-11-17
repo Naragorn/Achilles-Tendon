@@ -1,0 +1,27 @@
+# Ground Attack Chance (2026-11-17): rolled once per NPC when its tendon is cut.
+# 0 % = this fighter only crawls and screams, it never swings. (100 %: step3-e-crawl.)
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 0
+set-option AchillesTendon "Ground Attack Range" 4
+set-option AchillesTendon "Ground Attack Interval" 1
+
+spawn-npc HumanMale distance=3 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+expect-log attacker=no (roll
+wait 8
+expect-no-log [AchillesTendon] GROUND ATTACK |
+expect-npc state Alive within=0.1
+
+set-option AchillesTendon "Ground Attack Chance" 0.75
+set-option AchillesTendon "Bleed-Out Enabled" true
+expect-no-log Exception
+quit

@@ -1,0 +1,68 @@
+# Probe (not in the default run): a crawling NPC that dies hangs stiffly above the sand
+# (showcase run 20261117-175741, s17). DEATH POSE lines (Debug Logging) every 0.5 s for
+# 6 s after the death: ragdoll state, animator, per part lowest point above the terrain,
+# vertical speed, pin spring. Leg Strength x4 (default) vs x1; bled out vs killed by the player.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 10
+set-option AchillesTendon "Ground Attacks" false
+
+# A. Bled out, Leg Strength x4.
+set-option AchillesTendon "Leg Strength" 4
+spawn-npc HumanMale distance=2 angle=-40 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+expect-npc state Dead within=15
+screenshot a-0s of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot a-05s of=npc distance=2.5 height=0.6 angle=90
+wait 0.5
+screenshot a-1s of=npc distance=2.5 height=0.6 angle=90
+wait 1
+screenshot a-2s of=npc distance=2.5 height=0.6 angle=90
+wait 2
+screenshot a-4s of=npc distance=2.5 height=0.6 angle=90
+expect-log DEATH POSE
+expect-log DEATH | 
+wait 3
+
+# B. Bled out, Leg Strength x1.
+set-option AchillesTendon "Leg Strength" 1
+spawn-npc HumanMale distance=2 angle=0 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+expect-npc state Dead within=15
+expect-log DEATH | 
+screenshot b-0s of=npc distance=2.5 height=0.6 angle=90
+wait 1
+screenshot b-1s of=npc distance=2.5 height=0.6 angle=90
+wait 3
+screenshot b-4s of=npc distance=2.5 height=0.6 angle=90
+wait 3
+
+# C. Killed by the player while crawling, Leg Strength x4.
+set-option AchillesTendon "Leg Strength" 4
+spawn-npc HumanMale distance=2 angle=40 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+wait 4
+hit-npc Head type=Slash damage=999
+expect-npc state Dead within=3
+expect-log DEATH | 
+screenshot c-0s of=npc distance=2.5 height=0.6 angle=90
+wait 1
+screenshot c-1s of=npc distance=2.5 height=0.6 angle=90
+wait 3
+screenshot c-4s of=npc distance=2.5 height=0.6 angle=90
+wait 3
+expect-no-log Exception
+quit

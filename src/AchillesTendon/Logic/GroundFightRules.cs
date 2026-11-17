@@ -14,6 +14,9 @@ namespace AchillesTendon.Logic
 
         public bool AttacksOn;
 
+        /// <summary>Rolled once when the tendon was cut (Ground Attack Chance): this NPC fights from the ground.</summary>
+        public bool IsAttacker;
+
         /// <summary>The creature has attack animations (it held a weapon in a melee stance).</summary>
         public bool HasAttackClip;
 
@@ -45,6 +48,20 @@ namespace AchillesTendon.Logic
 
     public static class GroundFightRules
     {
+        /// <summary>
+        /// Ground Attack Chance: whether a freshly crippled NPC fights from the ground.
+        /// <paramref name="roll"/> is uniform in [0, 1] (UnityEngine.Random.value, which can
+        /// return 1), so a chance of 100 % always and 0 % never makes an attacker.
+        /// </summary>
+        public static bool IsAttacker(float chance, float roll)
+        {
+            if (chance >= 1f)
+            {
+                return true;
+            }
+            return chance > 0f && roll < chance;
+        }
+
         public static GroundFightDecision Decide(GroundFightInput input)
         {
             if (!input.FeatureOn || !input.IsDown)
@@ -56,6 +73,7 @@ namespace AchillesTendon.Logic
                 StrongArms = !input.IsCrawling,
                 UpperBodyOnly = input.IsCrawling,
                 Attack = input.AttacksOn
+                    && input.IsAttacker
                     && input.HasAttackClip
                     && !input.IsPlayingAnimation
                     && input.DistanceToPlayer <= input.AttackRange

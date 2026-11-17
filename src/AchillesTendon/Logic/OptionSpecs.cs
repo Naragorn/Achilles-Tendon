@@ -125,6 +125,9 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec ArmStrength =
             new FloatOptionSpec("Arm Strength", 1f, 10f, 0.5f, 1f, OptionUnit.Multiplier);
 
+        public static readonly FloatOptionSpec GroundAttackChance =
+            new FloatOptionSpec("Ground Attack Chance", 0f, 1f, 0.05f, 0.75f, OptionUnit.Percent);
+
         public static readonly FloatOptionSpec GroundAttackRange =
             new FloatOptionSpec("Ground Attack Range", 0.5f, 4f, 0.1f, 1.8f, OptionUnit.Meters);
 
@@ -170,6 +173,7 @@ namespace AchillesTendon.Logic
             ScreamSlowdown,
             GaspingFrom,
             ArmStrength,
+            GroundAttackChance,
             GroundAttackRange,
             GroundAttackInterval,
             ScreamInterval,

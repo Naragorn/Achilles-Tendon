@@ -6,13 +6,13 @@ Inspired by two heroes who fell to a single strike at the one weak point of thei
 
 Every feature can be toggled and tuned in the in-game Mod Menu.
 
-> **Work in progress (v0.8.1).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
+> **Work in progress (v0.8.2).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
 
 ## What it does
 
 - **The cut:** slash or stab the back of an enemy's heel, from behind or the side. Blunt hits and hits from the front do not count. You can cut with a held weapon, a thrown blade or a spell.
 - **The fall:** the enemy drops and never stands up again. By default they crawl on the ground (the game's own injured and crawl animations); you can switch to lying flat instead.
-- **Fighting from the ground:** they scream in pain and, if you turn on Ground Attacks, swing at you with their upper body when you come close.
+- **Fighting from the ground:** they scream in pain, and most of them (75 % by default) swing at you with their upper body when you come close. The rest only crawl and scream, so you never know which one still fights back.
 - **Bleeding out:** they bleed from the cut heel and die after the Bleed-Out Duration (45 s by default). Over time they crawl slower, scream less often and end up gasping. You can finish them earlier as usual.
 - Only your hits count: NPCs cutting each other's heels, or yours, do nothing.
 
@@ -50,7 +50,8 @@ After updating, press the mod page's reset button: the game saves options by the
 | | Gasping From (bleed-out share from which screams turn into heavy breathing) | 75 % | 50-100 % |
 | Ground Fighting | Ground Fighting Enabled | on | |
 | | Arm Strength (how stiff a lying NPC's arms are; x1 = the game's own limp value) | x1 | x1-x10 |
-| | Ground Attacks (crawling: upper-body swings; lying flat: experimental, no visible swing). Off: a downed NPC does not attack at all (its own melee AI stays off while crawling) | off | |
+| | Ground Attacks (crawling: upper-body swings; lying flat: experimental, no visible swing). Off: a downed NPC does not attack at all | on | |
+| | Ground Attack Chance (share of crippled enemies that fight back; rolled once per enemy at the cut) | 75 % | 0-100 % |
 | | Ground Attack Range | 1.8 m | 0.5-4 m |
 | | Ground Attack Interval | 3 s | 1-10 s |
 | | Screaming (pain cries) | on | |

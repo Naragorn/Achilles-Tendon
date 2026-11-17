@@ -166,31 +166,37 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float ArmStrength = OptionSpecs.ArmStrength.Default;
 
-        [ModOption("Ground Attacks", "Off by default. A downed NPC swings its weapon at you when you are in reach (its own attack animations; needs a weapon). Crawling: upper body only. Lying flat: experimental, no visible swing yet. A crawling NPC never uses its own melee AI, so with this off it does not attack.")]
+        [ModOption("Ground Attacks", "A downed NPC swings its weapon at you when you are in reach (its own attack animations; needs a weapon). Crawling: upper body only. Lying flat: experimental, no visible swing yet. A crawling NPC never uses its own melee AI, so with this off it does not attack.")]
         [ModOptionCategory(GroundCategory, 2)]
         [ModOptionOrder(2)]
-        public static bool GroundAttacks = false;
+        public static bool GroundAttacks = true;
+
+        [ModOption("Ground Attack Chance", "Share of crippled NPCs that fight from the ground; the others only crawl and scream. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(GroundAttackChanceValues))]
+        [ModOptionCategory(GroundCategory, 2)]
+        [ModOptionOrder(3)]
+        [ModOptionSlider]
+        public static float GroundAttackChance = OptionSpecs.GroundAttackChance.Default;
 
         [ModOption("Ground Attack Range", "How close you must be for a lying NPC to swing at you.", nameof(GroundAttackRangeValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(3)]
+        [ModOptionOrder(4)]
         [ModOptionSlider]
         public static float GroundAttackRange = OptionSpecs.GroundAttackRange.Default;
 
         [ModOption("Ground Attack Interval", "Seconds between two swings from the ground.", nameof(GroundAttackIntervalValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(4)]
+        [ModOptionOrder(5)]
         [ModOptionSlider]
         public static float GroundAttackInterval = OptionSpecs.GroundAttackInterval.Default;
 
         [ModOption("Screaming", "A lying NPC cries out in pain now and then.")]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(5)]
+        [ModOptionOrder(6)]
         public static bool Screaming = true;
 
         [ModOption("Scream Interval", "Seconds between two screams.", nameof(ScreamIntervalValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(6)]
+        [ModOptionOrder(7)]
         [ModOptionSlider]
         public static float ScreamInterval = OptionSpecs.ScreamInterval.Default;
 
@@ -279,6 +285,8 @@ namespace AchillesTendon
         public static ModOptionParameter[] GaspingFromValues() => ToParameters(OptionSpecs.GaspingFrom);
 
         public static ModOptionParameter[] ArmStrengthValues() => ToParameters(OptionSpecs.ArmStrength);
+
+        public static ModOptionParameter[] GroundAttackChanceValues() => ToParameters(OptionSpecs.GroundAttackChance);
 
         public static ModOptionParameter[] GroundAttackRangeValues() => ToParameters(OptionSpecs.GroundAttackRange);
 

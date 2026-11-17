@@ -14,6 +14,27 @@ namespace AchillesTendon
 
         public static Vector3 ToVector3(Vec3 v) => new Vector3(v.X, v.Y, v.Z);
 
+        /// <summary>
+        /// Stops the game's dying animation of an NPC that died crawling
+        /// (BrainModuleDeath.StopDying, the game's own abort, also used when a dying NPC is
+        /// pushed): it then falls as a plain ragdoll instead of hanging in a standing death clip.
+        /// </summary>
+        public static void StopDyingAnimationIfCrawling(Creature creature, bool wasCrawling)
+        {
+            var brain = creature.brain;
+            if (brain == null || !DeathRules.StopDyingAnimation(wasCrawling, brain.isDying))
+            {
+                return;
+            }
+            var death = brain.instance != null ? brain.instance.GetModule<BrainModuleDeath>(autoAddModuleIfMissing: false) : null;
+            if (death == null)
+            {
+                return;
+            }
+            death.StopDying();
+            ModLog.Verbose("DEATH | " + Label(creature) + " | died crawling, standing death animation stopped");
+        }
+
         public static LegSide SideOf(RagdollPart part)
         {
             if (part == null)

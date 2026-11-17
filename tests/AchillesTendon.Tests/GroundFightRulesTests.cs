@@ -13,6 +13,7 @@ namespace AchillesTendon.Tests
                 FeatureOn = true,
                 IsDown = true,
                 AttacksOn = true,
+                IsAttacker = true,
                 HasAttackClip = true,
                 IsPlayingAnimation = false,
                 DistanceToPlayer = 1f,
@@ -184,6 +185,39 @@ namespace AchillesTendon.Tests
             input.AttacksOn = false;
 
             Assert.False(GroundFightRules.Decide(input).Attack);
+        }
+
+        // Ground Attack Chance (Nadi, 2026-11-17): rolled once per NPC when its tendon is cut.
+        // Attackers swing from the ground, the others only crawl and scream.
+        [Fact]
+        public void Npc_that_rolled_no_attacker_never_attacks_but_still_screams()
+        {
+            var input = Ready();
+            input.IsAttacker = false;
+
+            var d = GroundFightRules.Decide(input);
+
+            Assert.False(d.Attack);
+            Assert.True(d.Scream);
+        }
+
+        [Theory]
+        [InlineData(0.75f, 0.74f, true)]
+        [InlineData(0.75f, 0.75f, false)]
+        [InlineData(0.75f, 0f, true)]
+        [InlineData(0f, 0f, false)]
+        [InlineData(1f, 1f, true)]
+        [InlineData(1f, 0.99f, true)]
+        public void Chance_decides_who_is_an_attacker(float chance, float roll, bool attacker)
+        {
+            Assert.Equal(attacker, GroundFightRules.IsAttacker(chance, roll));
+        }
+
+        [Fact]
+        public void Ground_attacks_are_on_by_default_for_three_of_four_npcs()
+        {
+            Assert.Equal(0.75f, OptionSpecs.GroundAttackChance.Default);
+            Assert.Equal("75 %", OptionSpecs.GroundAttackChance.Label(0.75f));
         }
     }
 }

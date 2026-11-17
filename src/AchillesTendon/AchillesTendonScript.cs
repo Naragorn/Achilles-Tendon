@@ -142,7 +142,25 @@ namespace AchillesTendon
         // dead in its next update). Creature.Kill raises OnStart only when the kill goes ahead.
         private void OnCreatureKill(Creature creature, Player player, CollisionInstance hit, EventTime eventTime)
         {
-            if (eventTime != EventTime.OnStart || creature == null)
+            if (creature == null)
+            {
+                return;
+            }
+            if (eventTime == EventTime.OnEnd)
+            {
+                // Runs after BrainModuleDeath.OnKill (Creature.Kill raises OnKillEvent before
+                // EventManager.onCreatureKill), so its dying animation has already started.
+                try
+                {
+                    GameAdapters.StopDyingAnimationIfCrawling(creature, cripple.IsCrawling(creature));
+                }
+                catch (Exception ex)
+                {
+                    ModLog.Error("Death animation check failed: " + ex);
+                }
+                return;
+            }
+            if (eventTime != EventTime.OnStart)
             {
                 return;
             }
