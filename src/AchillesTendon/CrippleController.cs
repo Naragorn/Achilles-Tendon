@@ -263,6 +263,58 @@ namespace AchillesTendon
                 + " raw speed=" + RawGait(creature).x.ToString("0.00", ci) + " strafe=" + RawGait(creature).y.ToString("0.00", ci)
                 + " gait=" + (!ModOptions.SteadyCrawlPose ? "game" : gaitMoving.Contains(creature) ? "moving" : "still")
                 + " | state=" + creature.state);
+            ModLog.Verbose("CRAWL BODY | " + GameAdapters.Label(creature) + " | " + BodySupport(creature, ci));
+        }
+
+        // Diagnosis of the slow sink after a crawl stops (Debug Logging): per body part the
+        // lowest collider point above the ground point (cm) and its vertical velocity; the
+        // held items' lowest point; the locomotion capsule. Shows what touches the ground
+        // while the hips hang (2026-11-17: only the lower legs). Joint.currentForce of the
+        // animation pins read 0 throughout, so it is not logged.
+        private static string BodySupport(Creature creature, System.Globalization.CultureInfo ci)
+        {
+            var ground = creature.transform.position.y;
+            var text = string.Empty;
+            foreach (var part in creature.ragdoll.parts)
+            {
+                text += part.type + " low=" + (LowestPoint(part.colliderGroup != null ? part.colliderGroup.colliders : null, ground) * 100f).ToString("0", ci)
+                    + " vy=" + (part.physicBody != null ? part.physicBody.velocity.y.ToString("0.00", ci) : "-") + "; ";
+            }
+            text += "| held " + HeldLow(creature.handLeft, "L", ground, ci) + HeldLow(creature.handRight, " R", ground, ci);
+            var capsule = creature.locomotion.capsuleCollider;
+            if (capsule != null)
+            {
+                text += " | capsule on=" + capsule.enabled + " bottom=" + ((capsule.bounds.min.y - ground) * 100f).ToString("0", ci)
+                    + " height=" + capsule.height.ToString("0.00", ci) + " layer=" + UnityEngine.LayerMask.LayerToName(capsule.gameObject.layer);
+            }
+            return text;
+        }
+
+        private static string HeldLow(RagdollHand hand, string side, float ground, System.Globalization.CultureInfo ci)
+        {
+            var item = hand != null && hand.grabbedHandle != null ? hand.grabbedHandle.item : null;
+            if (item == null)
+            {
+                return side + "=none";
+            }
+            var colliders = new List<UnityEngine.Collider>(item.GetComponentsInChildren<UnityEngine.Collider>());
+            return side + "=" + item.data.id + " low=" + (LowestPoint(colliders, ground) * 100f).ToString("0", ci);
+        }
+
+        private static float LowestPoint(List<UnityEngine.Collider> colliders, float ground)
+        {
+            var lowest = float.PositiveInfinity;
+            if (colliders != null)
+            {
+                foreach (var collider in colliders)
+                {
+                    if (collider != null && collider.enabled && !collider.isTrigger)
+                    {
+                        lowest = UnityEngine.Mathf.Min(lowest, collider.bounds.min.y - ground);
+                    }
+                }
+            }
+            return lowest;
         }
 
         private static string RootPin(Creature creature, System.Globalization.CultureInfo ci)
