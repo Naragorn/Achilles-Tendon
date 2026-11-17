@@ -103,8 +103,8 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec LieFlatChance =
             new FloatOptionSpec("Lie Flat Chance", 0f, 1f, 0.05f, 0.05f, OptionUnit.Percent);
 
-        public static readonly FloatOptionSpec BellyCrawlChance =
-            new FloatOptionSpec("Belly Crawl Chance", 0f, 1f, 0.05f, 0f, OptionUnit.Percent);
+        public static readonly FloatOptionSpec KneelChance =
+            new FloatOptionSpec("Kneel Chance", 0f, 1f, 0.05f, 0.3f, OptionUnit.Percent);
 
         public static readonly FloatOptionSpec CrawlSpeed =
             new FloatOptionSpec("Crawl Speed", 0.05f, 1f, 0.05f, 0.3f, OptionUnit.Multiplier);
@@ -166,7 +166,7 @@ namespace AchillesTendon.Logic
             HeelZoneHeightOffset,
             MaxHitAngle,
             LieFlatChance,
-            BellyCrawlChance,
+            KneelChance,
             CrawlSpeed,
             CrawlBodyHeight,
             CrawlStartSpeed,

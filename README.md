@@ -6,12 +6,12 @@ Inspired by two heroes who fell to a single strike at the one weak point of thei
 
 Every feature can be toggled and tuned in the in-game Mod Menu.
 
-> **Work in progress (v0.8.3).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
+> **Work in progress (v0.8.4).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
 
 ## What it does
 
 - **The cut:** slash or stab the back of an enemy's heel, from behind or the side. Blunt hits and hits from the front do not count. You can cut with a held weapon, a thrown blade or a spell.
-- **The fall:** the enemy drops and never stands up again. Most crawl on the ground with the game's own injured and crawl animations; a few (5 % by default) fall flat and lie still.
+- **The fall:** the enemy drops and never stands up again, in one of three poses, rolled per enemy: most sit down and crawl on their back with the game's own injured and crawl animations, some (30 % of the crawlers by default) fall forward onto their knees and fight on kneeling, and a few (5 % by default) fall flat and lie still.
 - **Fighting from the ground:** they scream in pain, and most of them (75 % by default) swing at you with their upper body when you come close. The rest only crawl and scream, so you never know which one still fights back.
 - **Bleeding out:** they bleed from the cut heel and die after the Bleed-Out Duration (45 s by default). Over time they crawl slower, scream less often and end up gasping. You can finish them earlier as usual.
 - Only your hits count: NPCs cutting each other's heels, or yours, do nothing.
@@ -34,7 +34,7 @@ After updating, press the mod page's reset button: the game saves options by the
 | | Allowed Damage Types | Slash and Pierce | Slash and Pierce / Slash only / Pierce only |
 | | Stand Up When Disabled (NPCs with a cut tendon get up when the mod is turned off) | on | |
 | | Lie Flat Chance (share of crippled enemies that lie flat as a ragdoll instead of crawling; rolled once per enemy at the cut) | 5 % | 0-100 % |
-| | Belly Crawl Chance (experimental: share of crawlers that fall forward instead of sitting down; for now they kneel upright rather than lie face down) | 0 % | 0-100 % |
+| | Kneel Chance (share of crawling enemies that fall forward onto their knees and fight on kneeling; the others sit down and crawl on their back) | 30 % | 0-100 % |
 | | Crawl Speed (movement while crawling, relative to walking) | x0.3 | x0.05-x1 |
 | | Crawl Body Height (0 = flat, 1 = standing) | x0.2 | x0-x0.6 |
 | | Steady Crawl Pose (twitches count as standing still) | on | on/off |

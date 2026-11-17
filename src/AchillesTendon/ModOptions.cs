@@ -72,11 +72,11 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float LieFlatChance = OptionSpecs.LieFlatChance.Default;
 
-        [ModOption("Belly Crawl Chance", "Experimental, off by default: share of crawling NPCs that fall forward instead of sitting down (in headless tests they kneel upright rather than lie face down); the others sit and crawl on their back. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(BellyCrawlChanceValues))]
+        [ModOption("Kneel Chance", "Share of crawling NPCs that fall forward onto their knees and fight on kneeling upright; the others sit down and crawl on their back. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(KneelChanceValues))]
         [ModOptionCategory(TendonCategory, 0)]
         [ModOptionOrder(8)]
         [ModOptionSlider]
-        public static float BellyCrawlChance = OptionSpecs.BellyCrawlChance.Default;
+        public static float KneelChance = OptionSpecs.KneelChance.Default;
 
         [ModOption("Crawl Speed", "Movement speed while crawling, relative to walking.", nameof(CrawlSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
@@ -267,7 +267,7 @@ namespace AchillesTendon
 
         public static ModOptionParameter[] LieFlatChanceValues() => ToParameters(OptionSpecs.LieFlatChance);
 
-        public static ModOptionParameter[] BellyCrawlChanceValues() => ToParameters(OptionSpecs.BellyCrawlChance);
+        public static ModOptionParameter[] KneelChanceValues() => ToParameters(OptionSpecs.KneelChance);
 
         public static ModOptionParameter[] CrawlSpeedValues() => ToParameters(OptionSpecs.CrawlSpeed);
 

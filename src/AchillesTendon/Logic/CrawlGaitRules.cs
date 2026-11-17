@@ -11,7 +11,7 @@ namespace AchillesTendon.Logic
     /// ("sitting in the air", measured with the CRAWL POSE log). This adds the missing
     /// hysteresis: it only counts as moving from Start up, and as still again below Stop.
     /// </summary>
-    /// <summary>Animator Speed/Strafe to write for a belly crawler this frame.</summary>
+    /// <summary>Animator Speed/Strafe to write for a kneeling NPC this frame.</summary>
     public struct CrawlGait
     {
         public float Speed;
@@ -22,21 +22,22 @@ namespace AchillesTendon.Logic
     {
         /// <summary>
         /// Just above the animator's idle/moving switch at |Speed| 0.1 (Human controller): a
-        /// still belly crawler stays in the moving blend tree, between Crouch_Idle (Speed 0)
-        /// and the face-down Crawling clip (Speed 0.16), instead of falling back to the
-        /// idle states, which lie on the back. An engine threshold, not a tuning value.
+        /// still kneeling NPC stays in the moving blend tree (between Crouch_Idle at Speed 0
+        /// and Crawling at 0.16) instead of falling back to the idle states, which sit or lie
+        /// on the back. An engine threshold, not a tuning value.
         /// </summary>
-        public const float BellyHoldSpeed = 0.12f;
+        public const float KneelHoldSpeed = 0.12f;
 
         /// <summary>
-        /// Belly crawl: always the forward Crawling clip (face down). CrawlBackwards lies on
-        /// the back, so a belly crawler moving backwards or sideways plays the forward crawl
-        /// at its own speed.
+        /// Kneel pose (Kneel Chance): always the forward moving blend tree, never the idle
+        /// states or CrawlBackwards (both on the back); moving backwards or sideways plays the
+        /// forward motion at its own speed. Headless it kneels upright (probes 20261117-192804,
+        /// -195433), the pose Nadi kept (2026-11-17).
         /// </summary>
-        public static CrawlGait BellyGait(bool moving, float speed, float strafe)
+        public static CrawlGait KneelGait(bool moving, float speed, float strafe)
         {
             var magnitude = moving ? Math.Max(Math.Abs(speed), Math.Abs(strafe)) : 0f;
-            return new CrawlGait { Speed = Math.Max(BellyHoldSpeed, magnitude), Strafe = 0f };
+            return new CrawlGait { Speed = Math.Max(KneelHoldSpeed, magnitude), Strafe = 0f };
         }
 
         public static bool IsMoving(bool wasMoving, float speed, float strafe, float start, float stop)

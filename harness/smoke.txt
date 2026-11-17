@@ -13,7 +13,7 @@ expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
 option-exists AchillesTendon "Achilles Tendon Enabled" category="Achilles Tendon" type=Boolean save=true
 option-exists AchillesTendon "Stand Up When Disabled" category="Achilles Tendon" type=Boolean save=true tooltip="get up again"
 option-exists AchillesTendon "Lie Flat Chance" category="Achilles Tendon" type=Single save=true
-option-exists AchillesTendon "Belly Crawl Chance" category="Achilles Tendon" type=Single save=true
+option-exists AchillesTendon "Kneel Chance" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Crawl Speed" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Crawl Body Height" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Steady Crawl Pose" category="Achilles Tendon" type=Boolean save=true
@@ -46,7 +46,7 @@ option-exists AchillesTendon "Debug Logging" category=Debug type=Boolean save=tr
 expect-option AchillesTendon "Achilles Tendon Enabled" true
 expect-option AchillesTendon "Stand Up When Disabled" true
 expect-option AchillesTendon "Lie Flat Chance" 0.05
-expect-option AchillesTendon "Belly Crawl Chance" 0
+expect-option AchillesTendon "Kneel Chance" 0.3
 expect-option AchillesTendon "Crawl Speed" 0.3
 expect-option AchillesTendon "Crawl Body Height" 0.2
 expect-option AchillesTendon "Steady Crawl Pose" true

@@ -42,8 +42,8 @@ namespace AchillesTendon
         // Lie Flat Chance, rolled per NPC when its tendon is cut.
         private readonly Dictionary<Creature, DownedPose> poses = new Dictionary<Creature, DownedPose>();
 
-        // Belly Crawl Chance, rolled per crawling NPC when its tendon is cut.
-        private readonly HashSet<Creature> belly = new HashSet<Creature>();
+        // Kneel Chance, rolled per crawling NPC when its tendon is cut.
+        private readonly HashSet<Creature> kneel = new HashSet<Creature>();
 
         // The game's stab deaths (bas.jsondb, 1.3.2): with moveDirection Forward they are
         // DeathKneelForward 1-3, which end face down (clip root rotation, read from
@@ -63,17 +63,17 @@ namespace AchillesTendon
                 + ", lie flat chance " + OptionSpecs.LieFlatChance.Label(ModOptions.LieFlatChance) + ")";
             if (pose == DownedPose.Crawl)
             {
-                var bellyRoll = UnityEngine.Random.value;
-                var onBelly = Chance.Hits(ModOptions.BellyCrawlChance, bellyRoll);
-                if (onBelly)
+                var kneelRoll = UnityEngine.Random.value;
+                var onKnees = Chance.Hits(ModOptions.KneelChance, kneelRoll);
+                if (onKnees)
                 {
-                    belly.Add(creature);
+                    kneel.Add(creature);
                 }
                 Crawl(creature, 1f);
                 ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, down to the injured/crawl pose" + rolled
-                    + " | " + (onBelly ? "belly" : "back") + " (roll " + bellyRoll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
-                    + ", belly chance " + OptionSpecs.BellyCrawlChance.Label(ModOptions.BellyCrawlChance) + ")");
-                if (onBelly)
+                    + " | " + (onKnees ? "kneel" : "sit") + " (roll " + kneelRoll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                    + ", kneel chance " + OptionSpecs.KneelChance.Label(ModOptions.KneelChance) + ")");
+                if (onKnees)
                 {
                     FallForward(creature);
                 }
@@ -128,7 +128,7 @@ namespace AchillesTendon
                         Release(creature);
                         crippled.Remove(creature);
                         poses.Remove(creature);
-                        belly.Remove(creature);
+                        kneel.Remove(creature);
                         ModLog.Verbose("RELEASE | " + GameAdapters.Label(creature) + " | feature off, may stand up");
                         break;
                     case CrippleAction.Forget:
@@ -147,7 +147,7 @@ namespace AchillesTendon
                         lastPoseLog.Remove(creature);
                         crippled.Remove(creature);
                         poses.Remove(creature);
-                        belly.Remove(creature);
+                        kneel.Remove(creature);
                         break;
                 }
             }
@@ -166,7 +166,7 @@ namespace AchillesTendon
             }
             crippled.Clear();
             poses.Clear();
-            belly.Clear();
+            kneel.Clear();
             crawling.Clear();
             meleeBefore.Clear();
             gaitMoving.Clear();
@@ -239,9 +239,9 @@ namespace AchillesTendon
         // here, would only creep back up from 0.
         private void SteadyGait(Creature creature)
         {
-            if (belly.Contains(creature))
+            if (kneel.Contains(creature))
             {
-                BellyGait(creature);
+                KneelGait(creature);
                 return;
             }
             if (!ModOptions.SteadyCrawlPose)
@@ -268,10 +268,10 @@ namespace AchillesTendon
             creature.animator.SetFloat(Creature.hashStrafe, 0f);
         }
 
-        // Belly crawl: always the face-down forward Crawling clip, never the idle states or
-        // CrawlBackwards, which lie on the back (CrawlGaitRules.BellyGait). Start/stop use the
-        // same hysteresis as Steady Crawl Pose.
-        private void BellyGait(Creature creature)
+        // Kneel pose: always the forward moving blend tree, never the idle states or
+        // CrawlBackwards, which sit or lie on the back (CrawlGaitRules.KneelGait). Start/stop
+        // use the same hysteresis as Steady Crawl Pose.
+        private void KneelGait(Creature creature)
         {
             var raw = RawGait(creature);
             var was = gaitMoving.Contains(creature);
@@ -284,14 +284,14 @@ namespace AchillesTendon
             {
                 gaitMoving.Remove(creature);
             }
-            var gait = CrawlGaitRules.BellyGait(moving, raw.x, raw.y);
+            var gait = CrawlGaitRules.KneelGait(moving, raw.x, raw.y);
             creature.animator.SetFloat(Creature.hashSpeed, gait.Speed);
             creature.animator.SetFloat(Creature.hashStrafe, gait.Strafe);
         }
 
         // Falls forward with one of the game's own face-down stab deaths, played as a
         // one-shot on the FullBody layer (Creature.PlayAnimation); when it ends the animator
-        // goes back to the base layer, where BellyGait holds the face-down crawl.
+        // goes back to the base layer, where KneelGait keeps it kneeling.
         private static void FallForward(Creature creature)
         {
             var data = Catalog.GetData<AnimationData>(FallForwardAnimationId, logWarning: false);
