@@ -4,7 +4,8 @@
 #   tools/harness.sh harness/smoke.txt
 # Every run starts from a fresh harness prefix (default options). Only one harness run
 # at a time (BasHarness holds a lock). BAS_HARNESS_DIR overrides where BasHarness lives
-# (default: ../BasHarness next to this repo).
+# (default: ../BasHarness next to this repo). DMCS_MOD=<DMCS build folder> loads DMCS too
+# (for harness/compat/dmcs-adrenaline.txt).
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 HARNESS=${BAS_HARNESS_DIR:-$ROOT/../BasHarness}
@@ -14,6 +15,10 @@ dotnet build "$ROOT/src/AchillesTendon/AchillesTendon.csproj" -c Release -nologo
 if [ $# -eq 0 ]; then
   set -- "$ROOT"/harness/*.txt
 fi
+EXTRA=()
+if [ -n "${DMCS_MOD:-}" ]; then
+  EXTRA=(--mod "$DMCS_MOD")
+fi
 exec python3 "$HARNESS/runner/bas_harness.py" \
-  --mod "$ROOT/dist/AchillesTendon" \
+  --mod "$ROOT/dist/AchillesTendon" "${EXTRA[@]}" \
   --artifacts "$ROOT/artifacts/harness" --fresh-prefix "$@"

@@ -18,6 +18,7 @@ namespace AchillesTendon
         private readonly CrippleController cripple = new CrippleController();
         private readonly BleedController bleed = new BleedController();
         private readonly GroundFightController groundFight = new GroundFightController();
+        private readonly DmcsAdrenaline dmcs = new DmcsAdrenaline();
 
         public override void ScriptLoaded(ModManager.ModData modData)
         {
@@ -28,12 +29,15 @@ namespace AchillesTendon
         public override void ScriptEnable()
         {
             EventManager.onCreatureHit += OnCreatureHit;
+            EventManager.onCreatureKill += OnCreatureKill;
             ModLog.Info("Enabled, listening to EventManager.onCreatureHit");
         }
 
         public override void ScriptDisable()
         {
             EventManager.onCreatureHit -= OnCreatureHit;
+            EventManager.onCreatureKill -= OnCreatureKill;
+            dmcs.Clear();
             visualizer.Clear();
             cripple.ReleaseAll();
             bleed.Clear();
@@ -44,6 +48,8 @@ namespace AchillesTendon
         public override void ScriptUnload()
         {
             EventManager.onCreatureHit -= OnCreatureHit;
+            EventManager.onCreatureKill -= OnCreatureKill;
+            dmcs.Clear();
             visualizer.Clear();
             cripple.ReleaseAll();
             bleed.Clear();
@@ -132,6 +138,24 @@ namespace AchillesTendon
             }
         }
 
+        // OnStart: the creature is still tracked as crippled (CrippleController forgets the
+        // dead in its next update). Creature.Kill raises OnStart only when the kill goes ahead.
+        private void OnCreatureKill(Creature creature, Player player, CollisionInstance hit, EventTime eventTime)
+        {
+            if (eventTime != EventTime.OnStart || creature == null)
+            {
+                return;
+            }
+            try
+            {
+                dmcs.OnKill(creature, hit, cripple.IsCrippled(creature));
+            }
+            catch (Exception ex)
+            {
+                ModLog.Error("DMCS kill check failed: " + ex);
+            }
+        }
+
         private void HandleHit(Creature creature, CollisionInstance hit)
         {
             var part = GameAdapters.HitPart(hit);
@@ -186,6 +210,7 @@ namespace AchillesTendon
                 cripple.Cripple(creature);
                 // Tracked even with Bleed-Out off: it is paused then and starts when turned on.
                 bleed.Start(creature, part, hit.contactPoint);
+                dmcs.OnCrippled(creature, hit);
             }
         }
     }

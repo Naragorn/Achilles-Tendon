@@ -19,6 +19,8 @@ mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] HEEL HIT
 expect-log [AchillesTendon] COLLAPSE
+# DMCS compat without DMCS loaded: noted once, nothing else happens.
+expect-log [AchillesTendon] DMCS | not found
 expect-npc state Destabilized within=1
 
 # The game would stand it up after its knockout time; the hold must prevent that.

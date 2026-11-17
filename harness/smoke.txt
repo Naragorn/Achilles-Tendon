@@ -4,7 +4,7 @@
 # Checks the defaults, so it must be the first scenario of a run (fresh prefix);
 # scenarios in one run share the prefix and the game keeps option values.
 wait-level
-expect-log [ModManager][ModOption][AchillesTendon] Loaded 34 ModOptions
+expect-log [ModManager][ModOption][AchillesTendon] Loaded 37 ModOptions
 expect-log [AchillesTendon] Loaded Heel of Achilles
 expect-log [ModManager][ThunderScript][AchillesTendon] Loaded ThunderScript: AchillesTendon.AchillesTendonScript
 expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
@@ -37,6 +37,9 @@ option-exists AchillesTendon "Ground Attack Interval" category="Ground Fighting"
 option-exists AchillesTendon "Screaming" category="Ground Fighting" type=Boolean save=true
 option-exists AchillesTendon "Scream Interval" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Apply To Player" category="Player Hardcore Mode" type=Boolean save=true
+option-exists AchillesTendon "DMCS Adrenaline" category="DMCS Compat" type=Boolean save=true
+option-exists AchillesTendon "Heel Cut Adrenaline" category="DMCS Compat" type=Single save=true
+option-exists AchillesTendon "Crippled Kill Adrenaline" category="DMCS Compat" type=Single save=true
 option-exists AchillesTendon "Debug Logging" category=Debug type=Boolean save=true
 
 # Defaults
@@ -65,6 +68,9 @@ expect-option AchillesTendon "Ground Attack Interval" 3
 expect-option AchillesTendon "Screaming" true
 expect-option AchillesTendon "Scream Interval" 6
 expect-option AchillesTendon "Apply To Player" false
+expect-option AchillesTendon "DMCS Adrenaline" true
+expect-option AchillesTendon "Heel Cut Adrenaline" 20
+expect-option AchillesTendon "Crippled Kill Adrenaline" 35
 expect-option AchillesTendon "Debug Logging" false
 
 # Live toggles reach the static fields

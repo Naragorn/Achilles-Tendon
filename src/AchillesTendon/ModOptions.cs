@@ -21,6 +21,7 @@ namespace AchillesTendon
         private const string BleedCategory = "Bleed-Out";
         private const string GroundCategory = "Ground Fighting";
         private const string PlayerCategory = "Player Hardcore Mode";
+        private const string DmcsCategory = "DMCS Compat";
         private const string DebugCategory = "Debug";
 
         // ---- Achilles Tendon ------------------------------------------------
@@ -201,25 +202,44 @@ namespace AchillesTendon
         [ModOptionOrder(0)]
         public static bool ApplyToPlayer = false;
 
+        // ---- DMCS Compat ----------------------------------------------------
+
+        [ModOption("DMCS Adrenaline", "With DMCS installed: cutting a tendon and killing a crawling NPC with a cut tendon fill DMCS's Adrenaline meter. Without DMCS this does nothing.")]
+        [ModOptionCategory(DmcsCategory, 4)]
+        [ModOptionOrder(0)]
+        public static bool DmcsAdrenaline = true;
+
+        [ModOption("Heel Cut Adrenaline", "Adrenaline points for each heel cut that cripples an NPC (DMCS: a hit gives 5, a full meter is 100 by default).", nameof(HeelCutAdrenalineValues))]
+        [ModOptionCategory(DmcsCategory, 4)]
+        [ModOptionOrder(1)]
+        [ModOptionSlider]
+        public static float HeelCutAdrenaline = OptionSpecs.HeelCutAdrenaline.Default;
+
+        [ModOption("Crippled Kill Adrenaline", "Adrenaline points when you kill an NPC that was already crawling or lying with a cut tendon (any of your hits; bleeding out gives nothing).", nameof(CrippledKillAdrenalineValues))]
+        [ModOptionCategory(DmcsCategory, 4)]
+        [ModOptionOrder(2)]
+        [ModOptionSlider]
+        public static float CrippledKillAdrenaline = OptionSpecs.CrippledKillAdrenaline.Default;
+
         // ---- Debug ----------------------------------------------------------
 
         [ModOption("Debug Logging", "Logs every player hit on an NPC (and, with Apply To Player, NPC hits on you) with part, angle, damage type and verdict, plus collapse/release, bleed-out pulses and a one-line note for skipped hits, to the game log.")]
-        [ModOptionCategory(DebugCategory, 4)]
+        [ModOptionCategory(DebugCategory, 5)]
         [ModOptionOrder(0)]
         public static bool DebugLogging = false;
 
         [ModOption("Show Heel Zones", "Draws the heel zone of every NPC (and yours, with Apply To Player) as a sphere.")]
-        [ModOptionCategory(DebugCategory, 4)]
+        [ModOptionCategory(DebugCategory, 5)]
         [ModOptionOrder(1)]
         public static bool ShowHeelZones = false;
 
         [ModOption("Show Hit Markers", "Marks each leg hit: green = heel hit, red = miss.")]
-        [ModOptionCategory(DebugCategory, 4)]
+        [ModOptionCategory(DebugCategory, 5)]
         [ModOptionOrder(2)]
         public static bool ShowHitMarkers = false;
 
         [ModOption("Hit Marker Duration", "How long a hit marker stays visible.", nameof(HitMarkerDurationValues))]
-        [ModOptionCategory(DebugCategory, 4)]
+        [ModOptionCategory(DebugCategory, 5)]
         [ModOptionOrder(3)]
         [ModOptionSlider]
         public static float HitMarkerDuration = OptionSpecs.HitMarkerDuration.Default;
@@ -274,6 +294,10 @@ namespace AchillesTendon
         public static ModOptionParameter[] GroundAttackIntervalValues() => ToParameters(OptionSpecs.GroundAttackInterval);
 
         public static ModOptionParameter[] ScreamIntervalValues() => ToParameters(OptionSpecs.ScreamInterval);
+
+        public static ModOptionParameter[] HeelCutAdrenalineValues() => ToParameters(OptionSpecs.HeelCutAdrenaline);
+
+        public static ModOptionParameter[] CrippledKillAdrenalineValues() => ToParameters(OptionSpecs.CrippledKillAdrenaline);
 
         public static ModOptionParameter[] HitMarkerDurationValues() => ToParameters(OptionSpecs.HitMarkerDuration);
 

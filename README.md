@@ -140,6 +140,9 @@ Step 2 only detects and reports heel hits. It does not change the fight.
 | | Screaming (pain cry, the voice's `hit` dialog) | on | |
 | | Scream Interval | 6 s | 2-30 s |
 | Player Hardcore Mode | Apply To Player (detection only so far; your own collapse is step 6) | off | |
+| DMCS Compat | DMCS Adrenaline (with DMCS installed: heel cuts and executions fill its Adrenaline meter; without DMCS it does nothing) | on | |
+| | Heel Cut Adrenaline (points for each heel cut that cripples an NPC) | 20 | 0-100 |
+| | Crippled Kill Adrenaline (points when you kill an NPC that was already crippled) | 35 | 0-100 |
 | Debug | Debug Logging | off | |
 | | Show Heel Zones (NPCs; also yours with Apply To Player) | off | |
 | | Show Hit Markers | off | |
@@ -198,6 +201,19 @@ Because the drain starts from the current health every frame, extra hits make th
 Every Blood Pulse Interval the game's own blood drip plays at the cut, with an intensity that grows from 1/n to 1 over the n pulses. With Debug Logging on, each pulse also logs `BLEED | <npc> | health=.. | t=../.. s`; `BLEED START` and `BLED OUT` mark the start and the end.
 
 **Weakening** (the spec's "gets weaker/slower over time", `WeakeningRules`, unit-tested): from the bleed-out progress p (elapsed / duration, 0 to 1) the crawl speed is multiplied by a value going linearly from 1 to Weakest Crawl Speed, the scream interval by a value going from 1 to Scream Slowdown, and from p >= Gasping From the scream becomes the voice's `heavybreath` dialog (every human voice in the 1.3.2 catalog has it). Paused bleeding keeps the NPC as weak as it is. The BLEED log line shows the current factors (`weakening crawl=x.. scream interval=x..`, `gasping`); a gasp logs `GASP` instead of `SCREAM`.
+
+## DMCS compat (2026-11-17)
+
+With [DMCS](../DMCS) (Dark Messiah Combat Systems) installed, Achilles fills DMCS's Adrenaline meter (Nadi, 2026-11-17):
+
+| Event | Points (menu) | Counts when |
+|---|---|---|
+| Heel cut | Heel Cut Adrenaline, 20 | the cut cripples the NPC (a second cut on an already crippled NPC does not) |
+| Execution | Crippled Kill Adrenaline, 35 | the player kills an NPC that was already crippled: any of the player's hits (weapon, thrown, spell, fist, kick) |
+
+Never counted: bleeding out (`Creature.Kill()` has no attacker), a heel cut that kills at once (the NPC never crawled; the cut itself still counts), kills of NPCs that were not crippled. For scale, DMCS's own gains: a hit 5, disarm and charge stagger 15, full meter 100. DMCS's normal hit gain for the cutting hit comes on top.
+
+How: DMCS owns the meter. Achilles calls `DMCS.Adrenaline.AddExternal(float amount, string source)` (sources `AchillesHeelCut`, `AchillesCrippledKill`) by reflection: the game loads every mod DLL with `Assembly.Load` into one AppDomain (`ModManager.TryLoadAssembly`, decompiled 1.3.2), so Achilles has no reference to DMCS, finds it by name on each gain (load order does not matter) and runs unchanged without it. DMCS applies its own rules (Adrenaline off, or a full meter waiting for the critical, refuses). Rules: `DmcsCompatRules`, lookup: `DmcsBridge`, both unit-tested. The kill uses Achilles' own attacker resolution, not `CollisionInstance.IsDoneByPlayer()`: for a punch or kick that asks the player's own `lastInteractionCreature` (decompiled 1.3.2). Debug Logging: `DMCS | <source> +<points> | <npc> | Applied/Refused`, once `DMCS | not found` without DMCS. Harness: `harness/compat/dmcs-adrenaline.txt` (needs `DMCS_MOD=<DMCS build folder>`, not in the default run). **Headless-tested 2026-11-17** (run 20261117-131457, DMCS ff4c85a, PASS): DMCS's own log shows the meter at 20 (cut), 55 (execution +35), 75 (cut that kills at once, no execution gain), 95 (cut, then bled out, no execution gain); a kill of a never crippled NPC and everything with DMCS Adrenaline off reached DMCS not at all. Without DMCS: `DMCS | not found`, smoke and step3-b PASS (run 20261117-131321). Not checked: the headset feel of the amounts.
 
 ## Build
 

@@ -18,6 +18,9 @@ namespace AchillesTendon.Logic
 
         /// <summary>A bare number (no single unit fits, e.g. m/s plus degrees/s).</summary>
         Plain,
+
+        /// <summary>Whole points (e.g. DMCS adrenaline).</summary>
+        Points,
     }
 
     /// <summary>
@@ -74,6 +77,8 @@ namespace AchillesTendon.Logic
                     return ((decimal)value * 100m).ToString("0.#", culture) + " %";
                 case OptionUnit.Plain:
                     return ((decimal)value).ToString("0.0#", culture);
+                case OptionUnit.Points:
+                    return ((decimal)value).ToString("0", culture);
                 default:
                     return ((decimal)value).ToString("0.#", culture) + " s";
             }
@@ -141,6 +146,13 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec HitMarkerDuration =
             new FloatOptionSpec("Hit Marker Duration", 1f, 30f, 1f, 5f, OptionUnit.Seconds);
 
+        // DMCS's own gains for scale: hit 5, disarm 15, charge stagger 15, meter 100.
+        public static readonly FloatOptionSpec HeelCutAdrenaline =
+            new FloatOptionSpec("Heel Cut Adrenaline", 0f, 100f, 5f, 20f, OptionUnit.Points);
+
+        public static readonly FloatOptionSpec CrippledKillAdrenaline =
+            new FloatOptionSpec("Crippled Kill Adrenaline", 0f, 100f, 5f, 35f, OptionUnit.Points);
+
         public static readonly IReadOnlyList<FloatOptionSpec> All = new[]
         {
             HeelZoneSize,
@@ -161,6 +173,8 @@ namespace AchillesTendon.Logic
             GroundAttackRange,
             GroundAttackInterval,
             ScreamInterval,
+            HeelCutAdrenaline,
+            CrippledKillAdrenaline,
             HitMarkerDuration,
         };
     }
