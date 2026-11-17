@@ -1,0 +1,24 @@
+# Probe (not in the default run): does a kneeling NPC move towards the player? Ground
+# attacks with a 10 m range and 1 s interval log the distance once a second (GROUND
+# ATTACK lines). A: kneeler (Kneel Chance 100 %), B: sitting crawler (0 %) for comparison.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 10
+set-option AchillesTendon "Ground Attack Interval" 1
+
+set-option AchillesTendon "Kneel Chance" 1
+spawn-npc HumanMale distance=4 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 0.5
+mark
+hit-npc LeftFoot type=Slash
+expect-log | kneel (roll
+wait 15
+screenshot a-kneel-15s of=npc distance=3 height=1.5 angle=90
+expect-npc state Alive within=0.1
+quit

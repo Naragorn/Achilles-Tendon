@@ -78,9 +78,7 @@ wait 0.25
 screenshot s13-swing-c of=npc distance=2.5 height=1.0 angle=90
 
 # 5. Bleeding: drip at the cut heel, weaker over time.
-wait 2
-screenshot s14-blood of=npc distance=1.0 height=0.3 angle=150
-wait 8
+wait 10
 screenshot s15-bleeding-20s of=npc distance=2.5 height=1.0 angle=90
 wait 5
 screenshot s16-near-death of=npc distance=2.5 height=1.0 angle=90
@@ -91,7 +89,31 @@ expect-log [AchillesTendon] BLED OUT
 wait 1
 screenshot s17-bled-out of=npc distance=2.5 height=1.0 angle=90
 
-# 7. The other pose: Lie Flat.
+# 7. The second pose: kneeling (Kneel Chance).
+set-option AchillesTendon "Kneel Chance" 1
+set-option AchillesTendon "Bleed-Out Enabled" false
+spawn-npc HumanMale distance=3 angle=30 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 0.5
+mark
+hit-npc LeftFoot type=Slash
+expect-log | kneel (roll
+wait 0.7
+screenshot s17a-kneel-falling of=npc distance=2.5 height=1.0 angle=90
+wait 1.3
+screenshot s17b-kneel-2s of=npc distance=2.5 height=1.0 angle=90
+wait 3
+screenshot s17c-kneel-5s of=npc distance=2.5 height=1.0 angle=45
+mark
+expect-log upper body | clip=
+screenshot s17d-kneel-swing-a of=npc distance=2.5 height=1.0 angle=90
+wait 0.3
+screenshot s17e-kneel-swing-b of=npc distance=2.5 height=1.0 angle=90
+wait 0.3
+screenshot s17f-kneel-swing-c of=npc distance=2.5 height=1.0 angle=90
+set-option AchillesTendon "Kneel Chance" 0
+
+# 8. The third pose: Lie Flat.
 set-option AchillesTendon "Lie Flat Chance" 1
 set-option AchillesTendon "Bleed-Out Enabled" false
 spawn-npc HumanMale distance=1.5 angle=60 facing=180 brain=HumanDummy
@@ -103,7 +125,7 @@ expect-npc state Destabilized within=2
 wait 2
 screenshot s18-lie-flat of=npc distance=2.5 height=1.0 angle=90
 
-# 8. Finished off by the player.
+# 9. Finished off by the player.
 hit-npc Head type=Slash damage=999
 expect-npc state Dead within=3
 wait 1
