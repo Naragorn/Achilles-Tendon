@@ -66,6 +66,8 @@ wait 3
 screenshot s09-crawl-5s of=npc distance=2.5 height=1.0 angle=90
 wait 3
 screenshot s10-crawl-8s of=npc distance=2.5 height=1.0 angle=45
+# A fresh mark, so the pictures follow a swing that starts now, not one logged earlier.
+mark
 expect-log upper body | clip=
 screenshot s11-swing-a of=npc distance=2.5 height=1.0 angle=90
 wait 0.25
