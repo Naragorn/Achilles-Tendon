@@ -83,6 +83,6 @@ Separate mod. Realistic crippling hit: a cut to the Achilles tendon takes the en
 3. Collapse: NPC can no longer stand or walk.
 4. Ground fighting: crawling, swinging from the ground.
 5. Bleed-out over time with blood effects and weakening.
-6. Optional player hardcore mode.
+6. ~~Optional player hardcore mode.~~ Won't do (Nadi, 2026-11-17); only the detection (`Apply To Player`) stays.
 
 After each step: build, test in game, and note what was verified vs. assumed (in README).

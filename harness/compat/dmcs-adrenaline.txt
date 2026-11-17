@@ -75,5 +75,60 @@ wait 1
 expect-no-log [AchillesTendon] DMCS |
 set-option AchillesTendon "DMCS Adrenaline" true
 
+# 6-9. Every way the player kills counts as an execution: fist, kick, thrown blade, spell.
+# GameAdapters.Attacker resolves fist and kick through the hitting ragdoll part (not
+# CollisionInstance.IsDoneByPlayer). Smaller amounts keep the meter from filling:
+# 4 x (5 + 10) = 60, so 155 of 300 after case 9.
+set-option AchillesTendon "Heel Cut Adrenaline" 5
+set-option AchillesTendon "Crippled Kill Adrenaline" 10
+
+# 6. Fist
+spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
+wait 2
+mark
+hit-npc Head type=Blunt damage=999 by=hand
+expect-npc state Dead within=3
+expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
+expect-log | Applied
+
+# 7. Kick (the player's right foot part)
+spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
+wait 2
+mark
+hit-npc Head type=Blunt damage=999 by=foot
+expect-npc state Dead within=3
+expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
+expect-log | Applied
+
+# 8. Thrown dagger (nobody holds it, the player was the last to)
+spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
+wait 2
+mark
+hit-npc Head type=Pierce damage=999 by=thrown item=DaggerCommon
+expect-npc state Dead within=3
+expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
+expect-log | Applied
+
+# 9. Spell (casterHand)
+spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
+wait 2
+mark
+hit-npc Head type=Energy damage=999 by=spell
+expect-npc state Dead within=3
+expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
+expect-log | Applied
+
 expect-no-log Exception
 quit
