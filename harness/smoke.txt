@@ -4,7 +4,7 @@
 # Checks the defaults, so it must be the first scenario of a run (fresh prefix);
 # scenarios in one run share the prefix and the game keeps option values.
 wait-level
-expect-log [ModManager][ModOption][AchillesTendon] Loaded 30 ModOptions
+expect-log [ModManager][ModOption][AchillesTendon] Loaded 33 ModOptions
 expect-log [AchillesTendon] Loaded Heel of Achilles
 expect-log [ModManager][ThunderScript][AchillesTendon] Loaded ThunderScript: AchillesTendon.AchillesTendonScript
 expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
@@ -15,6 +15,9 @@ option-exists AchillesTendon "Stand Up When Disabled" category="Achilles Tendon"
 option-exists AchillesTendon "Downed Pose" category="Achilles Tendon" type=DownedPose save=true
 option-exists AchillesTendon "Crawl Speed" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Crawl Body Height" category="Achilles Tendon" type=Single save=true
+option-exists AchillesTendon "Steady Crawl Pose" category="Achilles Tendon" type=Boolean save=true
+option-exists AchillesTendon "Crawl Start Speed" category="Achilles Tendon" type=Single save=true
+option-exists AchillesTendon "Crawl Stop Speed" category="Achilles Tendon" type=Single save=true
 # Bleed-Out group (step 5)
 option-exists AchillesTendon "Bleed-Out Enabled" category="Bleed-Out" type=Boolean save=true
 option-exists AchillesTendon "Bleed-Out Duration" category="Bleed-Out" type=Single save=true
@@ -41,6 +44,9 @@ expect-option AchillesTendon "Stand Up When Disabled" true
 expect-option AchillesTendon "Downed Pose" Crawl
 expect-option AchillesTendon "Crawl Speed" 0.3
 expect-option AchillesTendon "Crawl Body Height" 0.2
+expect-option AchillesTendon "Steady Crawl Pose" true
+expect-option AchillesTendon "Crawl Start Speed" 0.4
+expect-option AchillesTendon "Crawl Stop Speed" 0.1
 expect-option AchillesTendon "Bleed-Out Enabled" true
 expect-option AchillesTendon "Bleed-Out Duration" 45
 expect-option AchillesTendon "Blood Effects" true

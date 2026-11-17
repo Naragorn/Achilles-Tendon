@@ -83,6 +83,23 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float CrawlBodyHeight = OptionSpecs.CrawlBodyHeight.Default;
 
+        [ModOption("Steady Crawl Pose", "Small twitches of the crawling NPC count as standing still, so it does not flip between sitting and crawling (which looks like sitting in the air). Off: the game decides alone.")]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(10)]
+        public static bool SteadyCrawlPose = true;
+
+        [ModOption("Crawl Start Speed", "Steady Crawl Pose: how fast the NPC must move before it switches from sitting to crawling.", nameof(CrawlStartSpeedValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(11)]
+        [ModOptionSlider]
+        public static float CrawlStartSpeed = OptionSpecs.CrawlStartSpeed.Default;
+
+        [ModOption("Crawl Stop Speed", "Steady Crawl Pose: below this speed a crawling NPC sits down again. Keep it below Crawl Start Speed.", nameof(CrawlStopSpeedValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(12)]
+        [ModOptionSlider]
+        public static float CrawlStopSpeed = OptionSpecs.CrawlStopSpeed.Default;
+
         // ---- Bleed-Out ------------------------------------------------------
 
         [ModOption("Bleed-Out Enabled", "NPCs with a cut tendon bleed out and die after Bleed-Out Duration. Off: the bleeding pauses (it goes on when turned back on).")]
@@ -227,6 +244,10 @@ namespace AchillesTendon
         public static ModOptionParameter[] CrawlSpeedValues() => ToParameters(OptionSpecs.CrawlSpeed);
 
         public static ModOptionParameter[] CrawlBodyHeightValues() => ToParameters(OptionSpecs.CrawlBodyHeight);
+
+        public static ModOptionParameter[] CrawlStartSpeedValues() => ToParameters(OptionSpecs.CrawlStartSpeed);
+
+        public static ModOptionParameter[] CrawlStopSpeedValues() => ToParameters(OptionSpecs.CrawlStopSpeed);
 
         public static ModOptionParameter[] BleedOutDurationValues() => ToParameters(OptionSpecs.BleedOutDuration);
 

@@ -15,6 +15,9 @@ namespace AchillesTendon.Logic
 
         /// <summary>Stored as 0..1, shown in percent.</summary>
         Percent,
+
+        /// <summary>A bare number (no single unit fits, e.g. m/s plus degrees/s).</summary>
+        Plain,
     }
 
     /// <summary>
@@ -69,6 +72,8 @@ namespace AchillesTendon.Logic
                     return "x" + ((decimal)value).ToString("0.0#", culture);
                 case OptionUnit.Percent:
                     return ((decimal)value * 100m).ToString("0.#", culture) + " %";
+                case OptionUnit.Plain:
+                    return ((decimal)value).ToString("0.0#", culture);
                 default:
                     return ((decimal)value).ToString("0.#", culture) + " s";
             }
@@ -95,6 +100,13 @@ namespace AchillesTendon.Logic
 
         public static readonly FloatOptionSpec CrawlBodyHeight =
             new FloatOptionSpec("Crawl Body Height", 0f, 0.6f, 0.05f, 0.2f, OptionUnit.Multiplier);
+
+        // In the animator's Speed/Strafe units (local velocity, about m/s).
+        public static readonly FloatOptionSpec CrawlStartSpeed =
+            new FloatOptionSpec("Crawl Start Speed", 0.1f, 1f, 0.05f, 0.4f, OptionUnit.Plain);
+
+        public static readonly FloatOptionSpec CrawlStopSpeed =
+            new FloatOptionSpec("Crawl Stop Speed", 0.05f, 0.5f, 0.05f, 0.1f, OptionUnit.Plain);
 
         public static readonly FloatOptionSpec BleedOutDuration =
             new FloatOptionSpec("Bleed-Out Duration", 10f, 180f, 5f, 45f, OptionUnit.Seconds);
@@ -134,6 +146,8 @@ namespace AchillesTendon.Logic
             MaxHitAngle,
             CrawlSpeed,
             CrawlBodyHeight,
+            CrawlStartSpeed,
+            CrawlStopSpeed,
             BleedOutDuration,
             BleedPulseInterval,
             WeakestCrawlSpeed,

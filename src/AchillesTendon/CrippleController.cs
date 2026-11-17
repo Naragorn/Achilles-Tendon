@@ -24,6 +24,9 @@ namespace AchillesTendon
 
         // Crawling NPCs whose own melee AI we switched off, with the value to restore.
         private readonly Dictionary<Creature, bool> meleeBefore = new Dictionary<Creature, bool>();
+
+        // Steady Crawl Pose: crawling NPCs that currently count as moving (CrawlGaitRules).
+        private readonly HashSet<Creature> gaitMoving = new HashSet<Creature>();
         private readonly List<Creature> scratch = new List<Creature>();
 
         // Debug Logging only: when each crawling NPC last wrote a CRAWL POSE line.
@@ -92,6 +95,7 @@ namespace AchillesTendon
                         }
                         crawling.Remove(creature);
                         meleeBefore.Remove(creature);
+                        gaitMoving.Remove(creature);
                         lastPoseLog.Remove(creature);
                         crippled.Remove(creature);
                         break;
@@ -113,6 +117,7 @@ namespace AchillesTendon
             crippled.Clear();
             crawling.Clear();
             meleeBefore.Clear();
+            gaitMoving.Clear();
             lastPoseLog.Clear();
         }
 
@@ -158,6 +163,7 @@ namespace AchillesTendon
             creature.locomotion.SetAllSpeedModifiers(this, ModOptions.CrawlSpeed * speedFactor);
             creature.ragdoll.forcePhysic.Add(this);
             crawling.Add(creature);
+            SteadyGait(creature);
             // The AI's own attack clips move the whole body and raise a crawling NPC
             // upright (headless pictures), so its melee is off while crawling; swings come
             // from GroundFightController on the upper-body layer (Ground Attacks).
@@ -170,6 +176,47 @@ namespace AchillesTendon
             {
                 melee.meleeEnabled = false;
             }
+        }
+
+        // Steady Crawl Pose, see CrawlGaitRules. Runs in ScriptUpdate, which the game calls
+        // after every Creature.ManagedUpdate in the same frame (UpdateManager.Update, then
+        // ThunderScriptLoop), so it overrides that frame's Speed/Strafe from
+        // Creature.UpdateLocomotionAnimation. Decided on the raw local velocity the game
+        // derives them from, not on the animator values: those are damped and, once zeroed
+        // here, would only creep back up from 0.
+        private void SteadyGait(Creature creature)
+        {
+            if (!ModOptions.SteadyCrawlPose)
+            {
+                gaitMoving.Remove(creature);
+                return;
+            }
+            var raw = RawGait(creature);
+            var was = gaitMoving.Contains(creature);
+            var moving = CrawlGaitRules.IsMoving(was, raw.x, raw.y, ModOptions.CrawlStartSpeed, ModOptions.CrawlStopSpeed);
+            if (moving != was)
+            {
+                ModLog.Verbose("GAIT | " + GameAdapters.Label(creature) + " | " + (moving ? "crawling" : "sitting")
+                    + " | raw speed=" + raw.x.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                    + " strafe=" + raw.y.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            if (moving)
+            {
+                gaitMoving.Add(creature);
+                return;
+            }
+            gaitMoving.Remove(creature);
+            creature.animator.SetFloat(Creature.hashSpeed, 0f);
+            creature.animator.SetFloat(Creature.hashStrafe, 0f);
+        }
+
+        // Forward (x) and sideways (y) speed in the creature's own frame, as
+        // Creature.UpdateLocomotionAnimation computes Speed/Strafe (without its in-air factor).
+        private static UnityEngine.Vector2 RawGait(Creature creature)
+        {
+            var local = creature.transform.InverseTransformDirection(creature.currentLocomotion.velocity);
+            var scale = creature.transform.lossyScale;
+            return new UnityEngine.Vector2(local.z / scale.z, local.x / scale.x);
         }
 
         // Diagnosis of the "floating sit" (Debug Logging): what the animator's Height was
@@ -211,6 +258,10 @@ namespace AchillesTendon
                 + " transition=" + (creature.animator.IsInTransition(0) ? creature.animator.GetAnimatorTransitionInfo(0).normalizedTime.ToString("0.00", ci) : "-")
                 + " speed=" + creature.animator.GetFloat(Creature.hashSpeed).ToString("0.00", ci)
                 + " strafe=" + creature.animator.GetFloat(Creature.hashStrafe).ToString("0.00", ci)
+                + " | move=" + creature.currentLocomotion.horizontalSpeed.ToString("0.00", ci) + " m/s"
+                + " turn=" + creature.currentLocomotion.angularSpeed.ToString("0.0", ci) + " deg/s"
+                + " raw speed=" + RawGait(creature).x.ToString("0.00", ci) + " strafe=" + RawGait(creature).y.ToString("0.00", ci)
+                + " gait=" + (!ModOptions.SteadyCrawlPose ? "game" : gaitMoving.Contains(creature) ? "moving" : "still")
                 + " | state=" + creature.state);
         }
 
@@ -290,6 +341,7 @@ namespace AchillesTendon
             creature.animator.SetFloat(Brain.hashInjured, 0f);
             creature.locomotion.RemoveSpeedModifier(this);
             creature.ragdoll.forcePhysic.Remove(this);
+            gaitMoving.Remove(creature);
             if (meleeBefore.TryGetValue(creature, out var enabled))
             {
                 var melee = Melee(creature);
