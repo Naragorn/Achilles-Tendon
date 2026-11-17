@@ -84,7 +84,7 @@ namespace AchillesTendon
             var settings = ModOptions.CurrentHeelHitSettings();
             foreach (var creature in Creature.allActive)
             {
-                if (creature == null || creature.isKilled || (creature.isPlayer && !settings.ApplyToPlayer))
+                if (creature == null || creature.isKilled || creature.isPlayer)
                 {
                     continue;
                 }
@@ -107,7 +107,7 @@ namespace AchillesTendon
                 var creature = pair.Key;
                 if (creature == null
                     || creature.isKilled
-                    || (creature.isPlayer && !ModOptions.ApplyToPlayer)
+                    || creature.isPlayer
                     || !Creature.allActive.Contains(creature))
                 {
                     staleCreatures.Add(creature);

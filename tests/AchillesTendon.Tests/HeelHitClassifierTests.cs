@@ -12,8 +12,7 @@ namespace AchillesTendon.Tests
 
         private static HeelHitSettings Settings(
             AllowedDamageTypes allowed = AllowedDamageTypes.SlashAndPierce,
-            float maxHitAngle = 110f,
-            bool applyToPlayer = false)
+            float maxHitAngle = 110f)
         {
             return new HeelHitSettings
             {
@@ -22,7 +21,6 @@ namespace AchillesTendon.Tests
                 ZoneHeightOffset = 0.03f,
                 MaxHitAngle = maxHitAngle,
                 AllowedDamageTypes = allowed,
-                ApplyToPlayer = applyToPlayer,
             };
         }
 
@@ -259,7 +257,7 @@ namespace AchillesTendon.Tests
         }
 
         [Fact]
-        public void Player_hitting_itself_is_a_self_hit_even_with_apply_to_player()
+        public void Player_hitting_itself_is_a_self_hit()
         {
             var input = HeelSlashFromBehind();
             input.TargetIsPlayer = true;
@@ -267,7 +265,7 @@ namespace AchillesTendon.Tests
 
             Assert.Equal(
                 HeelHitRejection.SelfHit,
-                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+                HeelHitClassifier.Classify(input, Settings()).Rejection);
         }
 
         [Fact]
@@ -302,8 +300,10 @@ namespace AchillesTendon.Tests
 
             Assert.Equal(HeelHitRejection.OutsideHeelZone, HeelHitClassifier.Classify(input, Settings()).Rejection);
         }
+        // Player hardcore mode was dropped (Nadi, 2026-11-17): hits on the player's own
+        // heel never count, whoever deals them.
         [Fact]
-        public void Npc_hitting_the_player_heel_is_rejected_by_default()
+        public void Npc_hitting_the_player_heel_is_never_a_heel_hit()
         {
             Assert.Equal(
                 HeelHitRejection.NotPlayerVsNpc,
@@ -311,63 +311,36 @@ namespace AchillesTendon.Tests
         }
 
         [Fact]
-        public void Npc_hitting_the_player_heel_counts_with_apply_to_player()
+        public void Hit_on_the_player_from_an_unknown_source_is_rejected()
         {
-            var result = HeelHitClassifier.Classify(NpcSlashesPlayerHeel(), Settings(applyToPlayer: true));
-
-            Assert.True(result.IsHeelHit);
-        }
-
-        [Fact]
-        public void Apply_to_player_runs_the_same_checks_for_the_player()
-        {
-            var input = NpcSlashesPlayerHeel();
-            input.DamageType = HitDamageType.Blunt;
-
-            Assert.Equal(
-                HeelHitRejection.DamageTypeNotAllowed,
-                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
-        }
-
-        [Fact]
-        public void Hit_on_the_player_from_an_unknown_source_is_not_an_npc_hit()
-        {
-            // No resolvable attacker (trap, falling object, lost handler): it is
-            // not an NPC hit, so it is out of scope like NPC vs NPC.
             var input = NpcSlashesPlayerHeel();
             input.HasAttackerPosition = false;
 
             Assert.Equal(
                 HeelHitRejection.NotPlayerVsNpc,
-                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+                HeelHitClassifier.Classify(input, Settings()).Rejection);
         }
 
         [Fact]
-        public void Player_hitting_own_heel_is_rejected_even_with_apply_to_player()
-        {
-            var input = HeelSlashFromBehind();
-            input.TargetIsPlayer = true;
-
-            Assert.Equal(
-                HeelHitRejection.NotPlayerVsNpc,
-                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
-        }
-
-        [Fact]
-        public void Npc_vs_npc_is_rejected_even_with_apply_to_player()
+        public void Npc_vs_npc_is_rejected()
         {
             var input = HeelSlashFromBehind();
             input.AttackerIsPlayer = false;
 
             Assert.Equal(
                 HeelHitRejection.NotPlayerVsNpc,
-                HeelHitClassifier.Classify(input, Settings(applyToPlayer: true)).Rejection);
+                HeelHitClassifier.Classify(input, Settings()).Rejection);
         }
 
         [Fact]
-        public void Player_hitting_an_npc_still_counts_with_apply_to_player()
+        public void Player_hitting_own_heel_is_rejected()
         {
-            Assert.True(HeelHitClassifier.Classify(HeelSlashFromBehind(), Settings(applyToPlayer: true)).IsHeelHit);
+            var input = HeelSlashFromBehind();
+            input.TargetIsPlayer = true;
+
+            Assert.Equal(
+                HeelHitRejection.NotPlayerVsNpc,
+                HeelHitClassifier.Classify(input, Settings()).Rejection);
         }
     }
 }

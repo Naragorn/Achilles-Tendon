@@ -41,9 +41,7 @@ namespace AchillesTendon.Logic
         SelfHit,
 
         /// <summary>
-        /// Neither player-hits-NPC nor (with ApplyToPlayer) NPC-hits-player:
-        /// NPC vs NPC, or NPC hits on the player
-        /// while ApplyToPlayer is off.
+        /// Not the player hitting an NPC: NPC vs NPC, any hit on the player, or no known attacker.
         /// </summary>
         NotPlayerVsNpc,
         NotLegPart,
@@ -70,12 +68,6 @@ namespace AchillesTendon.Logic
         public float MaxHitAngle;
 
         public AllowedDamageTypes AllowedDamageTypes;
-
-        /// <summary>
-        /// Player hardcore mode: NPC hits on the player's heel count too.
-        /// Off: only player-vs-NPC hits count.
-        /// </summary>
-        public bool ApplyToPlayer;
     }
 
     /// <summary>One hit, as plain values taken from the game.</summary>
@@ -194,11 +186,10 @@ namespace AchillesTendon.Logic
             return result;
         }
 
-        private static bool IsEligiblePair(HeelHitInput input, HeelHitSettings settings)
+        /// <summary>Only the player hitting an NPC counts (player hardcore mode dropped, Nadi 2026-11-17).</summary>
+        private static bool IsPlayerHitsNpc(HeelHitInput input)
         {
-            var playerHitsNpc = input.AttackerIsPlayer && !input.TargetIsPlayer;
-            var npcHitsPlayer = !input.AttackerIsPlayer && input.TargetIsPlayer && input.HasAttackerPosition;
-            return playerHitsNpc || (settings.ApplyToPlayer && npcHitsPlayer);
+            return input.AttackerIsPlayer && !input.TargetIsPlayer;
         }
 
         private static HeelHitRejection FirstRejection(
@@ -208,7 +199,7 @@ namespace AchillesTendon.Logic
             {
                 return HeelHitRejection.SelfHit;
             }
-            if (!IsEligiblePair(input, settings))
+            if (!IsPlayerHitsNpc(input))
             {
                 return HeelHitRejection.NotPlayerVsNpc;
             }

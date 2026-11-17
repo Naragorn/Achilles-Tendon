@@ -171,8 +171,8 @@ namespace AchillesTendon
                 return;
             }
 
-            // NPC vs NPC, and NPC hits on the player while Apply To Player is
-            // off, are out of scope: only a one-line note with Debug Logging.
+            // NPC vs NPC and hits on the player are out of scope: only a
+            // one-line note with Debug Logging.
             if (result.Rejection == HeelHitRejection.NotPlayerVsNpc)
             {
                 ModLog.Verbose("skip (NotPlayerVsNpc) | target=" + GameAdapters.Label(creature)
