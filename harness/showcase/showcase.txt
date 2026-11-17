@@ -8,7 +8,7 @@ set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Stand Up When Disabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
-set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Show Heel Zones" true
 set-option AchillesTendon "Show Hit Markers" true
@@ -91,7 +91,7 @@ wait 1
 screenshot s17-bled-out of=npc distance=2.5 height=1.0 angle=90
 
 # 7. The other pose: Lie Flat.
-set-option AchillesTendon "Downed Pose" LieFlat
+set-option AchillesTendon "Lie Flat Chance" 1
 set-option AchillesTendon "Bleed-Out Enabled" false
 spawn-npc HumanMale distance=1.5 angle=60 facing=180 brain=HumanDummy
 npc-grab SwordShortCommon
@@ -108,7 +108,7 @@ expect-npc state Dead within=3
 wait 1
 screenshot s19-finished of=npc distance=2.5 height=1.0 angle=90
 
-set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Bleed-Out Enabled" true
 set-option AchillesTendon "Show Heel Zones" false
 set-option AchillesTendon "Show Hit Markers" false

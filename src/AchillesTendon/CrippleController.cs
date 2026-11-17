@@ -39,21 +39,55 @@ namespace AchillesTendon
         private readonly List<Creature> deathScratch = new List<Creature>();
         private const float DeathWatchSeconds = 6f;
 
+        // Lie Flat Chance, rolled per NPC when its tendon is cut.
+        private readonly Dictionary<Creature, DownedPose> poses = new Dictionary<Creature, DownedPose>();
+
+        // Belly Crawl Chance, rolled per crawling NPC when its tendon is cut.
+        private readonly HashSet<Creature> belly = new HashSet<Creature>();
+
+        // The game's stab deaths (bas.jsondb, 1.3.2): with moveDirection Forward they are
+        // DeathKneelForward 1-3, which end face down (clip root rotation, read from
+        // animations_assets_all.bundle).
+        private const string FallForwardAnimationId = "HumanStabDeaths";
+        private const string FallForwardClipName = "KneelForward";
+
         public bool IsCrippled(Creature creature) => crippled.Contains(creature);
 
         public void Cripple(Creature creature)
         {
             crippled.Add(creature);
-            if (ModOptions.DownedPose == DownedPose.Crawl)
+            var roll = UnityEngine.Random.value;
+            var pose = CrippleRules.PoseFor(ModOptions.LieFlatChance, roll);
+            poses[creature] = pose;
+            var rolled = " (roll " + roll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                + ", lie flat chance " + OptionSpecs.LieFlatChance.Label(ModOptions.LieFlatChance) + ")";
+            if (pose == DownedPose.Crawl)
             {
+                var bellyRoll = UnityEngine.Random.value;
+                var onBelly = Chance.Hits(ModOptions.BellyCrawlChance, bellyRoll);
+                if (onBelly)
+                {
+                    belly.Add(creature);
+                }
                 Crawl(creature, 1f);
-                ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, down to the injured/crawl pose");
+                ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, down to the injured/crawl pose" + rolled
+                    + " | " + (onBelly ? "belly" : "back") + " (roll " + bellyRoll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                    + ", belly chance " + OptionSpecs.BellyCrawlChance.Label(ModOptions.BellyCrawlChance) + ")");
+                if (onBelly)
+                {
+                    FallForward(creature);
+                }
             }
             else
             {
                 Collapse(creature);
-                ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, held on the ground");
+                ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, held on the ground" + rolled);
             }
+        }
+
+        private DownedPose PoseOf(Creature creature)
+        {
+            return poses.TryGetValue(creature, out var pose) ? pose : DownedPose.Crawl;
         }
 
         /// <summary>Crippled and in the crawl pose (a standing ragdoll kept low).</summary>
@@ -74,7 +108,7 @@ namespace AchillesTendon
             scratch.AddRange(crippled);
             foreach (var creature in scratch)
             {
-                var action = CrippleRules.Decide(StateOf(creature), ModOptions.TendonEnabled, ModOptions.StandUpWhenDisabled, ModOptions.DownedPose);
+                var action = CrippleRules.Decide(StateOf(creature), ModOptions.TendonEnabled, ModOptions.StandUpWhenDisabled, PoseOf(creature));
                 switch (action)
                 {
                     case CrippleAction.HoldCrawl:
@@ -93,6 +127,8 @@ namespace AchillesTendon
                         StopCrawl(creature);
                         Release(creature);
                         crippled.Remove(creature);
+                        poses.Remove(creature);
+                        belly.Remove(creature);
                         ModLog.Verbose("RELEASE | " + GameAdapters.Label(creature) + " | feature off, may stand up");
                         break;
                     case CrippleAction.Forget:
@@ -110,6 +146,8 @@ namespace AchillesTendon
                         gaitMoving.Remove(creature);
                         lastPoseLog.Remove(creature);
                         crippled.Remove(creature);
+                        poses.Remove(creature);
+                        belly.Remove(creature);
                         break;
                 }
             }
@@ -127,6 +165,8 @@ namespace AchillesTendon
                 }
             }
             crippled.Clear();
+            poses.Clear();
+            belly.Clear();
             crawling.Clear();
             meleeBefore.Clear();
             gaitMoving.Clear();
@@ -199,6 +239,11 @@ namespace AchillesTendon
         // here, would only creep back up from 0.
         private void SteadyGait(Creature creature)
         {
+            if (belly.Contains(creature))
+            {
+                BellyGait(creature);
+                return;
+            }
             if (!ModOptions.SteadyCrawlPose)
             {
                 gaitMoving.Remove(creature);
@@ -221,6 +266,60 @@ namespace AchillesTendon
             gaitMoving.Remove(creature);
             creature.animator.SetFloat(Creature.hashSpeed, 0f);
             creature.animator.SetFloat(Creature.hashStrafe, 0f);
+        }
+
+        // Belly crawl: always the face-down forward Crawling clip, never the idle states or
+        // CrawlBackwards, which lie on the back (CrawlGaitRules.BellyGait). Start/stop use the
+        // same hysteresis as Steady Crawl Pose.
+        private void BellyGait(Creature creature)
+        {
+            var raw = RawGait(creature);
+            var was = gaitMoving.Contains(creature);
+            var moving = CrawlGaitRules.IsMoving(was, raw.x, raw.y, ModOptions.CrawlStartSpeed, ModOptions.CrawlStopSpeed);
+            if (moving)
+            {
+                gaitMoving.Add(creature);
+            }
+            else
+            {
+                gaitMoving.Remove(creature);
+            }
+            var gait = CrawlGaitRules.BellyGait(moving, raw.x, raw.y);
+            creature.animator.SetFloat(Creature.hashSpeed, gait.Speed);
+            creature.animator.SetFloat(Creature.hashStrafe, gait.Strafe);
+        }
+
+        // Falls forward with one of the game's own face-down stab deaths, played as a
+        // one-shot on the FullBody layer (Creature.PlayAnimation); when it ends the animator
+        // goes back to the base layer, where BellyGait holds the face-down crawl.
+        private static void FallForward(Creature creature)
+        {
+            var data = Catalog.GetData<AnimationData>(FallForwardAnimationId, logWarning: false);
+            AnimationData.Clip clip = null;
+            if (data != null)
+            {
+                // Pick(Forward) returned Sword1h_Death_back in the first probe (run
+                // 20261117-192804), so the face-down clips are chosen by name.
+                var candidates = new List<AnimationData.Clip>();
+                var listed = string.Empty;
+                foreach (var c in data.animationClips)
+                {
+                    listed += (c.animationClip != null ? c.animationClip.name : "null") + "/" + c.moveDirection + " ";
+                    if (c.animationClip != null && c.animationClip.name.IndexOf(FallForwardClipName, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        candidates.Add(c);
+                    }
+                }
+                ModLog.Verbose("FALL FORWARD clips | " + FallForwardAnimationId + " | " + listed);
+                clip = candidates.Count > 0 ? candidates[UnityEngine.Random.Range(0, candidates.Count)] : null;
+            }
+            if (clip == null || clip.animationClip == null)
+            {
+                ModLog.Verbose("FALL FORWARD skipped | " + GameAdapters.Label(creature) + " | no forward clip in " + FallForwardAnimationId);
+                return;
+            }
+            creature.PlayAnimation(clip.animationClip, loop: false);
+            ModLog.Verbose("FALL FORWARD | " + GameAdapters.Label(creature) + " | clip=" + clip.animationClip.name);
         }
 
         private const RagdollPart.Type LegParts =

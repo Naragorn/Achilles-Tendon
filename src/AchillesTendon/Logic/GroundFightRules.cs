@@ -9,7 +9,7 @@ namespace AchillesTendon.Logic
         /// <summary>Lying on the ground and not getting up.</summary>
         public bool IsDown;
 
-        /// <summary>Crawl pose: a standing ragdoll whose own AI attacks; no lying-only arm work.</summary>
+        /// <summary>Crawl pose. Only a crawling NPC swings: lying flat, the game's animation does not move the body.</summary>
         public bool IsCrawling;
 
         public bool AttacksOn;
@@ -35,31 +35,18 @@ namespace AchillesTendon.Logic
 
     public struct GroundFightDecision
     {
-        /// <summary>Arms are pinned harder to the animation; false = the game's own lying value.</summary>
-        public bool StrongArms;
-
+        /// <summary>Swing on the upper-body layer (a full-body clip would raise the crawler upright).</summary>
         public bool Attack;
-
-        /// <summary>Crawl pose: play the swing on the upper-body layer so the legs stay down.</summary>
-        public bool UpperBodyOnly;
 
         public bool Scream;
     }
 
     public static class GroundFightRules
     {
-        /// <summary>
-        /// Ground Attack Chance: whether a freshly crippled NPC fights from the ground.
-        /// <paramref name="roll"/> is uniform in [0, 1] (UnityEngine.Random.value, which can
-        /// return 1), so a chance of 100 % always and 0 % never makes an attacker.
-        /// </summary>
+        /// <summary>Ground Attack Chance: whether a freshly crippled NPC fights from the ground.</summary>
         public static bool IsAttacker(float chance, float roll)
         {
-            if (chance >= 1f)
-            {
-                return true;
-            }
-            return chance > 0f && roll < chance;
+            return Chance.Hits(chance, roll);
         }
 
         public static GroundFightDecision Decide(GroundFightInput input)
@@ -70,9 +57,8 @@ namespace AchillesTendon.Logic
             }
             return new GroundFightDecision
             {
-                StrongArms = !input.IsCrawling,
-                UpperBodyOnly = input.IsCrawling,
-                Attack = input.AttacksOn
+                Attack = input.IsCrawling
+                    && input.AttacksOn
                     && input.IsAttacker
                     && input.HasAttackClip
                     && !input.IsPlayingAnimation

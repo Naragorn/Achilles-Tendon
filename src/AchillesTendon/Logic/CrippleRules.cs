@@ -1,9 +1,6 @@
 namespace AchillesTendon.Logic
 {
-    /// <summary>
-    /// How a crippled NPC is kept down. Shown as a dropdown in the Mod Menu; keep the
-    /// default first (the game's mod menu always falls back to the first enum entry).
-    /// </summary>
+    /// <summary>How a crippled NPC is kept down; rolled per NPC from Lie Flat Chance.</summary>
     public enum DownedPose
     {
         /// <summary>The game's own injured/crawl animations: lies injured, crawls when it moves.</summary>
@@ -54,6 +51,12 @@ namespace AchillesTendon.Logic
 
     public static class CrippleRules
     {
+        /// <summary>Lie Flat Chance (Nadi, 2026-11-17): the pose of a freshly crippled NPC.</summary>
+        public static DownedPose PoseFor(float lieFlatChance, float roll)
+        {
+            return Chance.Hits(lieFlatChance, roll) ? DownedPose.LieFlat : DownedPose.Crawl;
+        }
+
         /// <summary>
         /// Whether a heel hit cripples its target. Only NPCs for now: the player
         /// collapse belongs to build step 6, so a player heel hit is only reported.

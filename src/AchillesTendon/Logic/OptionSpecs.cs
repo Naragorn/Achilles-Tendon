@@ -100,6 +100,12 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec MaxHitAngle =
             new FloatOptionSpec("Max Hit Angle", 30f, 180f, 5f, 110f, OptionUnit.Degrees);
 
+        public static readonly FloatOptionSpec LieFlatChance =
+            new FloatOptionSpec("Lie Flat Chance", 0f, 1f, 0.05f, 0.05f, OptionUnit.Percent);
+
+        public static readonly FloatOptionSpec BellyCrawlChance =
+            new FloatOptionSpec("Belly Crawl Chance", 0f, 1f, 0.05f, 0f, OptionUnit.Percent);
+
         public static readonly FloatOptionSpec CrawlSpeed =
             new FloatOptionSpec("Crawl Speed", 0.05f, 1f, 0.05f, 0.3f, OptionUnit.Multiplier);
 
@@ -121,9 +127,6 @@ namespace AchillesTendon.Logic
 
         public static readonly FloatOptionSpec BleedPulseInterval =
             new FloatOptionSpec("Blood Pulse Interval", 0.5f, 10f, 0.5f, 2f, OptionUnit.Seconds);
-
-        public static readonly FloatOptionSpec ArmStrength =
-            new FloatOptionSpec("Arm Strength", 1f, 10f, 0.5f, 1f, OptionUnit.Multiplier);
 
         public static readonly FloatOptionSpec GroundAttackChance =
             new FloatOptionSpec("Ground Attack Chance", 0f, 1f, 0.05f, 0.75f, OptionUnit.Percent);
@@ -162,6 +165,8 @@ namespace AchillesTendon.Logic
             HeelZoneBackOffset,
             HeelZoneHeightOffset,
             MaxHitAngle,
+            LieFlatChance,
+            BellyCrawlChance,
             CrawlSpeed,
             CrawlBodyHeight,
             CrawlStartSpeed,
@@ -172,7 +177,6 @@ namespace AchillesTendon.Logic
             WeakestCrawlSpeed,
             ScreamSlowdown,
             GaspingFrom,
-            ArmStrength,
             GroundAttackChance,
             GroundAttackRange,
             GroundAttackInterval,

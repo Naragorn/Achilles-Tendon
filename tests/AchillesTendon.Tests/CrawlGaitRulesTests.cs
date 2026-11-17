@@ -67,5 +67,46 @@ namespace AchillesTendon.Tests
             Assert.True(OptionSpecs.CrawlStopSpeed.Default <= 0.1f);
             Assert.True(OptionSpecs.CrawlStopSpeed.Default < OptionSpecs.CrawlStartSpeed.Default);
         }
+
+        // Belly crawl (Nadi, 2026-11-17): the game's forward Crawling clip lies face down;
+        // the idle states (Laying/LayingInjured) and CrawlBackwards lie on the back. A belly
+        // crawler is therefore always kept in the moving state on the forward crawl: still
+        // at a speed just above the animator's idle switch (0.1), moving at its own speed
+        // forward, whichever way it moves.
+        [Fact]
+        public void Still_belly_crawler_is_held_just_above_the_idle_switch()
+        {
+            var gait = CrawlGaitRules.BellyGait(moving: false, speed: 0.02f, strafe: -0.05f);
+
+            Assert.Equal(CrawlGaitRules.BellyHoldSpeed, gait.Speed);
+            Assert.Equal(0f, gait.Strafe);
+            Assert.True(CrawlGaitRules.BellyHoldSpeed > 0.1f);
+        }
+
+        [Theory]
+        [InlineData(0.4f, 0f, 0.4f)]
+        [InlineData(-0.4f, 0.1f, 0.4f)]
+        [InlineData(0.05f, -0.5f, 0.5f)]
+        public void Moving_belly_crawler_always_plays_the_forward_crawl(float speed, float strafe, float expected)
+        {
+            var gait = CrawlGaitRules.BellyGait(moving: true, speed, strafe);
+
+            Assert.Equal(expected, gait.Speed, 3);
+            Assert.Equal(0f, gait.Strafe);
+        }
+
+        [Fact]
+        public void Slow_moving_belly_crawler_never_drops_below_the_hold_speed()
+        {
+            Assert.Equal(CrawlGaitRules.BellyHoldSpeed, CrawlGaitRules.BellyGait(moving: true, speed: 0.05f, strafe: 0f).Speed);
+        }
+
+        [Fact]
+        public void Belly_crawl_is_off_by_default_until_it_looks_right()
+        {
+            // Probes 20261117-192804 and -195433: the NPC falls forward but then kneels
+            // upright instead of lying face down (Nadi decides how to go on).
+            Assert.Equal(0f, OptionSpecs.BellyCrawlChance.Default);
+        }
     }
 }

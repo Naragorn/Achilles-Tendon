@@ -1,22 +1,21 @@
-# Step 4, route A (experimental): a crippled NPC with a sword swings from the ground,
-# its arms pinned harder to the animation, and screams. Pictures for the headset-less
-# look: before the cut, a burst while it lies and swings, and with Ground Fighting off.
+# Step 4, lying flat (Lie Flat Chance 100 %): a crippled NPC with a sword lies held on
+# the ground and screams, but never swings (Ground Attacks are for crawlers only since
+# 2026-11-17: a full-body swing on a lying body did not move it). Ground Fighting off
+# silences it. (Crawling swings: step3-e-crawl.)
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Stand Up When Disabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
-# These scenarios check the flat ragdoll (Destabilized); the crawl pose has its own.
-set-option AchillesTendon "Downed Pose" LieFlat
-# No bleed-out death in the middle of the pictures.
+set-option AchillesTendon "Lie Flat Chance" 1
+# No bleed-out death in the middle of the check.
 set-option AchillesTendon "Bleed-Out Enabled" false
 set-option AchillesTendon "Ground Fighting Enabled" true
-set-option AchillesTendon "Arm Strength" 4
 set-option AchillesTendon "Ground Attacks" true
 set-option AchillesTendon "Ground Attack Chance" 1
 set-option AchillesTendon "Ground Attack Range" 4
-set-option AchillesTendon "Ground Attack Interval" 2
+set-option AchillesTendon "Ground Attack Interval" 1
 set-option AchillesTendon "Screaming" true
 set-option AchillesTendon "Scream Interval" 3
 
@@ -24,49 +23,30 @@ spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
 npc-grab SwordShortCommon
 wait 2
 expect-npc holding true
-screenshot 01-standing-before-cut of=npc distance=2.5 height=1.0 angle=60
 
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] GROUND FIGHT START
-expect-log [AchillesTendon] COLLAPSE
+expect-log held on the ground (roll
 expect-npc state Destabilized within=1
 wait 1.5
-expect-log [AchillesTendon] ARMS
 expect-log [AchillesTendon] SCREAM
-screenshot 02-lying-side of=npc distance=2.2 height=1.4 angle=90
-screenshot 03-lying-above of=npc distance=0.6 height=2.2 angle=0
+screenshot 01-lying of=npc distance=2.2 height=1.4 angle=90
 expect-npc holding true
-
-# A burst while it swings (one swing every 2 s).
-expect-log [AchillesTendon] GROUND ATTACK |
-screenshot 04-swing-a of=npc distance=2.2 height=1.2 angle=60
-wait 0.3
-screenshot 05-swing-b of=npc distance=2.2 height=1.2 angle=60
-wait 0.3
-screenshot 06-swing-c of=npc distance=2.2 height=1.2 angle=60
-wait 0.3
-screenshot 07-swing-d of=npc distance=2.2 height=1.2 angle=60
-wait 0.3
-screenshot 08-swing-e of=npc distance=2.2 height=1.2 angle=60
-wait 0.3
-screenshot 09-swing-f of=npc distance=2.2 height=1.2 angle=60
-
-# Still down after several swings.
-wait 5
+wait 6
+expect-no-log [AchillesTendon] GROUND ATTACK |
 expect-npc state Destabilized within=0.1
-
 expect-no-log Exception
 
-# Ground Fighting off: the arms go back to the game's limp lying value.
-mark
+# Ground Fighting off: no more screams.
 set-option AchillesTendon "Ground Fighting Enabled" false
-expect-log [AchillesTendon] ARMS
-wait 3
-screenshot 10-ground-fighting-off of=npc distance=2.2 height=1.2 angle=60
-expect-no-log [AchillesTendon] GROUND ATTACK |
+wait 1
+mark
+wait 5
+expect-no-log [AchillesTendon] SCREAM
 
 set-option AchillesTendon "Ground Fighting Enabled" true
 set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Lie Flat Chance" 0.05
 expect-no-log Exception
 quit

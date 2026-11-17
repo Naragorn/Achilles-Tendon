@@ -111,11 +111,23 @@ namespace AchillesTendon.Tests
         private static CrippledCreatureState Up() =>
             new CrippledCreatureState { Exists = true, IsKilled = false, IsDown = false };
 
-        [Fact]
-        public void Crawl_is_the_first_pose_so_the_menu_default_matches()
+        // Lie Flat Chance (Nadi, 2026-11-17) replaces the Downed Pose dropdown: rolled once
+        // per NPC when its tendon is cut; default 5 % lie flat, the rest crawl.
+        [Theory]
+        [InlineData(0.05f, 0.04f, DownedPose.LieFlat)]
+        [InlineData(0.05f, 0.05f, DownedPose.Crawl)]
+        [InlineData(0f, 0f, DownedPose.Crawl)]
+        [InlineData(1f, 1f, DownedPose.LieFlat)]
+        public void Lie_flat_chance_picks_the_pose(float chance, float roll, DownedPose pose)
         {
-            // The game's mod menu falls back to the first enum entry for enum defaults.
-            Assert.Equal(0, (int)DownedPose.Crawl);
+            Assert.Equal(pose, CrippleRules.PoseFor(chance, roll));
+        }
+
+        [Fact]
+        public void Five_percent_lie_flat_by_default()
+        {
+            Assert.Equal(0.05f, OptionSpecs.LieFlatChance.Default);
+            Assert.Equal("5 %", OptionSpecs.LieFlatChance.Label(0.05f));
         }
 
         [Fact]

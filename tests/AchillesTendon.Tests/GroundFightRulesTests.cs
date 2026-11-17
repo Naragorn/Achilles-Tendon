@@ -5,13 +5,14 @@ namespace AchillesTendon.Tests
 {
     public class GroundFightRulesTests
     {
-        /// <summary>Lying, everything on, player in reach, both timers due.</summary>
+        /// <summary>Crawling, everything on, player in reach, both timers due.</summary>
         private static GroundFightInput Ready()
         {
             return new GroundFightInput
             {
                 FeatureOn = true,
                 IsDown = true,
+                IsCrawling = true,
                 AttacksOn = true,
                 IsAttacker = true,
                 HasAttackClip = true,
@@ -27,24 +28,22 @@ namespace AchillesTendon.Tests
         }
 
         [Fact]
-        public void Ready_npc_strengthens_its_arms_attacks_and_screams()
+        public void Ready_crawling_npc_attacks_and_screams()
         {
             var d = GroundFightRules.Decide(Ready());
 
-            Assert.True(d.StrongArms);
             Assert.True(d.Attack);
             Assert.True(d.Scream);
         }
 
         [Fact]
-        public void Feature_off_does_nothing_and_relaxes_the_arms()
+        public void Feature_off_does_nothing()
         {
             var input = Ready();
             input.FeatureOn = false;
 
             var d = GroundFightRules.Decide(input);
 
-            Assert.False(d.StrongArms);
             Assert.False(d.Attack);
             Assert.False(d.Scream);
         }
@@ -58,20 +57,18 @@ namespace AchillesTendon.Tests
 
             var d = GroundFightRules.Decide(input);
 
-            Assert.False(d.StrongArms);
             Assert.False(d.Attack);
             Assert.False(d.Scream);
         }
 
         [Fact]
-        public void Attacks_off_still_strengthens_arms_and_screams()
+        public void Attacks_off_still_screams()
         {
             var input = Ready();
             input.AttacksOn = false;
 
             var d = GroundFightRules.Decide(input);
 
-            Assert.True(d.StrongArms);
             Assert.False(d.Attack);
             Assert.True(d.Scream);
         }
@@ -155,26 +152,18 @@ namespace AchillesTendon.Tests
             Assert.False(d.Attack);
         }
 
+        // Lying flat (Lie Flat Chance) the game's animation does not move the body
+        // (harness step4-a, 2026-11-16): such an NPC only screams (Nadi, 2026-11-17).
         [Fact]
-        public void Crawling_npc_swings_with_the_upper_body_only_and_keeps_its_arms()
+        public void Lying_flat_npc_never_swings_but_screams()
         {
-            // Crawling it is a standing ragdoll: full arm pins already, and a full-body
-            // attack clip would raise it upright, so the swing goes to the upper-body layer.
             var input = Ready();
-            input.IsCrawling = true;
+            input.IsCrawling = false;
 
             var d = GroundFightRules.Decide(input);
 
-            Assert.False(d.StrongArms);
-            Assert.True(d.Attack);
-            Assert.True(d.UpperBodyOnly);
+            Assert.False(d.Attack);
             Assert.True(d.Scream);
-        }
-
-        [Fact]
-        public void Lying_npc_swings_with_the_whole_body()
-        {
-            Assert.False(GroundFightRules.Decide(Ready()).UpperBodyOnly);
         }
 
         [Fact]

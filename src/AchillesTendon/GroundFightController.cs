@@ -6,29 +6,20 @@ using UnityEngine;
 namespace AchillesTendon
 {
     /// <summary>
-    /// Build step 4, route A (experimental): a crippled NPC fights on from the ground.
+    /// Build step 4: a crippled NPC fights on from the ground.
     ///
-    /// Engine facts this relies on (ThunderRoad.dll 1.3.2, see README):
-    /// - In Ragdoll.State.Destabilized the animator stays enabled and every non-root
-    ///   part is pulled toward the animated pose by a rotation spring
-    ///   (springRotationForce * destabilizedGroundSpringRotationMultiplier once on the
-    ///   ground, Ragdoll.OnFallEvent). Raising that spring on the arm parts lets an
-    ///   animation move the arms of a lying body; electrocution animates a lying NPC
-    ///   the same way (BrainModuleElectrocute).
-    /// - Attack clips come from the NPC's own melee stance (BrainModuleMelee.meleeIdle,
-    ///   only set while it holds a weapon in a melee stance). They are captured when the
-    ///   tendon is cut, because the stance may drop its pose once the NPC lies down.
-    /// - Creature.PlayAnimation(clip, loop:false) is the call BrainModuleMelee uses for
-    ///   its own attacks.
-    /// - Screams: BrainModuleSpeak.Play("hit"), the voice's pain dialog.
-    /// Whether the animator actually lets the swing through while the NPC lies down is
-    /// the open question this step tests.
+    /// - Screams: BrainModuleSpeak.Play("hit"), the voice's pain dialog; near the end
+    ///   of the bleed-out "heavybreath".
+    /// - Swings (crawling NPCs only, rolled per NPC from Ground Attack Chance): one of
+    ///   its own attack clips on the upper-body layer. Clips come from the NPC's melee
+    ///   stance (BrainModuleMelee.meleeIdle, else the stance its equipment maps to),
+    ///   captured when the tendon is cut.
+    /// - NPCs lying flat do not swing: a full-body clip on a Destabilized body did not
+    ///   move it (harness step4-a, 2026-11-16), so that route and Arm Strength were
+    ///   removed (Nadi, 2026-11-17).
     /// </summary>
     internal sealed class GroundFightController
     {
-        private const RagdollPart.Type ArmParts =
-            RagdollPart.Type.LeftArm | RagdollPart.Type.RightArm | RagdollPart.Type.LeftHand | RagdollPart.Type.RightHand;
-
         private const string ScreamDialogId = "hit";
 
         // Every human voice in the catalog (Voices/Voice_Human*.json, 1.3.2) has it.
@@ -39,15 +30,10 @@ namespace AchillesTendon
             public readonly List<AnimationClip> AttackClips = new List<AnimationClip>();
             public float LastAttackTime = float.NegativeInfinity;
             public float LastScreamTime = float.NegativeInfinity;
-            public bool ArmsStrong;
-            public float AppliedArmStrength;
             public bool NoClipLogged;
 
             /// <summary>Ground Attack Chance, rolled when the tendon was cut.</summary>
             public bool IsAttacker;
-
-            /// <summary>We started a swing; it is stopped when the NPC leaves ground fighting.</summary>
-            public bool StartedAnimation;
         }
 
         private readonly Dictionary<Creature, Fighter> fighters = new Dictionary<Creature, Fighter>();
@@ -84,10 +70,6 @@ namespace AchillesTendon
                 var fighter = fighters[creature];
                 if (creature == null || !Creature.allActive.Contains(creature) || creature.isKilled || !isCrippled(creature))
                 {
-                    if (creature != null && !creature.isKilled)
-                    {
-                        Relax(creature, fighter);
-                    }
                     fighters.Remove(creature);
                     continue;
                 }
@@ -111,15 +93,10 @@ namespace AchillesTendon
                     ScreamInterval = ModOptions.ScreamInterval * weak.ScreamIntervalFactor,
                 });
 
-                ApplyArms(creature, fighter, decision.StrongArms);
-                if (!decision.StrongArms && fighter.StartedAnimation)
-                {
-                    StopSwing(creature, fighter);
-                }
                 if (decision.Attack)
                 {
                     fighter.LastAttackTime = time;
-                    Attack(creature, fighter, decision.UpperBodyOnly);
+                    Attack(creature, fighter);
                 }
                 if (decision.Scream)
                 {
@@ -134,96 +111,19 @@ namespace AchillesTendon
             }
         }
 
-        /// <summary>Gives every arm back the game's own lying value and stops tracking.</summary>
         public void Clear()
         {
-            foreach (var pair in fighters)
-            {
-                if (pair.Key != null && !pair.Key.isKilled)
-                {
-                    Relax(pair.Key, pair.Value);
-                }
-            }
             fighters.Clear();
         }
 
-        // Re-applied every frame while strong: the game resets the pins on every state
-        // change and when the body lands (Ragdoll.OnFallEvent).
-        private static void ApplyArms(Creature creature, Fighter fighter, bool strong)
-        {
-            if (strong)
-            {
-                SetArmStrength(creature, ModOptions.ArmStrength);
-                if (!fighter.ArmsStrong || fighter.AppliedArmStrength != ModOptions.ArmStrength)
-                {
-                    ModLog.Verbose("ARMS | " + GameAdapters.Label(creature) + " | strength x" + ModOptions.ArmStrength);
-                }
-                fighter.ArmsStrong = true;
-                fighter.AppliedArmStrength = ModOptions.ArmStrength;
-            }
-            else if (fighter.ArmsStrong)
-            {
-                SetArmStrength(creature, 1f);
-                fighter.ArmsStrong = false;
-                ModLog.Verbose("ARMS | " + GameAdapters.Label(creature) + " | back to the game's lying value");
-            }
-        }
-
-        private static void Relax(Creature creature, Fighter fighter)
-        {
-            if (fighter.ArmsStrong)
-            {
-                SetArmStrength(creature, 1f);
-                fighter.ArmsStrong = false;
-            }
-            if (fighter.StartedAnimation)
-            {
-                StopSwing(creature, fighter);
-            }
-        }
-
-        // Headless test (harness/step4-a): a swing started on a lying NPC never reports its
-        // end, so isPlayingDynamicAnimation stays set. Stopping it keeps the NPC from playing
-        // the swing once it stands up again.
-        private static void StopSwing(Creature creature, Fighter fighter)
-        {
-            if (creature.isPlayingDynamicAnimation)
-            {
-                creature.StopAnimation(interrupt: true);
-            }
-            fighter.StartedAnimation = false;
-        }
-
-        private static void SetArmStrength(Creature creature, float multiplier)
-        {
-            var ragdoll = creature.ragdoll;
-            var spring = ragdoll.springRotationForce * ragdoll.destabilizedGroundSpringRotationMultiplier * multiplier;
-            var damper = ragdoll.damperRotationForce * ragdoll.destabilizedDamperRotationMultiplier;
-            var maxForce = ragdoll.maxRotationForce * multiplier;
-            foreach (var part in ragdoll.parts)
-            {
-                if (part != ragdoll.rootPart && (part.type & ArmParts) != 0)
-                {
-                    part.bone.SetPinRotationForce(spring, damper, maxForce);
-                }
-            }
-        }
-
-        private static void Attack(Creature creature, Fighter fighter, bool upperBodyOnly)
+        // The upper-body layer the game uses e.g. for reaching for a door while standing
+        // (BrainModuleMove); a full-body clip would raise the crawler upright. It does not
+        // set isPlayingDynamicAnimation.
+        private static void Attack(Creature creature, Fighter fighter)
         {
             var clip = fighter.AttackClips[Random.Range(0, fighter.AttackClips.Count)];
-            if (upperBodyOnly)
-            {
-                // The upper-body layer the game uses e.g. for reaching for a door while standing
-                // (BrainModuleMove); it does not set isPlayingDynamicAnimation.
-                creature.PlayUpperAnimation(clip, loop: false);
-            }
-            else
-            {
-                creature.PlayAnimation(clip, loop: false);
-                fighter.StartedAnimation = true;
-            }
-            ModLog.Verbose("GROUND ATTACK | " + GameAdapters.Label(creature) + " | " + (upperBodyOnly ? "upper body" : "full body") + " | clip=" + clip.name
+            creature.PlayUpperAnimation(clip, loop: false);
+            ModLog.Verbose("GROUND ATTACK | " + GameAdapters.Label(creature) + " | upper body | clip=" + clip.name
                 + " | distance=" + DistanceToPlayer(creature).ToString("0.0#", System.Globalization.CultureInfo.InvariantCulture) + " m");
         }
 

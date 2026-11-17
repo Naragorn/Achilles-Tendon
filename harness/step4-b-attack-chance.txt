@@ -2,7 +2,7 @@
 # 0 % = this fighter only crawls and screams, it never swings. (100 %: step3-e-crawl.)
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
-set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Bleed-Out Enabled" false
 set-option AchillesTendon "Ground Fighting Enabled" true

@@ -1,0 +1,73 @@
+# Probe (not in the default run): Belly Crawl Chance 100 % vs 0 %. A belly crawler falls
+# forward (the game's face-down stab death, FullBody one-shot) and is held on the
+# face-down Crawling clip (never the idle Laying/LayingInjured or CrawlBackwards, which lie
+# on the back). Pictures of the fall and the crawl; CRAWL POSE lines (Debug Logging).
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 4
+set-option AchillesTendon "Ground Attack Interval" 2
+
+# A. Belly.
+set-option AchillesTendon "Belly Crawl Chance" 1
+spawn-npc HumanMale distance=3 angle=-30 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log | belly (roll
+expect-log FALL FORWARD |
+wait 0.3
+screenshot a-fall-03 of=npc distance=2.5 height=0.8 angle=90
+wait 0.4
+screenshot a-fall-07 of=npc distance=2.5 height=0.8 angle=90
+wait 0.5
+screenshot a-fall-12 of=npc distance=2.5 height=0.8 angle=90
+wait 1
+screenshot a-fall-22 of=npc distance=2.5 height=0.8 angle=90
+wait 2
+screenshot a-crawl-4 of=npc distance=2.5 height=0.8 angle=90
+wait 3
+screenshot a-crawl-7 of=npc distance=2.5 height=0.8 angle=45
+wait 3
+screenshot a-crawl-10 of=npc distance=2.5 height=0.8 angle=135
+screenshot a-crawl-10-above of=npc distance=0.8 height=2.2 angle=0
+expect-npc state Alive within=0.1
+expect-no-log Exception
+wait 3
+
+# A2. Belly, unarmed and no ground attacks: does the upper-body weapon pose keep the
+# torso upright (A kneels upright with the sword)?
+set-option AchillesTendon "Ground Attacks" false
+spawn-npc HumanMale distance=3 angle=0 facing=180 brain=HumanMedium
+mark
+hit-npc LeftFoot type=Slash
+expect-log | belly (roll
+wait 1
+screenshot a2-fall-1 of=npc distance=2.5 height=0.8 angle=90
+wait 3
+screenshot a2-crawl-4 of=npc distance=2.5 height=0.8 angle=90
+wait 3
+screenshot a2-crawl-7 of=npc distance=2.5 height=0.8 angle=45
+set-option AchillesTendon "Ground Attacks" true
+wait 3
+
+# B. Back (today's crawl) for comparison.
+set-option AchillesTendon "Belly Crawl Chance" 0
+spawn-npc HumanMale distance=3 angle=30 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+mark
+hit-npc LeftFoot type=Slash
+expect-log | back (roll
+wait 4
+screenshot b-crawl-4 of=npc distance=2.5 height=0.8 angle=90
+wait 3
+screenshot b-crawl-7 of=npc distance=2.5 height=0.8 angle=45
+
+set-option AchillesTendon "Belly Crawl Chance" 0
+set-option AchillesTendon "Bleed-Out Enabled" true
+expect-no-log Exception
+quit

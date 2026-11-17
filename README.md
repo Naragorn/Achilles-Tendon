@@ -6,12 +6,12 @@ Inspired by two heroes who fell to a single strike at the one weak point of thei
 
 Every feature can be toggled and tuned in the in-game Mod Menu.
 
-> **Work in progress (v0.8.2).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
+> **Work in progress (v0.8.3).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
 
 ## What it does
 
 - **The cut:** slash or stab the back of an enemy's heel, from behind or the side. Blunt hits and hits from the front do not count. You can cut with a held weapon, a thrown blade or a spell.
-- **The fall:** the enemy drops and never stands up again. By default they crawl on the ground (the game's own injured and crawl animations); you can switch to lying flat instead.
+- **The fall:** the enemy drops and never stands up again. Most crawl on the ground with the game's own injured and crawl animations; a few (5 % by default) fall flat and lie still.
 - **Fighting from the ground:** they scream in pain, and most of them (75 % by default) swing at you with their upper body when you come close. The rest only crawl and scream, so you never know which one still fights back.
 - **Bleeding out:** they bleed from the cut heel and die after the Bleed-Out Duration (45 s by default). Over time they crawl slower, scream less often and end up gasping. You can finish them earlier as usual.
 - Only your hits count: NPCs cutting each other's heels, or yours, do nothing.
@@ -33,7 +33,8 @@ After updating, press the mod page's reset button: the game saves options by the
 | | Max Hit Angle (0 = straight behind, 90 = side) | 110° | 30-180° |
 | | Allowed Damage Types | Slash and Pierce | Slash and Pierce / Slash only / Pierce only |
 | | Stand Up When Disabled (NPCs with a cut tendon get up when the mod is turned off) | on | |
-| | Downed Pose (Crawl = the game's injured/crawl animations; Lie Flat = ragdoll on the ground) | Crawl | Crawl / Lie Flat |
+| | Lie Flat Chance (share of crippled enemies that lie flat as a ragdoll instead of crawling; rolled once per enemy at the cut) | 5 % | 0-100 % |
+| | Belly Crawl Chance (experimental: share of crawlers that fall forward instead of sitting down; for now they kneel upright rather than lie face down) | 0 % | 0-100 % |
 | | Crawl Speed (movement while crawling, relative to walking) | x0.3 | x0.05-x1 |
 | | Crawl Body Height (0 = flat, 1 = standing) | x0.2 | x0-x0.6 |
 | | Steady Crawl Pose (twitches count as standing still) | on | on/off |
@@ -49,8 +50,7 @@ After updating, press the mod page's reset button: the game saves options by the
 | | Scream Slowdown (Scream Interval multiplier at the moment of death) | x3 | x1-x5 |
 | | Gasping From (bleed-out share from which screams turn into heavy breathing) | 75 % | 50-100 % |
 | Ground Fighting | Ground Fighting Enabled | on | |
-| | Arm Strength (how stiff a lying NPC's arms are; x1 = the game's own limp value) | x1 | x1-x10 |
-| | Ground Attacks (crawling: upper-body swings; lying flat: experimental, no visible swing). Off: a downed NPC does not attack at all | on | |
+| | Ground Attacks (crawling enemies swing with the upper body; enemies lying flat never swing). Off: no downed enemy attacks | on | |
 | | Ground Attack Chance (share of crippled enemies that fight back; rolled once per enemy at the cut) | 75 % | 0-100 % |
 | | Ground Attack Range | 1.8 m | 0.5-4 m |
 | | Ground Attack Interval | 3 s | 1-10 s |

@@ -7,7 +7,7 @@ set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
 # These scenarios check the flat ragdoll (Destabilized); the crawl pose has its own.
-set-option AchillesTendon "Downed Pose" LieFlat
+set-option AchillesTendon "Lie Flat Chance" 1
 set-option AchillesTendon "Bleed-Out Enabled" true
 set-option AchillesTendon "Bleed-Out Duration" 10
 set-option AchillesTendon "Blood Effects" false

@@ -12,7 +12,8 @@ expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
 # Achilles Tendon group (step 3 adds Stand Up When Disabled)
 option-exists AchillesTendon "Achilles Tendon Enabled" category="Achilles Tendon" type=Boolean save=true
 option-exists AchillesTendon "Stand Up When Disabled" category="Achilles Tendon" type=Boolean save=true tooltip="get up again"
-option-exists AchillesTendon "Downed Pose" category="Achilles Tendon" type=DownedPose save=true
+option-exists AchillesTendon "Lie Flat Chance" category="Achilles Tendon" type=Single save=true
+option-exists AchillesTendon "Belly Crawl Chance" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Crawl Speed" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Crawl Body Height" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Steady Crawl Pose" category="Achilles Tendon" type=Boolean save=true
@@ -30,7 +31,6 @@ option-exists AchillesTendon "Scream Slowdown" category="Bleed-Out" type=Single 
 option-exists AchillesTendon "Gasping From" category="Bleed-Out" type=Single save=true
 # Ground Fighting group (step 4, experimental)
 option-exists AchillesTendon "Ground Fighting Enabled" category="Ground Fighting" type=Boolean save=true
-option-exists AchillesTendon "Arm Strength" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Ground Attacks" category="Ground Fighting" type=Boolean save=true
 option-exists AchillesTendon "Ground Attack Chance" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Ground Attack Range" category="Ground Fighting" type=Single save=true
@@ -45,7 +45,8 @@ option-exists AchillesTendon "Debug Logging" category=Debug type=Boolean save=tr
 # Defaults
 expect-option AchillesTendon "Achilles Tendon Enabled" true
 expect-option AchillesTendon "Stand Up When Disabled" true
-expect-option AchillesTendon "Downed Pose" Crawl
+expect-option AchillesTendon "Lie Flat Chance" 0.05
+expect-option AchillesTendon "Belly Crawl Chance" 0
 expect-option AchillesTendon "Crawl Speed" 0.3
 expect-option AchillesTendon "Crawl Body Height" 0.2
 expect-option AchillesTendon "Steady Crawl Pose" true
@@ -61,7 +62,6 @@ expect-option AchillesTendon "Weakest Crawl Speed" 0.25
 expect-option AchillesTendon "Scream Slowdown" 3
 expect-option AchillesTendon "Gasping From" 0.75
 expect-option AchillesTendon "Ground Fighting Enabled" true
-expect-option AchillesTendon "Arm Strength" 1
 expect-option AchillesTendon "Ground Attacks" true
 expect-option AchillesTendon "Ground Attack Chance" 0.75
 expect-option AchillesTendon "Ground Attack Range" 1.8

@@ -6,7 +6,7 @@ set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
-set-option AchillesTendon "Downed Pose" Crawl
+set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Bleed-Out Enabled" true
 set-option AchillesTendon "Bleed-Out Duration" 20
 set-option AchillesTendon "Blood Pulse Interval" 2

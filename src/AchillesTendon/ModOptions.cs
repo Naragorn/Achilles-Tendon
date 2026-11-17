@@ -66,43 +66,50 @@ namespace AchillesTendon
         [ModOptionOrder(6)]
         public static bool StandUpWhenDisabled = true;
 
-        [ModOption("Downed Pose", "Crawl: the NPC drops into the game's own injured pose and crawls when it moves. Lie Flat: it falls as a ragdoll and lies still.")]
+        [ModOption("Lie Flat Chance", "Share of crippled NPCs that fall as a ragdoll and lie still; the others crawl with the game's own injured animations. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(LieFlatChanceValues))]
         [ModOptionCategory(TendonCategory, 0)]
         [ModOptionOrder(7)]
-        public static DownedPose DownedPose = DownedPose.Crawl;
+        [ModOptionSlider]
+        public static float LieFlatChance = OptionSpecs.LieFlatChance.Default;
+
+        [ModOption("Belly Crawl Chance", "Experimental, off by default: share of crawling NPCs that fall forward instead of sitting down (in headless tests they kneel upright rather than lie face down); the others sit and crawl on their back. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(BellyCrawlChanceValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(8)]
+        [ModOptionSlider]
+        public static float BellyCrawlChance = OptionSpecs.BellyCrawlChance.Default;
 
         [ModOption("Crawl Speed", "Movement speed while crawling, relative to walking.", nameof(CrawlSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(8)]
+        [ModOptionOrder(9)]
         [ModOptionSlider]
         public static float CrawlSpeed = OptionSpecs.CrawlSpeed.Default;
 
         [ModOption("Crawl Body Height", "How low the crawling body is held. 0 = flat on the ground, 1 = standing.", nameof(CrawlBodyHeightValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(9)]
+        [ModOptionOrder(10)]
         [ModOptionSlider]
         public static float CrawlBodyHeight = OptionSpecs.CrawlBodyHeight.Default;
 
         [ModOption("Steady Crawl Pose", "Small twitches of the crawling NPC count as standing still, so it does not flip between sitting and crawling (which looks like sitting in the air). Off: the game decides alone.")]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(10)]
+        [ModOptionOrder(11)]
         public static bool SteadyCrawlPose = true;
 
         [ModOption("Crawl Start Speed", "Steady Crawl Pose: how fast the NPC must move before it switches from sitting to crawling.", nameof(CrawlStartSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(11)]
+        [ModOptionOrder(12)]
         [ModOptionSlider]
         public static float CrawlStartSpeed = OptionSpecs.CrawlStartSpeed.Default;
 
         [ModOption("Crawl Stop Speed", "Steady Crawl Pose: below this speed a crawling NPC sits down again. Keep it below Crawl Start Speed.", nameof(CrawlStopSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(12)]
+        [ModOptionOrder(13)]
         [ModOptionSlider]
         public static float CrawlStopSpeed = OptionSpecs.CrawlStopSpeed.Default;
 
         [ModOption("Leg Strength", "How hard the legs of a crawling NPC follow its animation. x1 = the game's own value. Higher: it sits down faster after crawling instead of hanging on its shins.", nameof(LegStrengthValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(13)]
+        [ModOptionOrder(14)]
         [ModOptionSlider]
         public static float LegStrength = OptionSpecs.LegStrength.Default;
 
@@ -155,48 +162,42 @@ namespace AchillesTendon
 
         // ---- Ground Fighting (step 4, experimental) --------------------------
 
-        [ModOption("Ground Fighting Enabled", "NPCs with a cut tendon fight on from the ground: screams, and (experimental) stronger arms and swings. Off: they just lie there.")]
+        [ModOption("Ground Fighting Enabled", "NPCs with a cut tendon fight on from the ground: screams, and crawling NPCs swing at you. Off: they only crawl or lie there.")]
         [ModOptionCategory(GroundCategory, 2)]
         [ModOptionOrder(0)]
         public static bool GroundFightingEnabled = true;
 
-        [ModOption("Arm Strength", "How hard the arms of a lying NPC follow its animation. x1 = the game's own value for a lying body (limp, default). Higher values stiffen the arms.", nameof(ArmStrengthValues))]
+        [ModOption("Ground Attacks", "A crawling NPC swings its weapon at you with its upper body when you are in reach (its own attack animations; needs a weapon). NPCs lying flat do not swing. A crawling NPC never uses its own melee AI, so with this off it does not attack.")]
         [ModOptionCategory(GroundCategory, 2)]
         [ModOptionOrder(1)]
-        [ModOptionSlider]
-        public static float ArmStrength = OptionSpecs.ArmStrength.Default;
-
-        [ModOption("Ground Attacks", "A downed NPC swings its weapon at you when you are in reach (its own attack animations; needs a weapon). Crawling: upper body only. Lying flat: experimental, no visible swing yet. A crawling NPC never uses its own melee AI, so with this off it does not attack.")]
-        [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(2)]
         public static bool GroundAttacks = true;
 
         [ModOption("Ground Attack Chance", "Share of crippled NPCs that fight from the ground; the others only crawl and scream. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(GroundAttackChanceValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(3)]
+        [ModOptionOrder(2)]
         [ModOptionSlider]
         public static float GroundAttackChance = OptionSpecs.GroundAttackChance.Default;
 
         [ModOption("Ground Attack Range", "How close you must be for a lying NPC to swing at you.", nameof(GroundAttackRangeValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(4)]
+        [ModOptionOrder(3)]
         [ModOptionSlider]
         public static float GroundAttackRange = OptionSpecs.GroundAttackRange.Default;
 
         [ModOption("Ground Attack Interval", "Seconds between two swings from the ground.", nameof(GroundAttackIntervalValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(5)]
+        [ModOptionOrder(4)]
         [ModOptionSlider]
         public static float GroundAttackInterval = OptionSpecs.GroundAttackInterval.Default;
 
         [ModOption("Screaming", "A lying NPC cries out in pain now and then.")]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(6)]
+        [ModOptionOrder(5)]
         public static bool Screaming = true;
 
         [ModOption("Scream Interval", "Seconds between two screams.", nameof(ScreamIntervalValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(7)]
+        [ModOptionOrder(6)]
         [ModOptionSlider]
         public static float ScreamInterval = OptionSpecs.ScreamInterval.Default;
 
@@ -264,6 +265,10 @@ namespace AchillesTendon
 
         public static ModOptionParameter[] MaxHitAngleValues() => ToParameters(OptionSpecs.MaxHitAngle);
 
+        public static ModOptionParameter[] LieFlatChanceValues() => ToParameters(OptionSpecs.LieFlatChance);
+
+        public static ModOptionParameter[] BellyCrawlChanceValues() => ToParameters(OptionSpecs.BellyCrawlChance);
+
         public static ModOptionParameter[] CrawlSpeedValues() => ToParameters(OptionSpecs.CrawlSpeed);
 
         public static ModOptionParameter[] CrawlBodyHeightValues() => ToParameters(OptionSpecs.CrawlBodyHeight);
@@ -284,7 +289,6 @@ namespace AchillesTendon
 
         public static ModOptionParameter[] GaspingFromValues() => ToParameters(OptionSpecs.GaspingFrom);
 
-        public static ModOptionParameter[] ArmStrengthValues() => ToParameters(OptionSpecs.ArmStrength);
 
         public static ModOptionParameter[] GroundAttackChanceValues() => ToParameters(OptionSpecs.GroundAttackChance);
 
