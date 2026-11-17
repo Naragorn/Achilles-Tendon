@@ -32,6 +32,14 @@ namespace AchillesTendon.Logic
         Forget,
     }
 
+    /// <summary>Rotation drive of one animation pin (Ragdoll.Bone.SetPinRotationForce).</summary>
+    public struct PinDrive
+    {
+        public float Spring;
+        public float Damper;
+        public float MaxForce;
+    }
+
     /// <summary>A crippled creature, as plain values taken from the game.</summary>
     public struct CrippledCreatureState
     {
@@ -74,6 +82,23 @@ namespace AchillesTendon.Logic
                 return CrippleAction.HoldCrawl;
             }
             return state.IsDown ? CrippleAction.HoldDown : CrippleAction.Collapse;
+        }
+
+        /// <summary>
+        /// Leg Strength: the legs' rotation pins while crawling, from the ragdoll's own
+        /// standing values. Spring and max force scale with the multiplier, the damper with
+        /// its square root (critical damping grows with sqrt(spring), so the damping ratio
+        /// stays the game's). Below x1 counts as x1.
+        /// </summary>
+        public static PinDrive LegPin(float multiplier, float spring, float damper, float maxForce)
+        {
+            var m = System.Math.Max(1f, multiplier);
+            return new PinDrive
+            {
+                Spring = spring * m,
+                Damper = damper * (float)System.Math.Sqrt(m),
+                MaxForce = maxForce * m,
+            };
         }
     }
 }

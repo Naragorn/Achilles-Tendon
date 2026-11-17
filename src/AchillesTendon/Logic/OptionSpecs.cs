@@ -108,6 +108,9 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec CrawlStopSpeed =
             new FloatOptionSpec("Crawl Stop Speed", 0.05f, 0.5f, 0.05f, 0.1f, OptionUnit.Plain);
 
+        public static readonly FloatOptionSpec LegStrength =
+            new FloatOptionSpec("Leg Strength", 1f, 10f, 0.5f, 4f, OptionUnit.Multiplier);
+
         public static readonly FloatOptionSpec BleedOutDuration =
             new FloatOptionSpec("Bleed-Out Duration", 10f, 180f, 5f, 45f, OptionUnit.Seconds);
 
@@ -148,6 +151,7 @@ namespace AchillesTendon.Logic
             CrawlBodyHeight,
             CrawlStartSpeed,
             CrawlStopSpeed,
+            LegStrength,
             BleedOutDuration,
             BleedPulseInterval,
             WeakestCrawlSpeed,

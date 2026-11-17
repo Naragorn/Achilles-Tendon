@@ -100,6 +100,12 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float CrawlStopSpeed = OptionSpecs.CrawlStopSpeed.Default;
 
+        [ModOption("Leg Strength", "How hard the legs of a crawling NPC follow its animation. x1 = the game's own value. Higher: it sits down faster after crawling instead of hanging on its shins.", nameof(LegStrengthValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(13)]
+        [ModOptionSlider]
+        public static float LegStrength = OptionSpecs.LegStrength.Default;
+
         // ---- Bleed-Out ------------------------------------------------------
 
         [ModOption("Bleed-Out Enabled", "NPCs with a cut tendon bleed out and die after Bleed-Out Duration. Off: the bleeding pauses (it goes on when turned back on).")]
@@ -248,6 +254,8 @@ namespace AchillesTendon
         public static ModOptionParameter[] CrawlStartSpeedValues() => ToParameters(OptionSpecs.CrawlStartSpeed);
 
         public static ModOptionParameter[] CrawlStopSpeedValues() => ToParameters(OptionSpecs.CrawlStopSpeed);
+
+        public static ModOptionParameter[] LegStrengthValues() => ToParameters(OptionSpecs.LegStrength);
 
         public static ModOptionParameter[] BleedOutDurationValues() => ToParameters(OptionSpecs.BleedOutDuration);
 

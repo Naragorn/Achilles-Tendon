@@ -164,6 +164,7 @@ namespace AchillesTendon
             creature.ragdoll.forcePhysic.Add(this);
             crawling.Add(creature);
             SteadyGait(creature);
+            SetLegStrength(creature, ModOptions.LegStrength);
             // The AI's own attack clips move the whole body and raise a crawling NPC
             // upright (headless pictures), so its melee is off while crawling; swings come
             // from GroundFightController on the upper-body layer (Ground Attacks).
@@ -208,6 +209,27 @@ namespace AchillesTendon
             gaitMoving.Remove(creature);
             creature.animator.SetFloat(Creature.hashSpeed, 0f);
             creature.animator.SetFloat(Creature.hashStrafe, 0f);
+        }
+
+        private const RagdollPart.Type LegParts =
+            RagdollPart.Type.LeftLeg | RagdollPart.Type.RightLeg | RagdollPart.Type.LeftFoot | RagdollPart.Type.RightFoot;
+
+        // Leg Strength. After a crawl stops, only the lower legs touch the ground while the
+        // hips hang 0.3 m above the sitting pose for 3-4 s (CRAWL BODY log): the body rests
+        // on its shins and the leg pins fold them into the sitting pose only slowly. From the
+        // ragdoll's own standing values (Bone.ResetPinForce uses the same three). Re-applied
+        // every frame: the game resets pins on ragdoll state changes (Ragdoll.ResetPinForce).
+        private static void SetLegStrength(Creature creature, float multiplier)
+        {
+            var ragdoll = creature.ragdoll;
+            var pin = CrippleRules.LegPin(multiplier, ragdoll.springRotationForce, ragdoll.damperRotationForce, ragdoll.maxRotationForce);
+            foreach (var part in ragdoll.parts)
+            {
+                if (part != ragdoll.rootPart && (part.type & LegParts) != 0 && !part.isSliced && part.bone != null && part.bone.animationJoint != null)
+                {
+                    part.bone.SetPinRotationForce(pin.Spring, pin.Damper, pin.MaxForce);
+                }
+            }
         }
 
         // Forward (x) and sideways (y) speed in the creature's own frame, as
