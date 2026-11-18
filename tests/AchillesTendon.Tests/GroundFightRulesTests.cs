@@ -84,6 +84,55 @@ namespace AchillesTendon.Tests
         }
 
         [Fact]
+        public void A_due_attack_without_clips_looks_for_them_again()
+        {
+            // Cut before it stood in a melee stance: no clips at the cut, so it looks again when a swing is due.
+            var input = Ready();
+            input.HasAttackClip = false;
+
+            var d = GroundFightRules.Decide(input);
+
+            Assert.False(d.Attack);
+            Assert.True(d.LookForClips);
+        }
+
+        [Fact]
+        public void An_npc_with_clips_does_not_look_for_them()
+        {
+            var d = GroundFightRules.Decide(Ready());
+
+            Assert.False(d.LookForClips);
+        }
+
+        [Theory]
+        [InlineData("notCrawling")]
+        [InlineData("attacksOff")]
+        [InlineData("notAttacker")]
+        [InlineData("playing")]
+        [InlineData("outOfRange")]
+        [InlineData("tooSoon")]
+        [InlineData("featureOff")]
+        [InlineData("notDown")]
+        public void No_clip_search_when_no_swing_would_be_due(string blocker)
+        {
+            var input = Ready();
+            input.HasAttackClip = false;
+            switch (blocker)
+            {
+                case "notCrawling": input.IsCrawling = false; break;
+                case "attacksOff": input.AttacksOn = false; break;
+                case "notAttacker": input.IsAttacker = false; break;
+                case "playing": input.IsPlayingAnimation = true; break;
+                case "outOfRange": input.DistanceToPlayer = 5f; break;
+                case "tooSoon": input.SinceLastAttack = 1f; break;
+                case "featureOff": input.FeatureOn = false; break;
+                case "notDown": input.IsDown = false; break;
+            }
+
+            Assert.False(GroundFightRules.Decide(input).LookForClips);
+        }
+
+        [Fact]
         public void No_attack_while_the_previous_swing_plays()
         {
             var input = Ready();

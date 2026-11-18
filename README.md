@@ -6,7 +6,7 @@ Inspired by two heroes who fell to a single strike at the one weak point of thei
 
 Every feature can be toggled and tuned in the in-game Mod Menu.
 
-> **Work in progress (v0.8.4).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
+> **Work in progress (v0.8.5).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
 
 ## What it does
 

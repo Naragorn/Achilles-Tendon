@@ -1,0 +1,181 @@
+# Nexus pictures 1/2: one fighter, clean arena, debug views off. Each nexus file runs in its own
+# harness invocation (fresh game, no bystanders). Bursts become GIFs (tools/make-gifs.py).
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 40
+set-option AchillesTendon "Blood Effects" true
+set-option AchillesTendon "Blood Pulse Interval" 1
+set-option AchillesTendon "Weakening" true
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 2
+set-option AchillesTendon "Ground Attack Interval" 2
+player-invincible true
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+spawn-npc HumanMale distance=3.5 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 1
+screenshot n01-target of=npc distance=3 height=1.3 angle=150
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+screenshot gcut-01 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-02 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-03 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-04 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-05 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-06 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-07 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-08 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-09 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-10 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-11 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-12 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-13 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-14 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-15 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-16 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-17 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-18 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-19 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-20 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-21 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-22 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-23 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-24 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcut-25 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gcrawl-01 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-02 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-03 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-04 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-05 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-06 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-07 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-08 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-09 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-10 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-11 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-12 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-13 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-14 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-15 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-16 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-17 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-18 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-19 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-20 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-21 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-22 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-23 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-24 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-25 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-26 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-27 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-28 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-29 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+screenshot gcrawl-30 of=npc distance=2.8 height=1.1 angle=60
+wait 0.3
+mark
+expect-log upper body | clip=
+screenshot gswing-01 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-02 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-03 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-04 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-05 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-06 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-07 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-08 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-09 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-10 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-11 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-12 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-13 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-14 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+screenshot gswing-15 of=npc distance=2.4 height=0.9 angle=100
+wait 0.08
+wait 4
+screenshot n02-blood of=npc distance=1.6 height=0.5 angle=150
+screenshot n03-gasping of=npc distance=2.2 height=0.9 angle=80
+expect-npc state Dead within=40
+expect-log [AchillesTendon] BLED OUT
+wait 1.5
+screenshot n04-bled-out of=npc distance=2.6 height=1.2 angle=90
+expect-no-log Exception
+quit

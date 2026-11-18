@@ -39,6 +39,10 @@ namespace AchillesTendon.Logic
         public bool Attack;
 
         public bool Scream;
+
+        /// <summary>A swing is due but the NPC has no attack clips (cut before it stood in a melee
+        /// stance): look for them again, then swing if found.</summary>
+        public bool LookForClips;
     }
 
     public static class GroundFightRules
@@ -55,15 +59,16 @@ namespace AchillesTendon.Logic
             {
                 return new GroundFightDecision();
             }
+            var swingDue = input.IsCrawling
+                && input.AttacksOn
+                && input.IsAttacker
+                && !input.IsPlayingAnimation
+                && input.DistanceToPlayer <= input.AttackRange
+                && input.SinceLastAttack >= input.AttackInterval;
             return new GroundFightDecision
             {
-                Attack = input.IsCrawling
-                    && input.AttacksOn
-                    && input.IsAttacker
-                    && input.HasAttackClip
-                    && !input.IsPlayingAnimation
-                    && input.DistanceToPlayer <= input.AttackRange
-                    && input.SinceLastAttack >= input.AttackInterval,
+                Attack = swingDue && input.HasAttackClip,
+                LookForClips = swingDue && !input.HasAttackClip,
                 Scream = input.ScreamsOn && input.SinceLastScream >= input.ScreamInterval,
             };
         }

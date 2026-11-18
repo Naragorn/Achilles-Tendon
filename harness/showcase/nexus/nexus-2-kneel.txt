@@ -1,0 +1,126 @@
+# Nexus pictures 2/2: the kneeling pose (Kneel Chance 100 %), clean arena, debug views off.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 40
+set-option AchillesTendon "Blood Effects" true
+set-option AchillesTendon "Blood Pulse Interval" 1
+set-option AchillesTendon "Weakening" true
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 2
+set-option AchillesTendon "Ground Attack Interval" 2
+player-invincible true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 1
+spawn-npc HumanMale distance=3.5 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 1
+mark
+hit-npc LeftFoot type=Slash
+expect-log | kneel (roll
+screenshot gkneel-01 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-02 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-03 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-04 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-05 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-06 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-07 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-08 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-09 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-10 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-11 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-12 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-13 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-14 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-15 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-16 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-17 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-18 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-19 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-20 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-21 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-22 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-23 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-24 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-25 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-26 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-27 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-28 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-29 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+screenshot gkneel-30 of=npc distance=2.6 height=1.0 angle=90
+wait 0.08
+wait 2
+mark
+expect-log upper body | clip=
+screenshot gkswing-01 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-02 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-03 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-04 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-05 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-06 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-07 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-08 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-09 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-10 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-11 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-12 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-13 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-14 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot gkswing-15 of=npc distance=2.4 height=1.0 angle=100
+wait 0.08
+screenshot n05-kneeling of=npc distance=2.4 height=1.1 angle=40
+set-option AchillesTendon "Kneel Chance" 0
+expect-no-log Exception
+quit

@@ -1,0 +1,33 @@
+# Cut before the NPC stands in a melee stance (2026-11-18): one second after it got its sword, as when
+# the player sneaks up on an unaware enemy. Before the fix it had no attack clips at the cut and never
+# swung (Nexus showcase runs 20261118-133530, -133625). Now it looks for the clips again when a swing
+# is due and swings.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 4
+set-option AchillesTendon "Ground Attack Interval" 1
+
+spawn-npc HumanMale distance=3.5 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 1
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+expect-log attacker=yes (roll
+await-log 15 [AchillesTendon] GROUND ATTACK | HumanMale
+expect-log upper body | clip=
+expect-npc state Alive within=0.1
+
+set-option AchillesTendon "Ground Attack Chance" 0.75
+set-option AchillesTendon "Ground Attack Range" 1.8
+set-option AchillesTendon "Ground Attack Interval" 3
+set-option AchillesTendon "Bleed-Out Enabled" true
+expect-no-log Exception
+quit

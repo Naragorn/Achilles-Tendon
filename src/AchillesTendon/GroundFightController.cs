@@ -13,7 +13,8 @@ namespace AchillesTendon
     /// - Swings (crawling NPCs only, rolled per NPC from Ground Attack Chance): one of
     ///   its own attack clips on the upper-body layer. Clips come from the NPC's melee
     ///   stance (BrainModuleMelee.meleeIdle, else the stance its equipment maps to),
-    ///   captured when the tendon is cut.
+    ///   captured when the tendon is cut; an NPC cut before it stood in a melee stance
+    ///   has none then, so it looks again whenever a swing is due (2026-11-18).
     /// - NPCs lying flat do not swing: a full-body clip on a Destabilized body did not
     ///   move it (harness step4-a, 2026-11-16), so that route and Arm Strength were
     ///   removed (Nadi, 2026-11-17).
@@ -30,7 +31,6 @@ namespace AchillesTendon
             public readonly List<AnimationClip> AttackClips = new List<AnimationClip>();
             public float LastAttackTime = float.NegativeInfinity;
             public float LastScreamTime = float.NegativeInfinity;
-            public bool NoClipLogged;
 
             /// <summary>Ground Attack Chance, rolled when the tendon was cut.</summary>
             public bool IsAttacker;
@@ -39,7 +39,7 @@ namespace AchillesTendon
         private readonly Dictionary<Creature, Fighter> fighters = new Dictionary<Creature, Fighter>();
         private readonly List<Creature> scratch = new List<Creature>();
 
-        /// <summary>Called when the tendon is cut, while the NPC still stands in its stance.</summary>
+        /// <summary>Called when the tendon is cut (the NPC may not stand in a melee stance yet).</summary>
         public void Start(Creature creature)
         {
             if (fighters.ContainsKey(creature))
@@ -47,11 +47,11 @@ namespace AchillesTendon
                 return;
             }
             var fighter = new Fighter();
-            CaptureAttackClips(creature, fighter.AttackClips);
+            var source = CaptureAttackClips(creature, fighter.AttackClips);
             var roll = Random.value;
             fighter.IsAttacker = GroundFightRules.IsAttacker(ModOptions.GroundAttackChance, roll);
             fighters[creature] = fighter;
-            ModLog.Verbose("GROUND FIGHT START | " + GameAdapters.Label(creature) + " | attack clips=" + fighter.AttackClips.Count
+            ModLog.Verbose("GROUND FIGHT START | " + GameAdapters.Label(creature) + " | attack clips=" + fighter.AttackClips.Count + " (" + source + ")"
                 + " | attacker=" + (fighter.IsAttacker ? "yes" : "no")
                 + " (roll " + roll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
                 + ", chance " + OptionSpecs.GroundAttackChance.Label(ModOptions.GroundAttackChance) + ")");
@@ -93,7 +93,19 @@ namespace AchillesTendon
                     ScreamInterval = ModOptions.ScreamInterval * weak.ScreamIntervalFactor,
                 });
 
-                if (decision.Attack)
+                if (decision.LookForClips)
+                {
+                    // Cut before it stood in a melee stance: the clips can be there now.
+                    var source = CaptureAttackClips(creature, fighter.AttackClips);
+                    ModLog.Verbose("GROUND ATTACK clips | " + GameAdapters.Label(creature) + " | looked again when a swing was due: "
+                        + fighter.AttackClips.Count + " (" + source + ")");
+                    if (fighter.AttackClips.Count == 0)
+                    {
+                        // Next look after one Ground Attack Interval.
+                        fighter.LastAttackTime = time;
+                    }
+                }
+                if (decision.Attack || (decision.LookForClips && fighter.AttackClips.Count > 0))
                 {
                     fighter.LastAttackTime = time;
                     Attack(creature, fighter);
@@ -102,11 +114,6 @@ namespace AchillesTendon
                 {
                     fighter.LastScreamTime = time;
                     Scream(creature, weak.Gasping);
-                }
-                if (ModOptions.GroundAttacks && fighter.IsAttacker && fighter.AttackClips.Count == 0 && !fighter.NoClipLogged)
-                {
-                    fighter.NoClipLogged = true;
-                    ModLog.Verbose("GROUND ATTACK skipped | " + GameAdapters.Label(creature) + " | no attack animations (no weapon in a melee stance when cut)");
                 }
             }
         }
@@ -154,36 +161,68 @@ namespace AchillesTendon
         // First choice: the melee pose the NPC stands in right now. An NPC without a
         // target (e.g. HumanDummy) holds its weapon in a plain idle pose, so the fallback
         // is the stance its equipment maps to (BrainModuleStance.GetStanceDataFromEquipment,
-        // the lookup the game uses when combat starts); its clips are loaded with the catalog.
-        private static void CaptureAttackClips(Creature creature, List<AnimationClip> clips)
+        // the lookup the game uses when combat starts). Returns where the clips came from,
+        // or why there are none (Debug Logging).
+        private static string CaptureAttackClips(Creature creature, List<AnimationClip> clips)
         {
             var instance = creature.brain != null ? creature.brain.instance : null;
             if (instance == null)
             {
-                return;
+                return "no brain";
             }
             var melee = instance.GetModule<BrainModuleMelee>(autoAddModuleIfMissing: false);
+            var meleeMotions = 0;
             if (melee != null && melee.meleeIdle != null && melee.meleeIdle.attackMotions != null)
             {
                 foreach (var motion in melee.meleeIdle.attackMotions)
                 {
+                    meleeMotions++;
                     AddClip(motion, clips);
                 }
             }
             if (clips.Count > 0)
             {
-                return;
+                return "melee idle " + melee.meleeIdle.id;
             }
+            var report = "melee idle " + (melee == null ? "no module" : melee.meleeIdle == null ? "none" : meleeMotions + " motions, no clip");
             var stance = instance.GetModule<BrainModuleStance>(autoAddModuleIfMissing: false);
-            var stanceData = stance != null ? stance.currentStanceData ?? stance.GetStanceDataFromEquipment() : null;
+            if (stance == null)
+            {
+                return report + "; no stance module";
+            }
+            report += "; stance " + (stance.currentStanceData != null ? stance.currentStanceData.id : "none");
+            report += Collect(stance.currentStanceData, clips);
+            if (clips.Count > 0)
+            {
+                return report;
+            }
+            var fromEquipment = stance.GetStanceDataFromEquipment();
+            report += "; equipment stance " + (fromEquipment != null ? fromEquipment.id : "none");
+            return report + Collect(fromEquipment, clips);
+        }
+
+        private static string Collect(StanceData stanceData, List<AnimationClip> clips)
+        {
             if (stanceData == null)
             {
-                return;
+                return "";
             }
+            int motions = 0, missing = 0;
             foreach (var node in stanceData.AllStanceNodes())
             {
-                AddClip(node as AttackMotion, clips);
+                var motion = node as AttackMotion;
+                if (motion == null)
+                {
+                    continue;
+                }
+                motions++;
+                if (motion.animationClip == null)
+                {
+                    missing++;
+                }
+                AddClip(motion, clips);
             }
+            return " (" + motions + " attacks, " + missing + " without clip)";
         }
 
         private static void AddClip(AttackMotion motion, List<AnimationClip> clips)
