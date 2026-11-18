@@ -80,3 +80,5 @@ Separate mod. Realistic crippling hit: a cut to the Achilles tendon takes the en
 6. ~~Optional player hardcore mode.~~ Won't do (Nadi, 2026-11-17); the detection-only option `Apply To Player` was removed as well (v0.8.1).
 
 After each step: build, test in game, and note what was verified vs. assumed (in `DEVELOPMENT.md`). `README.md` is only for players: what the mod does, install, Mod Menu, compat; no implementation detail (Nadi, 2026-11-17).
+
+**Deploy (rule, user 2026-11-18): always both installs.** Every committed, tested build goes into the Linux Steam copy and the Windows Steam copy of Blade & Sorcery (`…/BladeAndSorcery_Data/StreamingAssets/Mods/AchillesTendon`; on Windows Vortex manages the Mods folder, the mod lies next to the others), never only one. Use `tools/deploy.sh` (builds Release, refuses uncommitted `src` changes, copies DLL + manifest into both Mods folders, checks the md5 of all copies). Not while a harness run or the game uses the Linux install.
