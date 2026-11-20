@@ -4,6 +4,7 @@
 # Pictures over time; then, with Lie Flat Chance 100 %, a second NPC lies flat.
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Stand Up When Disabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true

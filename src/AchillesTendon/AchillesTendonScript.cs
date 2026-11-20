@@ -225,6 +225,10 @@ namespace AchillesTendon
 
             if (CrippleRules.ShouldCripple(result, creature.isPlayer, creature.isKilled, cripple.IsCrippled(creature)))
             {
+                if (TryKillAtOnce(creature, hit))
+                {
+                    return;
+                }
                 // Captured before the collapse: the attack clips come from the standing stance.
                 groundFight.Start(creature);
                 cripple.Cripple(creature);
@@ -232,6 +236,36 @@ namespace AchillesTendon
                 bleed.Start(creature, part, hit.contactPoint);
                 dmcs.OnCrippled(creature, hit);
             }
+        }
+
+        // Instant Death Chance (Nadi, 2026-11-20). The cutting hit itself kills, through the game's own
+        // Creature.Kill(hit), as DMCS's critical does. This runs at the hit's start, before the game's damage,
+        // while the NPC still stands: Kill raises the kill events with this player hit (the Combat Focus
+        // skill's focus, DMCS, BrainModuleDeath's dying animation picked from the standing pose and the cut's
+        // direction), and Creature.Damage then sees isKilled and only raises the hit's end. Not crippled first:
+        // the crawl pose would turn the dying animation into a ragdoll (DeathRules.StopDyingAnimation).
+        private bool TryKillAtOnce(Creature creature, CollisionInstance hit)
+        {
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+            var roll = UnityEngine.Random.value;
+            var rolled = " (roll " + roll.ToString("0.00", ci)
+                + ", instant death chance " + OptionSpecs.InstantDeathChance.Label(ModOptions.InstantDeathChance) + ")";
+            if (CrippleRules.OutcomeFor(ModOptions.InstantDeathChance, roll) != CutOutcome.InstantDeath)
+            {
+                return false;
+            }
+            var focusBefore = GameAdapters.PlayerFocus();
+            creature.Kill(hit);
+            if (!creature.isKilled)
+            {
+                ModLog.Verbose("INSTANT DEATH refused | " + GameAdapters.Label(creature) + " | the game kept it alive" + rolled + ", crippled instead");
+                return false;
+            }
+            ModLog.Verbose("INSTANT DEATH | " + GameAdapters.Label(creature) + " | tendon cut, killed at once" + rolled
+                + " | dying animation " + (creature.brain != null && creature.brain.isDying ? "yes" : "no (ragdoll)")
+                + " | player focus " + focusBefore.ToString("0.0", ci) + " -> " + GameAdapters.PlayerFocus().ToString("0.0", ci));
+            dmcs.OnKilledByCut(creature);
+            return true;
         }
     }
 }

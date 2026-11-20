@@ -169,4 +169,36 @@ namespace AchillesTendon.Tests
             Assert.Equal(CrippleAction.HoldDown, CrippleRules.Decide(Lying(), tendonEnabled: false, standUpWhenDisabled: false, pose: DownedPose.LieFlat));
         }
     }
+
+    // Instant Death Chance (Nadi, 2026-11-20): rolled once at the cut, before the pose. A hit kills the
+    // NPC with that very cut (the game's own death and kill events); the rest are crippled as before.
+    public class CrippleRulesCutOutcomeTests
+    {
+        [Theory]
+        [InlineData(0.5f, 0f, CutOutcome.InstantDeath)]
+        [InlineData(0.5f, 0.49f, CutOutcome.InstantDeath)]
+        [InlineData(0.5f, 0.5f, CutOutcome.Cripple)]
+        [InlineData(0.5f, 1f, CutOutcome.Cripple)]
+        [InlineData(0f, 0f, CutOutcome.Cripple)]
+        [InlineData(1f, 1f, CutOutcome.InstantDeath)]
+        public void Instant_death_chance_picks_the_outcome(float chance, float roll, CutOutcome outcome)
+        {
+            Assert.Equal(outcome, CrippleRules.OutcomeFor(chance, roll));
+        }
+
+        [Fact]
+        public void Half_of_the_cuts_kill_by_default()
+        {
+            Assert.Equal(0.5f, OptionSpecs.InstantDeathChance.Default);
+            Assert.Equal("50 %", OptionSpecs.InstantDeathChance.Label(0.5f));
+            Assert.Equal("0 %", OptionSpecs.InstantDeathChance.Label(OptionSpecs.InstantDeathChance.Min));
+            Assert.Equal("100 %", OptionSpecs.InstantDeathChance.Label(OptionSpecs.InstantDeathChance.Max));
+        }
+
+        [Fact]
+        public void Instant_death_chance_is_in_the_menu_list()
+        {
+            Assert.Contains(OptionSpecs.InstantDeathChance, OptionSpecs.All);
+        }
+    }
 }

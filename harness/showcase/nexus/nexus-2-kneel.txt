@@ -1,6 +1,7 @@
 # Nexus pictures 2/2: the kneeling pose (Kneel Chance 100 %), clean arena, debug views off.
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Debug Logging" true

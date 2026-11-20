@@ -100,6 +100,10 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec MaxHitAngle =
             new FloatOptionSpec("Max Hit Angle", 30f, 180f, 5f, 110f, OptionUnit.Degrees);
 
+        // Share of heel cuts that kill at once (Nadi, 2026-11-20: default 50 %); rolled before the pose.
+        public static readonly FloatOptionSpec InstantDeathChance =
+            new FloatOptionSpec("Instant Death Chance", 0f, 1f, 0.05f, 0.5f, OptionUnit.Percent);
+
         public static readonly FloatOptionSpec LieFlatChance =
             new FloatOptionSpec("Lie Flat Chance", 0f, 1f, 0.05f, 0.05f, OptionUnit.Percent);
 
@@ -170,6 +174,7 @@ namespace AchillesTendon.Logic
             HeelZoneBackOffset,
             HeelZoneHeightOffset,
             MaxHitAngle,
+            InstantDeathChance,
             LieFlatChance,
             KneelChance,
             CrawlSpeed,

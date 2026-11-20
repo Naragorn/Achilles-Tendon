@@ -10,6 +10,16 @@ namespace AchillesTendon.Logic
         LieFlat = 1,
     }
 
+    /// <summary>What a heel cut does; rolled once from Instant Death Chance, before the pose.</summary>
+    public enum CutOutcome
+    {
+        /// <summary>Crippled: down for good, then the pose rolls (lie flat, sit and crawl, kneel).</summary>
+        Cripple = 0,
+
+        /// <summary>The cut kills at once: the game's own death (dying animation, kill events) with the cutting hit.</summary>
+        InstantDeath = 1,
+    }
+
     /// <summary>What to do with a crippled creature this frame.</summary>
     public enum CrippleAction
     {
@@ -51,6 +61,12 @@ namespace AchillesTendon.Logic
 
     public static class CrippleRules
     {
+        /// <summary>Instant Death Chance (Nadi, 2026-11-20): whether a heel cut kills at once or cripples.</summary>
+        public static CutOutcome OutcomeFor(float instantDeathChance, float roll)
+        {
+            return Chance.Hits(instantDeathChance, roll) ? CutOutcome.InstantDeath : CutOutcome.Cripple;
+        }
+
         /// <summary>Lie Flat Chance (Nadi, 2026-11-17): the pose of a freshly crippled NPC.</summary>
         public static DownedPose PoseFor(float lieFlatChance, float roll)
         {

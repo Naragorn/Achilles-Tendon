@@ -126,6 +126,17 @@ namespace AchillesTendon
             return null;
         }
 
+        /// <summary>The player's focus (Mana.currentFocus), or NaN without a player body; for Debug Logging.</summary>
+        public static float PlayerFocus()
+        {
+            var player = Player.currentCreature;
+            if (player == null || player.mana == null)
+            {
+                return float.NaN;
+            }
+            return player.mana.currentFocus;
+        }
+
         public static string Label(Creature creature)
         {
             var id = string.IsNullOrEmpty(creature.creatureId) ? creature.name : creature.creatureId;

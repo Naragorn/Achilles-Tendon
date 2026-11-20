@@ -6,6 +6,7 @@ wait-level
 # faster than at 90 fps (runs 20261120-101234 and -112856).
 frame-rate 90
 set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Debug Logging" true

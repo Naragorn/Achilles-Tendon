@@ -4,6 +4,7 @@
 # vertical speed, pin spring. Leg Strength x4 (default) vs x1; bled out vs killed by the player.
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Kneel Chance" 0
 set-option AchillesTendon "Debug Logging" true

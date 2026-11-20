@@ -7,7 +7,7 @@ using ThunderRoad;
 namespace AchillesTendon
 {
     /// <summary>
-    /// DMCS compat (Nadi, 2026-11-17): a heel cut and the player's kill of a crippled NPC
+    /// DMCS compat (Nadi, 2026-11-17): a heel cut (also one that kills at once) and the player's kill of a crippled NPC
     /// fill DMCS's Adrenaline meter through DMCS.Adrenaline.AddExternal(float, string).
     /// DMCS is looked up by name on every gain (rare events), so the mods' load order does
     /// not matter and Achilles runs unchanged without DMCS.
@@ -25,6 +25,15 @@ namespace AchillesTendon
         public void OnCrippled(Creature creature, CollisionInstance hit)
         {
             crippleHits[creature] = hit;
+            Give(DmcsCompatRules.HeelCutGain(ModOptions.DmcsAdrenaline, ModOptions.HeelCutAdrenaline), HeelCutSource, creature);
+        }
+
+        /// <summary>
+        /// Instant Death: the heel cut's own amount. The kill itself is the cutting hit on an NPC that was never
+        /// crippled, so OnKill gives nothing for it, as for a heel cut whose damage kills.
+        /// </summary>
+        public void OnKilledByCut(Creature creature)
+        {
             Give(DmcsCompatRules.HeelCutGain(ModOptions.DmcsAdrenaline, ModOptions.HeelCutAdrenaline), HeelCutSource, creature);
         }
 

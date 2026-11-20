@@ -1,0 +1,65 @@
+# Instant Death Chance (Nadi, 2026-11-20, default 50 %): a heel cut kills at once with that chance. The cut
+# itself kills through the game's Creature.Kill(hit) while the NPC still stands, so the game plays its own
+# dying animation and the kill events carry the player's hit (Combat Focus skill, DMCS). Not crippled, no
+# bleed-out, no ground fight. The others are crippled as before. Filmed for the evidence page.
+# The DMCS adrenaline of an instant death is checked in harness/compat/dmcs-adrenaline.txt (case 10).
+wait-level
+frame-rate 90
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Ground Fighting Enabled" true
+# Case 3 expects the crawl pose (state Alive): no lying flat.
+set-option AchillesTendon "Lie Flat Chance" 0
+player-invincible true
+
+# 1. Default 50 %.
+expect-option AchillesTendon "Instant Death Chance" 0.5
+
+# 2. 100 %: a fighter, cut from behind with the player's sword: dead at once, with the game's dying animation.
+set-option AchillesTendon "Instant Death Chance" 1
+spawn-npc HumanMale distance=3.5 facing=180 brain=HumanMedium container=CivilianMeleeSword
+record-start instant fps=30 width=960 height=540 views=side,npc distance=2.6 rise=1.0 angle=90
+wait 0.5
+mark
+hit-npc LeftFoot type=Slash by=held item=SwordShortCommon
+expect-log [AchillesTendon] INSTANT DEATH
+expect-log | dying animation yes
+expect-npc state Dead within=1
+wait 5
+record-stop
+expect-no-log [AchillesTendon] COLLAPSE
+expect-no-log [AchillesTendon] BLEED START
+expect-no-log [AchillesTendon] GROUND FIGHT START
+
+# 3. 0 %: crippled as before.
+set-option AchillesTendon "Instant Death Chance" 0
+spawn-npc HumanMale distance=3.5 angle=90 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+expect-log [AchillesTendon] BLEED START
+wait 1
+expect-no-log INSTANT DEATH
+expect-npc state Alive within=0.1
+
+# 4. 100 %, but a cut from the front is no heel hit: nothing happens.
+set-option AchillesTendon "Instant Death Chance" 1
+spawn-npc HumanMale distance=3.5 angle=-90 facing=0 brain=HumanDummy
+wait 0.5
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] miss (AttackAngleTooFrontal)
+wait 1
+expect-no-log INSTANT DEATH
+expect-no-log [AchillesTendon] COLLAPSE
+expect-npc state Alive within=0.1
+
+set-option AchillesTendon "Instant Death Chance" 0.5
+set-option AchillesTendon "Lie Flat Chance" 0.05
+expect-no-log Exception
+quit

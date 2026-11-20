@@ -8,6 +8,7 @@
 # ground is 1.26 m high, and a dummy spawned there died inside it (run 20261120-111650).
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
@@ -84,7 +85,7 @@ set-option AchillesTendon "DMCS Adrenaline" true
 # 6-9. Every way the player kills counts as an execution: fist, kick, thrown blade, spell.
 # GameAdapters.Attacker resolves fist and kick through the hitting ragdoll part (not
 # CollisionInstance.IsDoneByPlayer). Smaller amounts keep the meter from filling:
-# 4 x (5 + 10) = 60, so 155 of 300 after case 9.
+# 4 x (5 + 10) = 60, so 155 of 300 after case 9 (160 after case 10).
 set-option AchillesTendon "Heel Cut Adrenaline" 5
 set-option AchillesTendon "Crippled Kill Adrenaline" 10
 
@@ -135,6 +136,23 @@ hit-npc Head type=Energy damage=999 by=spell
 expect-npc state Dead within=3
 expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
 expect-log | Applied
+
+# 10. Instant Death: the cut kills at once and counts as a heel cut (+5); the kill is the cutting hit on an
+# NPC that was never crippled, so no execution (as in case 2). DMCS's own hit handlers then see a dead NPC
+# at the hit's end (Creature.Damage raises OnEnd after a kill inside OnStart): no exception.
+# 140 degrees, 2.5 m: 6 m from case 9, at least 1.4 m from every earlier body (case 2 at 120 degrees, 3.5 m).
+set-option AchillesTendon "Instant Death Chance" 1
+spawn-npc HumanMale distance=2.5 angle=140 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash by=held item=SwordShortCommon
+expect-log [AchillesTendon] INSTANT DEATH
+expect-npc state Dead within=1
+expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
+expect-log | Applied
+wait 1
+expect-no-log AchillesCrippledKill
+expect-no-log Adrenaline error
+set-option AchillesTendon "Instant Death Chance" 0
 
 expect-no-log Exception
 quit

@@ -53,6 +53,7 @@ Separate mod. Realistic crippling hit: a cut to the Achilles tendon takes the en
 - **Sitting crawler** (the rest): the game's own injured/crawl animator states (low `Height`, `Injured = 1`); sits on its back, crawls forward or backward.
 - **Kneeler** (`Kneel Chance`, default 30 % of the crawlers): falls forward with the game's `DeathKneelForward` stab-death clips, then kneels upright and fights on. Started as a wished-for belly (face-down) crawl; headless it kneels upright instead, and Nadi kept that as its own pose. The game has no face-down idle; its forward `Crawling` clip is face down.
 - **Lying flat** (`Lie Flat Chance`, default 5 %, rolled first): ragdoll held on the ground (`Destabilized`); only screams.
+- **Instant death** (`Instant Death Chance`, default 50 %, Nadi 2026-11-20): rolled at the cut before all poses; the cut kills at once through the game's own `Creature.Kill(hit)` (dying animation, kill events, focus, DMCS heel-cut adrenaline). Only the survivors roll a pose.
 - Superseded: the 2026-11-16 decision (lie flat for now, most likely own animations later). Own animations (Unity SDK, asset bundle) stay the route if the game's clips do not hold up in the headset.
 - Details, measurements and runs: `DEVELOPMENT.md` "What a heel hit does".
 

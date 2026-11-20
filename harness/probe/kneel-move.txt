@@ -3,6 +3,7 @@
 # ATTACK lines). A: kneeler (Kneel Chance 100 %), B: sitting crawler (0 %) for comparison.
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Bleed-Out Enabled" false
