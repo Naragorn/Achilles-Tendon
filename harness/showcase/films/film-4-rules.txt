@@ -1,0 +1,44 @@
+# Films 4/4: only a blade on the back of the heel counts. Heel zones and hit markers on (debug views):
+# a blunt hit on the heel does nothing, the slash on the same spot drops it.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 40
+set-option AchillesTendon "Blood Effects" true
+set-option AchillesTendon "Blood Pulse Interval" 1
+set-option AchillesTendon "Weakening" true
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 2
+set-option AchillesTendon "Ground Attack Interval" 2
+player-invincible true
+set-option AchillesTendon "Show Heel Zones" true
+set-option AchillesTendon "Show Hit Markers" true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+spawn-npc HumanMale distance=2 facing=180 brain=HumanDummy
+wait 1
+record-start rules fps=30 width=960 height=540 views=npc distance=1.8 rise=0.6 angle=130
+wait 1
+mark
+hit-npc LeftFoot type=Blunt
+expect-log [AchillesTendon] miss (DamageTypeNotAllowed)
+wait 2.5
+expect-npc state Alive within=0.1
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+wait 3.5
+record-stop
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+expect-no-log Exception
+quit

@@ -1,0 +1,54 @@
+# Films 3/4: three enemies, three fates. Each one is cut right after it spawns, with the pose forced
+# by the chance sliders (the pose is rolled at the cut): left sits and crawls, middle kneels, right
+# lies flat. Filmed from the player's eyes once the third one goes down.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 40
+set-option AchillesTendon "Blood Effects" true
+set-option AchillesTendon "Blood Pulse Interval" 1
+set-option AchillesTendon "Weakening" true
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 2
+set-option AchillesTendon "Ground Attack Interval" 2
+player-invincible true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+spawn-npc HumanMale distance=3.5 angle=-35 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 1
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+set-option AchillesTendon "Kneel Chance" 1
+spawn-npc HumanMale distance=3.5 angle=0 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 1
+mark
+hit-npc LeftFoot type=Slash
+expect-log | kneel (roll
+set-option AchillesTendon "Lie Flat Chance" 1
+spawn-npc HumanMale distance=3.5 angle=35 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+# No wait here: in run 20261120-091236 the third one had turned to face the player 1.5 s after it spawned
+# (angleFromBehind 178.5 deg), so the cut was rightly refused as frontal.
+record-start fates fps=30 width=960 height=540 views=first
+wait 0.2
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+wait 10
+record-stop
+set-option AchillesTendon "Lie Flat Chance" 0.05
+set-option AchillesTendon "Kneel Chance" 0.3
+expect-no-log Exception
+quit

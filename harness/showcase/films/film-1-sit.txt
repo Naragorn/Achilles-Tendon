@@ -1,0 +1,45 @@
+# Films 1/4: the sitting crawler from the cut to its death, filmed at the game's own pace (BasHarness
+# record mode, camera beside the NPC). Each film file runs in its own harness invocation (fresh game,
+# clean arena). hit-npc has no physics contact, so the blade itself is not in the picture.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Bleed-Out Duration" 40
+set-option AchillesTendon "Blood Effects" true
+set-option AchillesTendon "Blood Pulse Interval" 1
+set-option AchillesTendon "Weakening" true
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Ground Attack Range" 2
+set-option AchillesTendon "Ground Attack Interval" 2
+player-invincible true
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+spawn-npc HumanMale distance=3.5 facing=180 brain=HumanMedium
+npc-grab SwordShortCommon
+wait 1
+record-start cut fps=30 width=960 height=540 views=npc distance=2.6 rise=1.0 angle=90
+wait 0.5
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+wait 3
+record-stop
+record-start hunt fps=30 width=960 height=540 views=npc,side distance=2.8 rise=1.1 angle=60
+await-log 20 [AchillesTendon] GROUND ATTACK | HumanMale
+wait 4
+record-stop
+record-start bleed fps=15 width=960 height=540 views=npc distance=2.4 rise=1.0 angle=80
+expect-npc state Dead within=40
+expect-log [AchillesTendon] BLED OUT
+wait 2
+record-stop
+expect-no-log Exception
+quit
