@@ -5,6 +5,10 @@
 # fighting, they turned to the player within 1 s (run 20261120-101121). Three NPCs with their backs to the player, each in a fresh spot: a blunt hit
 # (refused, stays up: the game's own turn), a kneeler, a sitter.
 wait-level
+# Headset pace (BasHarness 305fce2, its own frame limiter): uncapped, the headless game runs at 330-500 fps,
+# and the game's AI turn takes a share of the remaining angle per frame. Runs 20261120-101121 and -101234
+# were uncapped; in run 20261120-112206 the older targetFrameRate cap had no effect (XR paces the frames).
+frame-rate 90
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
@@ -25,7 +29,6 @@ wait 2.5
 set-option AchillesTendon "Kneel Chance" 1
 spawn-npc HumanMale distance=3.5 angle=0 facing=180 brain=HumanMedium container=CivilianMeleeSword
 record-start kneelturn fps=30 width=640 height=360 views=npc distance=2.6 rise=1.0 angle=90
-wait 0.1
 mark
 hit-npc LeftFoot type=Slash
 expect-log | kneel (roll
@@ -34,8 +37,8 @@ record-stop
 
 set-option AchillesTendon "Kneel Chance" 0
 spawn-npc HumanMale distance=3.5 angle=40 facing=180 brain=HumanMedium container=CivilianMeleeSword
+# No wait before the cut: in run 20261120-112206 this NPC had turned to the player 0.23 s after it spawned.
 record-start sitturn fps=30 width=640 height=360 views=npc distance=2.6 rise=1.0 angle=90
-wait 0.1
 mark
 hit-npc LeftFoot type=Slash
 expect-log | sit (roll
