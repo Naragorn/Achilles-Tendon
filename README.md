@@ -1,105 +1,129 @@
 # Heel of Achilles
 
-Blade & Sorcery mod: cutting an enemy's Achilles tendon makes them fall. They can no longer stand, keep fighting from the ground and slowly bleed out.
+A Blade & Sorcery mod about one precise cut. Slice an enemy's Achilles tendon and they go down for good. Some die on the spot. The rest crawl, fight on from the ground and slowly bleed out.
 
-Inspired by two heroes who fell to a single strike at the one weak point of their body: **Achilles** (Greek) and **Krishna** (Indian). The idea of the mod is the same: the precise expert strike instead of raw force.
+Achilles in Greek myth and Krishna in Indian myth both fell to a single strike at their one weak spot. This mod gives your enemies that weak spot. Skill beats raw force.
 
-Every feature can be toggled and tuned in the in-game Mod Menu.
-
-> **Work in progress (v0.8.7).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
+> **Work in progress (v0.8.7).** Everything below passes automated in-game tests but has not been played in a headset yet. Crawling and ground attacks may still look rough.
 
 ## What it does
 
-- **The cut:** slash or stab the back of an enemy's heel, from behind or the side. Blunt hits and hits from the front do not count. You can cut with a held weapon, a thrown blade or a spell.
-- **Instant death:** half of the cuts (by default) kill at once. The enemy drops with the game's own death animation, and it counts as your kill.
-- **The fall:** an enemy that survives the cut drops and never stands up again, in one of three poses, rolled per enemy: most sit down and crawl on their back with the game's own injured and crawl animations, some (30 % of the crawlers by default) fall forward onto their knees and fight on kneeling, and a few (5 % by default) fall flat and lie still.
-- **Fighting from the ground:** they scream in pain, and most of them (75 % by default) swing at you with their upper body when you come close. The rest only crawl and scream, so you never know which one still fights back.
-- **Bleeding out:** they bleed from the cut heel and die after the Bleed-Out Duration (45 s by default). Over time they crawl slower, scream less often and end up gasping. You can finish them earlier as usual.
-- Only your hits count: NPCs cutting each other's heels, or yours, do nothing.
+- **The cut.** Slash or stab the back of an enemy's heel, from behind or the side. Blunt hits and hits from the front don't count. Held weapons, thrown blades and spells all work.
+- **Instant death.** Half of all cuts kill on the spot. The enemy drops with the game's own death animation, and it counts as your kill.
+- **Down for good.** The survivors never stand up again. Each one rolls its own pose: most sit down and crawl on their back, some (30 %) fall to their knees and fight on kneeling, and a few (5 %) fall flat and lie still.
+- **Slow to turn.** Crawling and kneeling enemies turn toward you at a quarter of the normal speed, so you can circle them.
+- **Still dangerous.** They scream and crawl after you, and most of them (75 %) swing at you when you get close. The rest only crawl and scream. You can't tell which is which.
+- **Bleeding out.** Blood drips from the cut heel, heavier toward the end. They crawl slower, scream less, start gasping and die after 45 seconds. You can finish them sooner as usual.
+- **Only your cuts count.** Enemies cutting each other's heels, or yours, do nothing.
+- **Your rules.** Every feature has a toggle or slider in the Mod Menu, and changes apply live. Turn the mod off and crippled enemies get back up.
+- **Practice aids.** Show the heel zones as spheres and mark every leg hit green (heel) or red (miss).
+- **DMCS.** With Dark Messiah Combat Systems installed, heel cuts fill its Adrenaline meter. See [DMCS compat](#dmcs-compat).
+
+All numbers are defaults. You can change every one of them in the Mod Menu.
 
 ## Install
 
-Requires Blade & Sorcery 1.3.2 (PC). Copy the `AchillesTendon` folder into `Blade & Sorcery/BladeAndSorcery_Data/StreamingAssets/Mods/` and start the game. All options are on the mod's page in the in-game Mod Menu.
+You need Blade & Sorcery 1.3.2 (PC). Copy the `AchillesTendon` folder into `BladeAndSorcery_Data/StreamingAssets/Mods/` in the game folder and start the game. The options are on the mod's page in the Mod Menu.
 
-After updating, press the mod page's reset button: the game saves options by their position in each slider, so changed ranges can shift saved values.
+After an update, press the reset button on the mod's page. The game saves each option as a position on its slider, so a changed range can shift a saved value.
 
 ## Mod Menu
 
-| Category | Option | Default | Range |
+### Achilles Tendon
+
+| Option | Default | Range | What it does |
 |---|---|---|---|
-| Achilles Tendon | Achilles Tendon Enabled | on | |
-| | Heel Zone Size (radius) | 8 cm | 2-20 cm |
-| | Heel Zone Back Offset | 4 cm | 0-15 cm |
-| | Heel Zone Height Offset | 3 cm | -5-15 cm |
-| | Max Hit Angle (0 = straight behind, 90 = side) | 110° | 30-180° |
-| | Allowed Damage Types | Slash and Pierce | Slash and Pierce / Slash only / Pierce only |
-| | Stand Up When Disabled (NPCs with a cut tendon get up when the mod is turned off) | on | |
-| | Instant Death Chance (share of heel cuts that kill at once: the enemy drops with the game's own death animation, and it counts as your kill; the others are crippled) | 50 % | 0-100 % |
-| | Lie Flat Chance (share of crippled enemies that lie flat as a ragdoll instead of crawling; rolled once per enemy at the cut) | 5 % | 0-100 % |
-| | Kneel Chance (share of crawling enemies that fall forward onto their knees and fight on kneeling; the others sit down and crawl on their back) | 30 % | 0-100 % |
-| | Crawl Speed (movement while crawling, relative to walking) | x0.3 | x0.05-x1 |
-| | Crawl Body Height (0 = flat, 1 = standing) | x0.2 | x0-x0.6 |
-| | Steady Crawl Pose (twitches count as standing still) | on | on/off |
-| | Crawl Start Speed (sitting -> crawling from this speed) | 0.4 | 0.1-1 |
-| | Crawl Stop Speed (crawling -> sitting below this speed) | 0.1 | 0.05-0.5 |
-| | Leg Strength (how hard the legs follow the animation while crawling) | x4 | x1-x10 |
-| | Crawl Turn Speed (how fast a crawling or kneeling enemy turns towards you; 100 % = the game's own speed, a half turn in about 0.2 s) | 25 % | 10-100 % |
-| Bleed-Out | Bleed-Out Enabled (off pauses the bleeding, on resumes it) | on | |
-| | Bleed-Out Duration (cut to death) | 45 s | 10-180 s |
-| | Blood Effects (drip from the cut heel, stronger towards the end) | on | |
-| | Blood Pulse Interval (between drips and bleed log lines) | 2 s | 0.5-10 s |
-| | Weakening (crawls slower, screams less often, heavy breathing near the end) | on | |
-| | Weakest Crawl Speed (share of Crawl Speed at the moment of death) | 25 % | 5-100 % |
-| | Scream Slowdown (Scream Interval multiplier at the moment of death) | x3 | x1-x5 |
-| | Gasping From (bleed-out share from which screams turn into heavy breathing) | 75 % | 50-100 % |
-| Ground Fighting | Ground Fighting Enabled | on | |
-| | Ground Attacks (crawling enemies swing with the upper body; enemies lying flat never swing). Off: no downed enemy attacks | on | |
-| | Ground Attack Chance (share of crippled enemies that fight back; rolled once per enemy at the cut) | 75 % | 0-100 % |
-| | Ground Attack Range | 1.8 m | 0.5-4 m |
-| | Ground Attack Interval | 3 s | 1-10 s |
-| | Screaming (pain cries) | on | |
-| | Scream Interval | 6 s | 2-30 s |
-| DMCS Compat | DMCS Adrenaline (with DMCS installed: heel cuts and executions fill its Adrenaline meter; without DMCS it does nothing) | on | |
-| | Heel Cut Adrenaline (points for each heel cut that cripples an NPC) | 20 | 0-100 |
-| | Crippled Kill Adrenaline (points when you kill an NPC that was already crippled) | 35 | 0-100 |
-| Debug | Debug Logging (writes heel hits, collapses and bleed-out to the game log) | off | |
-| | Show Heel Zones (draws each NPC's heel zone as a sphere) | off | |
-| | Show Hit Markers (green = heel hit, red = miss) | off | |
-| | Hit Marker Duration | 5 s | 1-30 s |
+| Achilles Tendon Enabled | on | | Turns the mod on or off. |
+| Heel Zone Size | 8 cm | 2-20 cm | Radius of the hit zone at the heel. |
+| Heel Zone Back Offset | 4 cm | 0-15 cm | How far behind the ankle the zone sits. |
+| Heel Zone Height Offset | 3 cm | -5 to 15 cm | How far above the ankle the zone sits. |
+| Max Hit Angle | 110° | 30-180° | How far from straight behind you can cut. 0 = only from behind, 90 = side, 180 = anywhere. |
+| Allowed Damage Types | Slash and Pierce | Slash and Pierce, Slash only, Pierce only | Which hits cut the tendon. Blunt never does. |
+| Stand Up When Disabled | on | | Crippled enemies get back up when you turn the mod off. |
+| Instant Death Chance | 50 % | 0-100 % | Share of cuts that kill on the spot. |
+| Lie Flat Chance | 5 % | 0-100 % | Share of crippled enemies that lie flat instead of crawling. |
+| Kneel Chance | 30 % | 0-100 % | Share of crawlers that kneel and fight on instead. |
+| Crawl Speed | x0.3 | x0.05-x1 | Crawling speed compared to walking. |
+| Crawl Body Height | x0.2 | x0-x0.6 | How low the crawling body stays. 0 = flat, 1 = standing. |
+| Steady Crawl Pose | on | | Small twitches count as standing still, so the enemy doesn't flicker between sitting and crawling. |
+| Crawl Start Speed | 0.4 | 0.1-1 | Speed at which a sitting enemy starts to crawl. |
+| Crawl Stop Speed | 0.1 | 0.05-0.5 | Speed below which a crawler sits down again. |
+| Leg Strength | x4 | x1-x10 | How firmly the legs follow the crawl animation. |
+| Crawl Turn Speed | 25 % | 10-100 % | How fast crawlers and kneelers turn toward you. 100 % = the game's normal speed. |
+
+### Bleed-Out
+
+| Option | Default | Range | What it does |
+|---|---|---|---|
+| Bleed-Out Enabled | on | | Off pauses the bleeding, on resumes it. |
+| Bleed-Out Duration | 45 s | 10-180 s | Time from the cut to death. |
+| Blood Effects | on | | Blood drips from the heel, heavier toward the end. |
+| Blood Pulse Interval | 2 s | 0.5-10 s | Time between drips. |
+| Weakening | on | | They crawl slower, scream less and gasp near the end. |
+| Weakest Crawl Speed | 25 % | 5-100 % | Crawl speed at the moment of death, as a share of Crawl Speed. |
+| Scream Slowdown | x3 | x1-x5 | How much longer the pauses between screams get by the end. |
+| Gasping From | 75 % | 50-100 % | Point of the bleed-out where screams turn into gasping. |
+
+### Ground Fighting
+
+| Option | Default | Range | What it does |
+|---|---|---|---|
+| Ground Fighting Enabled | on | | Crippled enemies scream and fight from the ground. |
+| Ground Attacks | on | | Crawlers and kneelers swing at you. Enemies lying flat never do. |
+| Ground Attack Chance | 75 % | 0-100 % | Share of crippled enemies that fight back. |
+| Ground Attack Range | 1.8 m | 0.5-4 m | How close you must be before they swing. |
+| Ground Attack Interval | 3 s | 1-10 s | Time between swings. |
+| Screaming | on | | Pain cries. |
+| Scream Interval | 6 s | 2-30 s | Time between screams. |
+
+### DMCS Compat
+
+| Option | Default | Range | What it does |
+|---|---|---|---|
+| DMCS Adrenaline | on | | Fills DMCS's Adrenaline meter. Does nothing without DMCS. |
+| Heel Cut Adrenaline | 20 | 0-100 | Points per heel cut. |
+| Crippled Kill Adrenaline | 35 | 0-100 | Points for killing an enemy that was already crippled. |
+
+### Debug
+
+| Option | Default | Range | What it does |
+|---|---|---|---|
+| Debug Logging | off | | Writes heel hits, falls and bleeding to the game log. |
+| Show Heel Zones | off | | Draws each enemy's heel zone as a sphere. |
+| Show Hit Markers | off | | Marks each leg hit: green = heel, red = miss. |
+| Hit Marker Duration | 5 s | 1-30 s | How long a marker stays. |
 
 ## DMCS compat
 
-With **DMCS** (Dark Messiah Combat Systems) installed, the mod fills DMCS's Adrenaline meter:
+With **DMCS** (Dark Messiah Combat Systems) installed, this mod fills DMCS's Adrenaline meter:
 
-| Event | Points (menu) | Counts when |
-|---|---|---|
-| Heel cut | Heel Cut Adrenaline, 20 | the cut cripples or kills an enemy (a second cut on the same enemy does not) |
-| Execution | Crippled Kill Adrenaline, 35 | you kill an enemy that was already crippled, with anything: weapon, thrown blade, spell, fist or kick |
+- **Heel cut:** 20 points, also when the cut kills at once. A second cut on the same enemy gives nothing.
+- **Killing a crippled enemy:** 35 points, with any hit: weapon, thrown blade, spell, fist or kick.
 
-Bleeding out gives nothing, and neither does a heel cut that kills at once, by Instant Death Chance or by its damage (the cut itself still counts). For scale: in DMCS a hit gives 5 and a full meter is 100. Without DMCS this does nothing, and the two mods can be installed in any order.
+Bleeding out gives nothing. For scale: in DMCS a normal hit gives 5 and a full meter is 100. If you switched on DMCS's *Adrenaline Needs Skill*, the meter only fills once you own that skill. Without DMCS nothing happens, and load order doesn't matter.
 
 ## Compatibility
 
-- **Realistic Deaths** (pineapple54) also makes NPCs crawl and bleed. Using both on the same enemies will most likely double the bleeding and make the two mods fight over the body. Not tested.
+- **Realistic Deaths** (pineapple54) also makes enemies crawl and bleed. Both on the same enemy will most likely double the bleeding and fight over the body. Not tested.
 
-## Background: two myths, one weak point
+## Background: two myths, one weak spot
 
-### Achilles - the heel
+### Achilles and the heel
 
-- His mother, the sea goddess Thetis, dipped the infant Achilles in the river Styx to make him invulnerable. She held him by the heel, so that spot stayed dry and mortal.
-- In the Trojan War he was the strongest and fastest fighter. He died when the Trojan prince Paris hit that heel with an arrow, guided by the god Apollo.
-- The tendon above the heel is named after him (Achilles tendon), and "Achilles' heel" became the word for a fatal weak spot in great strength.
-- Note: Homer's *Iliad* does not tell his death or the heel. The dipping in the Styx is first told explicitly by the Roman poet Statius (*Achilleid* 1.133-134), and the oldest sources speak of the ankle (Latin *talus*) rather than the heel.
+- His mother, the sea goddess Thetis, dipped baby Achilles in the river Styx to make him invulnerable. She held him by the heel, so that spot stayed mortal.
+- He became the greatest fighter of the Trojan War. The Trojan prince Paris killed him with an arrow to that heel, guided by the god Apollo.
+- The tendon above the heel carries his name, and "Achilles' heel" now means a fatal weak spot in someone strong.
+- Homer's *Iliad* tells neither his death nor the heel. The Roman poet Statius is the first to tell the dip in the Styx outright (*Achilleid* 1.133-134), and the oldest sources name the ankle (Latin *talus*), not the heel.
 
-### Krishna - the sole of the foot
+### Krishna and the sole of the foot
 
-- In the Indian epic *Mahabharata*, the sage Durvasa granted Krishna a boon: his whole body would be invulnerable except for his feet (*Anushasana Parva*, 13.159).
-- At the end of his life, after his own clan had destroyed itself (*Mausala Parva*, Book 16), Krishna sat in deep meditation in the forest.
-- A hunter named Jara (Sanskrit "old age") saw the red marks of Krishna's foot through the bushes, took it for a deer and shot. The arrowhead was forged from a piece of iron from the cursed club that had destroyed his clan. The arrow pierced the sole of the foot.
-- Jara begged forgiveness; Krishna comforted him and then left the world. (The *Bhagavata Purana* 11.30 tells the same death.)
+- In the Indian epic *Mahabharata*, the sage Durvasa granted Krishna a boon: his whole body would be invulnerable except his feet (*Anushasana Parva*, 13.159).
+- Late in life, after his own clan had wiped itself out (*Mausala Parva*, Book 16), Krishna sat meditating in the forest.
+- A hunter named Jara (Sanskrit for "old age") saw the red marks of Krishna's foot through the bushes, took it for a deer and shot. The arrowhead was made from the iron of the cursed club that had destroyed his clan. It pierced the sole of his foot.
+- Jara begged forgiveness. Krishna comforted him and left the world. (The *Bhagavata Purana* 11.30 tells the same death.)
 
 Sources: [Achilles' heel (Wikipedia)](https://en.wikipedia.org/wiki/Achilles%27_heel), [Statius, *Achilleid* 1 (Theoi)](https://www.theoi.com/Text/StatiusAchilleid1A.html), [Ancient World Magazine: Origins of a hero's weak point](https://www.ancientworldmagazine.com/articles/achilles-heel-origins-heros-weak-point/), [Mausala Parva (Wikipedia)](https://en.wikipedia.org/wiki/Mausala_Parva), [W. Doniger, *Mahabharata* Book 16 (Oxford, 2022)](https://doi.org/10.1093/oso/9780197553398.003.0003), [Jara (mahapurana.com)](https://www.mahapurana.com/hindu-mythology/jara-jaras-hunter-killed-krishna/).
 
 ## For developers
 
-How the mod is built, tested and what is verified in the game's code: [`DEVELOPMENT.md`](DEVELOPMENT.md).
+How the mod is built and tested, and what is checked against the game's code: [`DEVELOPMENT.md`](DEVELOPMENT.md).
