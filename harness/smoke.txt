@@ -4,7 +4,7 @@
 # Checks the defaults, so it must be the first scenario of a run (fresh prefix);
 # scenarios in one run share the prefix and the game keeps option values.
 wait-level
-expect-log [ModManager][ModOption][AchillesTendon] Loaded 37 ModOptions
+expect-log [ModManager][ModOption][AchillesTendon] Loaded 38 ModOptions
 expect-log [AchillesTendon] Loaded Heel of Achilles
 expect-log [ModManager][ThunderScript][AchillesTendon] Loaded ThunderScript: AchillesTendon.AchillesTendonScript
 expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
@@ -20,6 +20,7 @@ option-exists AchillesTendon "Steady Crawl Pose" category="Achilles Tendon" type
 option-exists AchillesTendon "Crawl Start Speed" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Crawl Stop Speed" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Leg Strength" category="Achilles Tendon" type=Single save=true
+option-exists AchillesTendon "Crawl Turn Speed" category="Achilles Tendon" type=Single save=true
 # Bleed-Out group (step 5)
 option-exists AchillesTendon "Bleed-Out Enabled" category="Bleed-Out" type=Boolean save=true
 option-exists AchillesTendon "Bleed-Out Duration" category="Bleed-Out" type=Single save=true
@@ -53,6 +54,7 @@ expect-option AchillesTendon "Steady Crawl Pose" true
 expect-option AchillesTendon "Crawl Start Speed" 0.4
 expect-option AchillesTendon "Crawl Stop Speed" 0.1
 expect-option AchillesTendon "Leg Strength" 4
+expect-option AchillesTendon "Crawl Turn Speed" 0.25
 expect-option AchillesTendon "Bleed-Out Enabled" true
 expect-option AchillesTendon "Bleed-Out Duration" 45
 expect-option AchillesTendon "Blood Effects" true

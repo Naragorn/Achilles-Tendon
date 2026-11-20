@@ -122,6 +122,11 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec LegStrength =
             new FloatOptionSpec("Leg Strength", 1f, 10f, 0.5f, 4f, OptionUnit.Multiplier);
 
+        // Share of the game's own turn speed (locomotion.turnSpeed). 25 %: a half turn in 0.69-0.76 s at
+        // 90 fps instead of 0.18 s (measured, runs 20261120-115653 and -124401).
+        public static readonly FloatOptionSpec CrawlTurnSpeed =
+            new FloatOptionSpec("Crawl Turn Speed", 0.1f, 1f, 0.05f, 0.25f, OptionUnit.Percent);
+
         public static readonly FloatOptionSpec BleedOutDuration =
             new FloatOptionSpec("Bleed-Out Duration", 10f, 180f, 5f, 45f, OptionUnit.Seconds);
 
@@ -172,6 +177,7 @@ namespace AchillesTendon.Logic
             CrawlStartSpeed,
             CrawlStopSpeed,
             LegStrength,
+            CrawlTurnSpeed,
             BleedOutDuration,
             BleedPulseInterval,
             WeakestCrawlSpeed,

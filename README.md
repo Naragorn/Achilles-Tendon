@@ -6,7 +6,7 @@ Inspired by two heroes who fell to a single strike at the one weak point of thei
 
 Every feature can be toggled and tuned in the in-game Mod Menu.
 
-> **Work in progress (v0.8.5).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
+> **Work in progress (v0.8.6).** Everything below works in automated in-game tests, but has not yet been played in a headset. Expect rough edges in how crawling and ground attacks look.
 
 ## What it does
 
@@ -41,6 +41,7 @@ After updating, press the mod page's reset button: the game saves options by the
 | | Crawl Start Speed (sitting -> crawling from this speed) | 0.4 | 0.1-1 |
 | | Crawl Stop Speed (crawling -> sitting below this speed) | 0.1 | 0.05-0.5 |
 | | Leg Strength (how hard the legs follow the animation while crawling) | x4 | x1-x10 |
+| | Crawl Turn Speed (how fast a crawling or kneeling enemy turns towards you; 100 % = the game's own speed, a half turn in about 0.2 s) | 25 % | 10-100 % |
 | Bleed-Out | Bleed-Out Enabled (off pauses the bleeding, on resumes it) | on | |
 | | Bleed-Out Duration (cut to death) | 45 s | 10-180 s |
 | | Blood Effects (drip from the cut heel, stronger towards the end) | on | |

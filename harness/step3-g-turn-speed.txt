@@ -1,0 +1,61 @@
+# Crawl Turn Speed (Nadi, 2026-11-20): a crawling or kneeling NPC turns towards the player at a share
+# of the game's own turn speed (locomotion.turnSpeed, 2.00 for HumanMale; default 25 % = 0.50). At
+# headset pace the game alone turns a crippled NPC half around in 0.17 s (run 20261120-112856).
+# Checks: the cut lowers it, a menu change applies live, and the game's value comes back when the NPC
+# stands up again (tendon off) or dies (the game reuses a dead NPC's object for a new spawn).
+# The turn itself is measured in harness/probe/turn-after-cut.txt (TURN lines).
+wait-level
+frame-rate 90
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Stand Up When Disabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 1
+player-invincible true
+
+# 1. Default 25 %: the cut lowers the turn speed to a quarter of the game's.
+expect-option AchillesTendon "Crawl Turn Speed" 0.25
+spawn-npc HumanMale distance=3.5 facing=180 brain=HumanMedium container=CivilianMeleeSword
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE
+expect-log | 0.50 (Crawl Turn Speed 25 %, game 2.00)
+wait 2
+
+# 2. Live: 100 % gives the game's speed back while it crawls, 50 % halves it.
+mark
+set-option AchillesTendon "Crawl Turn Speed" 1
+expect-log | 2.00 (Crawl Turn Speed 100 %, game 2.00)
+mark
+set-option AchillesTendon "Crawl Turn Speed" 0.5
+expect-log | 1.00 (Crawl Turn Speed 50 %, game 2.00)
+set-option AchillesTendon "Crawl Turn Speed" 0.25
+
+# 3. Tendon off (Stand Up When Disabled on): it may stand up, with the game's turn speed.
+mark
+set-option AchillesTendon "Achilles Tendon Enabled" false
+expect-log [AchillesTendon] RELEASE
+expect-log | 2.00 restored
+set-option AchillesTendon "Achilles Tendon Enabled" true
+wait 1
+
+# 4. Death: the game's value comes back as well. A dummy, because a fighter spawned while the first NPC
+# fights you sometimes faces you within 0.13 s and the cut counts as frontal (run 20261120-115749).
+spawn-npc HumanMale distance=3.5 angle=40 facing=180 brain=HumanDummy
+mark
+hit-npc LeftFoot type=Slash
+expect-log | 0.50 (Crawl Turn Speed 25 %, game 2.00)
+wait 1
+mark
+hit-npc Head type=Slash damage=999 by=held item=SwordShortCommon
+expect-npc state Dead within=3
+expect-log | 2.00 restored
+
+set-option AchillesTendon "Kneel Chance" 0.3
+set-option AchillesTendon "Lie Flat Chance" 0.05
+set-option AchillesTendon "Bleed-Out Enabled" true
+expect-no-log Exception
+quit

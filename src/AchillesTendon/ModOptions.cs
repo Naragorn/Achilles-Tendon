@@ -113,6 +113,12 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float LegStrength = OptionSpecs.LegStrength.Default;
 
+        [ModOption("Crawl Turn Speed", "How fast a crawling or kneeling NPC turns towards you, in percent of the game's own turn speed. 100 % = the game's speed: a half turn in about 0.2 s, as fast as a standing NPC.", nameof(CrawlTurnSpeedValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(15)]
+        [ModOptionSlider]
+        public static float CrawlTurnSpeed = OptionSpecs.CrawlTurnSpeed.Default;
+
         // ---- Bleed-Out ------------------------------------------------------
 
         [ModOption("Bleed-Out Enabled", "NPCs with a cut tendon bleed out and die after Bleed-Out Duration. Off: the bleeding pauses (it goes on when turned back on).")]
@@ -278,6 +284,8 @@ namespace AchillesTendon
         public static ModOptionParameter[] CrawlStopSpeedValues() => ToParameters(OptionSpecs.CrawlStopSpeed);
 
         public static ModOptionParameter[] LegStrengthValues() => ToParameters(OptionSpecs.LegStrength);
+
+        public static ModOptionParameter[] CrawlTurnSpeedValues() => ToParameters(OptionSpecs.CrawlTurnSpeed);
 
         public static ModOptionParameter[] BleedOutDurationValues() => ToParameters(OptionSpecs.BleedOutDuration);
 

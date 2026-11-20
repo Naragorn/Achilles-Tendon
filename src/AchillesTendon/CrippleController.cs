@@ -25,6 +25,9 @@ namespace AchillesTendon
         // Crawling NPCs whose own melee AI we switched off, with the value to restore.
         private readonly Dictionary<Creature, bool> meleeBefore = new Dictionary<Creature, bool>();
 
+        // Crawl Turn Speed: crawling NPCs whose locomotion.turnSpeed we lowered, with the game's value.
+        private readonly Dictionary<Creature, float> turnSpeedBefore = new Dictionary<Creature, float>();
+
         // Steady Crawl Pose: crawling NPCs that currently count as moving (CrawlGaitRules).
         private readonly HashSet<Creature> gaitMoving = new HashSet<Creature>();
         private readonly List<Creature> scratch = new List<Creature>();
@@ -51,7 +54,8 @@ namespace AchillesTendon
         private readonly Dictionary<Creature, float> turnLastYaw = new Dictionary<Creature, float>();
         private readonly List<Creature> turnScratch = new List<Creature>();
         private const float TurnWatchSeconds = 2f;
-        private const float TurnLogMinDegrees = 2f;
+        // 0.5 degrees: with Crawl Turn Speed 25 % a frame turns only 2-6 degrees, so 2 cut the turn's tail off.
+        private const float TurnLogMinDegrees = 0.5f;
 
         // The game's stab deaths (bas.jsondb, 1.3.2): with moveDirection Forward they are
         // DeathKneelForward 1-3, which end face down (clip root rotation, read from
@@ -95,7 +99,7 @@ namespace AchillesTendon
 
         /// <summary>
         /// Debug Logging only: for the next 2 s, logs every frame in which the NPC's yaw changes by more than
-        /// 2 degrees (TURN lines), with what may be turning it. Started on every player hit on an NPC, so a
+        /// 0.5 degrees (TURN lines), with what may be turning it. Started on every player hit on an NPC, so a
         /// refused hit (the NPC stays up) shows the game's own turn for comparison.
         /// </summary>
         public void WatchTurns(Creature creature)
@@ -240,6 +244,7 @@ namespace AchillesTendon
                         }
                         crawling.Remove(creature);
                         meleeBefore.Remove(creature);
+                        turnSpeedBefore.Remove(creature);
                         gaitMoving.Remove(creature);
                         lastPoseLog.Remove(creature);
                         crippled.Remove(creature);
@@ -266,6 +271,7 @@ namespace AchillesTendon
             kneel.Clear();
             crawling.Clear();
             meleeBefore.Clear();
+            turnSpeedBefore.Clear();
             gaitMoving.Clear();
             lastPoseLog.Clear();
         }
@@ -314,6 +320,7 @@ namespace AchillesTendon
             crawling.Add(creature);
             SteadyGait(creature);
             SetLegStrength(creature, ModOptions.LegStrength);
+            SetTurnSpeed(creature);
             // The AI's own attack clips move the whole body and raise a crawling NPC
             // upright (headless pictures), so its melee is off while crawling; swings come
             // from GroundFightController on the upper-body layer (Ground Attacks).
@@ -438,6 +445,44 @@ namespace AchillesTendon
                     part.bone.SetPinRotationForce(pin.Spring, pin.Damper, pin.MaxForce);
                 }
             }
+        }
+
+        // Crawl Turn Speed. The game's AI turns a crippled NPC as fast as a standing one: at 90 fps a
+        // half turn in 0.17 s (run 20261120-112856). BrainModuleMove.UpdateTurn turns by a share of the
+        // remaining angle that is proportional to locomotion.turnSpeed, and for NPCs nothing in the
+        // game writes that field (only Player.CopyLocomotionValuesFrom), so the game's value is kept
+        // here and put back in StopCrawl: the game reuses a dead NPC's object for a new spawn.
+        // Re-applied every frame, so a menu change applies at once.
+        private void SetTurnSpeed(Creature creature)
+        {
+            var locomotion = creature.locomotion;
+            if (!turnSpeedBefore.TryGetValue(creature, out var game))
+            {
+                game = locomotion.turnSpeed;
+                turnSpeedBefore[creature] = game;
+            }
+            var target = CrippleRules.CrawlTurnSpeed(game, ModOptions.CrawlTurnSpeed);
+            if (locomotion.turnSpeed.Equals(target))
+            {
+                return;
+            }
+            locomotion.turnSpeed = target;
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+            ModLog.Verbose("TURN SPEED | " + GameAdapters.Label(creature) + " | " + target.ToString("0.00", ci)
+                + " (Crawl Turn Speed " + OptionSpecs.CrawlTurnSpeed.Label(ModOptions.CrawlTurnSpeed)
+                + ", game " + game.ToString("0.00", ci) + ")");
+        }
+
+        private void RestoreTurnSpeed(Creature creature)
+        {
+            if (!turnSpeedBefore.TryGetValue(creature, out var game))
+            {
+                return;
+            }
+            turnSpeedBefore.Remove(creature);
+            creature.locomotion.turnSpeed = game;
+            ModLog.Verbose("TURN SPEED | " + GameAdapters.Label(creature) + " | "
+                + game.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + " restored");
         }
 
         // Forward (x) and sideways (y) speed in the creature's own frame, as
@@ -693,6 +738,7 @@ namespace AchillesTendon
             creature.SetAnimatorHeightRatio(1f);
             creature.animator.SetFloat(Brain.hashInjured, 0f);
             creature.locomotion.RemoveSpeedModifier(this);
+            RestoreTurnSpeed(creature);
             creature.ragdoll.forcePhysic.Remove(this);
             gaitMoving.Remove(creature);
             if (meleeBefore.TryGetValue(creature, out var enabled))

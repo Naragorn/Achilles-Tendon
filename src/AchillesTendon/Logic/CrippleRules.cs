@@ -103,5 +103,18 @@ namespace AchillesTendon.Logic
                 MaxForce = maxForce * m,
             };
         }
+
+        /// <summary>
+        /// Crawl Turn Speed: the locomotion turn speed of a crawling NPC, from the game's own value.
+        /// The game's AI turns an NPC by a share of the remaining angle each frame, in proportion to
+        /// locomotion.turnSpeed (BrainModuleMove.UpdateTurn, 1.3.2), so the factor slows the whole
+        /// turn. Never faster than the game; below the menu's minimum counts as the minimum, since an
+        /// NPC that can hardly turn would never face the player and never swing.
+        /// </summary>
+        public static float CrawlTurnSpeed(float gameTurnSpeed, float factor)
+        {
+            var f = System.Math.Min(1f, System.Math.Max(OptionSpecs.CrawlTurnSpeed.Min, factor));
+            return gameTurnSpeed * f;
+        }
     }
 }

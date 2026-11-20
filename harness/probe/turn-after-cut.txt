@@ -1,6 +1,6 @@
 # Probe (2026-11-20): an NPC cut from behind turns about 180 degrees toward the player within a few
 # frames (Nadi saw it in the kneel film: "180 Drehung in 1 ms"). TURN lines (Debug Logging) log every
-# frame of the 2 s after a player hit in which the NPC's yaw changed by more than 2 degrees, with what
+# frame of the 2 s after a player hit in which the NPC's yaw changed by more than 0.5 degrees (2 until v0.8.5), with what
 # may be turning it. The second and third NPC are cut right after they spawn: with the first one already
 # fighting, they turned to the player within 1 s (run 20261120-101121). Three NPCs with their backs to the player, each in a fresh spot: a blunt hit
 # (refused, stays up: the game's own turn), a kneeler, a sitter.
@@ -25,6 +25,11 @@ mark
 hit-npc LeftFoot type=Blunt
 expect-log [AchillesTendon] miss (DamageTypeNotAllowed)
 wait 2.5
+# Dies before the next NPC spawns: a fighter spawned while another one fights you sometimes faces you
+# within 0.13 s, so the cut counts as frontal (runs 20261120-112206, -115519).
+hit-npc Head type=Slash damage=999 by=held item=SwordShortCommon
+expect-npc state Dead within=3
+wait 1
 
 set-option AchillesTendon "Kneel Chance" 1
 spawn-npc HumanMale distance=3.5 angle=0 facing=180 brain=HumanMedium container=CivilianMeleeSword
@@ -34,10 +39,14 @@ hit-npc LeftFoot type=Slash
 expect-log | kneel (roll
 wait 2.5
 record-stop
+# Dies before the next NPC spawns: a fighter spawned while another one fights you sometimes faces you
+# within 0.13 s, so the cut counts as frontal (runs 20261120-112206, -115519).
+hit-npc Head type=Slash damage=999 by=held item=SwordShortCommon
+expect-npc state Dead within=3
+wait 1
 
 set-option AchillesTendon "Kneel Chance" 0
 spawn-npc HumanMale distance=3.5 angle=40 facing=180 brain=HumanMedium container=CivilianMeleeSword
-# No wait before the cut: in run 20261120-112206 this NPC had turned to the player 0.23 s after it spawned.
 record-start sitturn fps=30 width=640 height=360 views=npc distance=2.6 rise=1.0 angle=90
 mark
 hit-npc LeftFoot type=Slash
