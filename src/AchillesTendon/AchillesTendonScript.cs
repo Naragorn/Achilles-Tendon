@@ -221,6 +221,8 @@ namespace AchillesTendon
                 visualizer.AddHitMarker(hit.contactPoint, result.IsHeelHit);
             }
 
+            cripple.WatchTurns(creature);
+
             if (CrippleRules.ShouldCripple(result, creature.isPlayer, creature.isKilled, cripple.IsCrippled(creature)))
             {
                 // Captured before the collapse: the attack clips come from the standing stance.

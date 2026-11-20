@@ -45,6 +45,14 @@ namespace AchillesTendon
         // Kneel Chance, rolled per crawling NPC when its tendon is cut.
         private readonly HashSet<Creature> kneel = new HashSet<Creature>();
 
+        // Diagnosis of the fast turn after a hit from behind (Debug Logging, TURN lines): when the watch
+        // started and the yaw seen in the last frame.
+        private readonly Dictionary<Creature, float> turnWatch = new Dictionary<Creature, float>();
+        private readonly Dictionary<Creature, float> turnLastYaw = new Dictionary<Creature, float>();
+        private readonly List<Creature> turnScratch = new List<Creature>();
+        private const float TurnWatchSeconds = 2f;
+        private const float TurnLogMinDegrees = 2f;
+
         // The game's stab deaths (bas.jsondb, 1.3.2): with moveDirection Forward they are
         // DeathKneelForward 1-3, which end face down (clip root rotation, read from
         // animations_assets_all.bundle).
@@ -85,6 +93,94 @@ namespace AchillesTendon
             }
         }
 
+        /// <summary>
+        /// Debug Logging only: for the next 2 s, logs every frame in which the NPC's yaw changes by more than
+        /// 2 degrees (TURN lines), with what may be turning it. Started on every player hit on an NPC, so a
+        /// refused hit (the NPC stays up) shows the game's own turn for comparison.
+        /// </summary>
+        public void WatchTurns(Creature creature)
+        {
+            if (!ModOptions.DebugLogging || creature == null)
+            {
+                return;
+            }
+            turnWatch[creature] = UnityEngine.Time.time;
+            turnLastYaw[creature] = creature.transform.eulerAngles.y;
+            ModLog.Verbose("TURN | " + GameAdapters.Label(creature) + " | watch start | yaw="
+                + creature.transform.eulerAngles.y.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)
+                + " | to player " + AngleToPlayer(creature).ToString("0", System.Globalization.CultureInfo.InvariantCulture) + " deg"
+                + " | locomotion turnSpeed=" + creature.locomotion.turnSpeed.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        private void LogTurns()
+        {
+            if (turnWatch.Count == 0)
+            {
+                return;
+            }
+            var ci = System.Globalization.CultureInfo.InvariantCulture;
+            var now = UnityEngine.Time.time;
+            turnScratch.Clear();
+            turnScratch.AddRange(turnWatch.Keys);
+            foreach (var creature in turnScratch)
+            {
+                if (creature == null || now - turnWatch[creature] > TurnWatchSeconds)
+                {
+                    turnWatch.Remove(creature);
+                    turnLastYaw.Remove(creature);
+                    continue;
+                }
+                var yaw = creature.transform.eulerAngles.y;
+                var change = UnityEngine.Mathf.DeltaAngle(turnLastYaw[creature], yaw);
+                turnLastYaw[creature] = yaw;
+                if (UnityEngine.Mathf.Abs(change) < TurnLogMinDegrees)
+                {
+                    continue;
+                }
+                var instance = creature.brain != null ? creature.brain.instance : null;
+                var move = instance != null ? instance.GetModule<BrainModuleMove>(autoAddModuleIfMissing: false) : null;
+                var defense = instance != null ? instance.GetModule<BrainModuleDefense>(autoAddModuleIfMissing: false) : null;
+                var requests = string.Empty;
+                if (move != null)
+                {
+                    foreach (var request in move.turnRequests)
+                    {
+                        requests += (request.handler != null ? request.handler.GetType().Name : "null") + "/" + request.turnMode
+                            + " x" + request.turnSpeedRatio.ToString("0.##", ci) + " ";
+                    }
+                }
+                var exclusive = move != null && move.exclusiveHandlerStack.Count > 0 && move.exclusiveHandlerStack[0] != null
+                    ? move.exclusiveHandlerStack[0].GetType().Name
+                    : "-";
+                ModLog.Verbose("TURN | " + GameAdapters.Label(creature)
+                    + " | t=" + (now - turnWatch[creature]).ToString("0.000", ci) + " s"
+                    + " | yaw=" + yaw.ToString("0.0", ci) + " change=" + change.ToString("0.0", ci) + " deg in " + UnityEngine.Time.deltaTime.ToString("0.000", ci) + " s"
+                    + " | to player " + AngleToPlayer(creature).ToString("0", ci) + " deg"
+                    + " | busy=" + creature.IsAnimatorBusy() + " dynamicAnim=" + creature.isPlayingDynamicAnimation
+                    + " defending=" + (creature.brain != null && creature.brain.isDefending)
+                    + " | requests=" + (requests.Length > 0 ? requests : "none ") + "| exclusive=" + exclusive
+                    + " | turnSpeed=" + creature.locomotion.turnSpeed.ToString("0.00", ci)
+                    + " move x" + (move != null ? move.baseTurnSpeedMultiplier.ToString("0.##", ci) : "-")
+                    + " defense ratio=" + (defense != null ? defense.turnSpeedRatio.ToString("0.##", ci) : "-")
+                    + " | state=" + creature.state + " crippled=" + crippled.Contains(creature));
+            }
+        }
+
+        // Signed horizontal angle from the NPC's facing to the player, degrees (0 = facing the player).
+        private static float AngleToPlayer(Creature creature)
+        {
+            var player = Player.local != null ? Player.local.creature : null;
+            if (player == null)
+            {
+                return float.NaN;
+            }
+            var to = player.transform.position - creature.transform.position;
+            to.y = 0f;
+            var forward = creature.transform.forward;
+            forward.y = 0f;
+            return UnityEngine.Vector3.SignedAngle(forward, to, UnityEngine.Vector3.up);
+        }
+
         private DownedPose PoseOf(Creature creature)
         {
             return poses.TryGetValue(creature, out var pose) ? pose : DownedPose.Crawl;
@@ -100,6 +196,7 @@ namespace AchillesTendon
         public void Update(System.Func<Creature, float> crawlSpeedFactor)
         {
             LogDeathPoses();
+            LogTurns();
             if (crippled.Count == 0)
             {
                 return;

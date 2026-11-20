@@ -1,0 +1,50 @@
+# Probe (2026-11-20): an NPC cut from behind turns about 180 degrees toward the player within a few
+# frames (Nadi saw it in the kneel film: "180 Drehung in 1 ms"). TURN lines (Debug Logging) log every
+# frame of the 2 s after a player hit in which the NPC's yaw changed by more than 2 degrees, with what
+# may be turning it. The second and third NPC are cut right after they spawn: with the first one already
+# fighting, they turned to the player within 1 s (run 20261120-101121). Three NPCs with their backs to the player, each in a fresh spot: a blunt hit
+# (refused, stays up: the game's own turn), a kneeler, a sitter.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Attack Chance" 1
+set-option AchillesTendon "Lie Flat Chance" 0
+player-invincible true
+
+set-option AchillesTendon "Kneel Chance" 0
+spawn-npc HumanMale distance=3.5 angle=-40 facing=180 brain=HumanMedium container=CivilianMeleeSword
+wait 1
+mark
+hit-npc LeftFoot type=Blunt
+expect-log [AchillesTendon] miss (DamageTypeNotAllowed)
+wait 2.5
+
+set-option AchillesTendon "Kneel Chance" 1
+spawn-npc HumanMale distance=3.5 angle=0 facing=180 brain=HumanMedium container=CivilianMeleeSword
+record-start kneelturn fps=30 width=640 height=360 views=npc distance=2.6 rise=1.0 angle=90
+wait 0.1
+mark
+hit-npc LeftFoot type=Slash
+expect-log | kneel (roll
+wait 2.5
+record-stop
+
+set-option AchillesTendon "Kneel Chance" 0
+spawn-npc HumanMale distance=3.5 angle=40 facing=180 brain=HumanMedium container=CivilianMeleeSword
+record-start sitturn fps=30 width=640 height=360 views=npc distance=2.6 rise=1.0 angle=90
+wait 0.1
+mark
+hit-npc LeftFoot type=Slash
+expect-log | sit (roll
+wait 2.5
+record-stop
+
+set-option AchillesTendon "Kneel Chance" 0.3
+set-option AchillesTendon "Lie Flat Chance" 0.05
+set-option AchillesTendon "Ground Attack Chance" 0.75
+set-option AchillesTendon "Bleed-Out Enabled" true
+expect-no-log Exception
+quit
