@@ -1,6 +1,11 @@
 # DMCS compat: a heel cut and the player's kill of a crippled NPC fill DMCS's Adrenaline meter
 # (DMCS.Adrenaline.AddExternal). Needs DMCS loaded too, so it is not in the default run:
 #   DMCS_MOD=../DMCS/src/DMCS/bin/Release/net472 tools/harness.sh harness/compat/dmcs-adrenaline.txt
+# Each NPC spawns on its own spot (3.5 m from the player at -120..120 degrees, two at 1.5 m; the next case
+# at least 4 m away), never on an earlier body: in run 20261118-223801 case 8's dummy spawned 0.27 s after
+# case 7's kill on the same spot, took 1.6 damage before its cut, stood 12 degrees turned, and the heel hit
+# missed the zone (0.082 m, radius 0.080 m). Not behind the player: at 3.4 m and -160 degrees the Arena
+# ground is 1.26 m high, and a dummy spawned there died inside it (run 20261120-111650).
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
@@ -20,7 +25,7 @@ set-option DMCS "Adrenaline Per Hit" 0
 set-option DMCS "Adrenaline Meter Max" 300
 
 # 1. Heel cut: +20; then the player's sword kills the crawling NPC: +35.
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=3.5 angle=0 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] COLLAPSE
@@ -34,7 +39,7 @@ expect-log [AchillesTendon] DMCS | AchillesCrippledKill +35
 expect-log | Applied
 
 # 2. A heel cut that kills at once: the cut counts, the kill is no execution.
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=3.5 angle=120 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash damage=999
 expect-npc state Dead within=3
@@ -45,7 +50,7 @@ expect-no-log AchillesCrippledKill
 # 3. Bleeding out is no execution.
 set-option AchillesTendon "Bleed-Out Enabled" true
 set-option AchillesTendon "Bleed-Out Duration" 10
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=3.5 angle=-120 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] DMCS | AchillesHeelCut +20
@@ -56,7 +61,7 @@ expect-no-log AchillesCrippledKill
 set-option AchillesTendon "Bleed-Out Enabled" false
 
 # 4. A kill of an NPC that was never crippled gives nothing.
-spawn-npc HumanMale distance=1.5 facing=0 brain=HumanDummy
+spawn-npc HumanMale distance=3.5 angle=40 facing=0 brain=HumanDummy
 mark
 hit-npc Head type=Slash damage=999 by=held item=SwordShortCommon
 expect-npc state Dead within=3
@@ -65,7 +70,7 @@ expect-no-log [AchillesTendon] DMCS |
 
 # 5. Compat off: neither the cut nor the kill reaches DMCS.
 set-option AchillesTendon "DMCS Adrenaline" false
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=1.5 angle=-60 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] COLLAPSE
@@ -84,7 +89,7 @@ set-option AchillesTendon "Heel Cut Adrenaline" 5
 set-option AchillesTendon "Crippled Kill Adrenaline" 10
 
 # 6. Fist
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=3.5 angle=80 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
@@ -96,7 +101,7 @@ expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
 expect-log | Applied
 
 # 7. Kick (the player's right foot part)
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=3.5 angle=-80 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
@@ -108,7 +113,7 @@ expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
 expect-log | Applied
 
 # 8. Thrown dagger (nobody holds it, the player was the last to)
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=1.5 angle=60 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
@@ -120,7 +125,7 @@ expect-log [AchillesTendon] DMCS | AchillesCrippledKill +10
 expect-log | Applied
 
 # 9. Spell (casterHand)
-spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+spawn-npc HumanMale distance=3.5 angle=-40 facing=180 brain=HumanDummy
 mark
 hit-npc LeftFoot type=Slash
 expect-log [AchillesTendon] DMCS | AchillesHeelCut +5
