@@ -1,5 +1,8 @@
 # Films 2/4: the kneeling pose (Kneel Chance 100 %): falls forward, kneels upright, fights on.
 wait-level
+# Headset pace: uncapped, the headless game runs at 330-500 fps and the game's AI turns about 2x
+# faster than at 90 fps (runs 20261120-101234 and -112856).
+frame-rate 90
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
