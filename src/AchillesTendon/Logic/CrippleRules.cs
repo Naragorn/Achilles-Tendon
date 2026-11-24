@@ -67,6 +67,16 @@ namespace AchillesTendon.Logic
             return Chance.Hits(instantDeathChance, roll) ? CutOutcome.InstantDeath : CutOutcome.Cripple;
         }
 
+        /// <summary>
+        /// The animator's Injured value for a crawling NPC (Clutch Chest Chance, Nadi 2026-11-24). Sitting:
+        /// 1 = the idle pose LayingInjured (clutches the chest), 0 = Laying (lies back plainly). A kneeler
+        /// keeps 1, the blend its pose was built and filmed with.
+        /// </summary>
+        public static float InjuredBlend(bool kneeling, bool clutchChest)
+        {
+            return kneeling || clutchChest ? 1f : 0f;
+        }
+
         /// <summary>Lie Flat Chance (Nadi, 2026-11-17): the pose of a freshly crippled NPC.</summary>
         public static DownedPose PoseFor(float lieFlatChance, float roll)
         {

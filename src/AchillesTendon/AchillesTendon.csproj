@@ -16,6 +16,8 @@
     <AssemblyName>AchillesTendon</AssemblyName>
     <RootNamespace>AchillesTendon</RootNamespace>
     <DebugType>portable</DebugType>
+    <!-- No local folder names in the shipped DLL (its debug entry names the pdb path). -->
+    <PathMap>$(MSBuildProjectDirectory)=AchillesTendon</PathMap>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <ModFolderName>AchillesTendon</ModFolderName>

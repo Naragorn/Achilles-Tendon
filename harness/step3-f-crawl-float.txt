@@ -11,6 +11,8 @@ set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Kneel Chance" 0
+# The sitting pose these checks were built on: LayingInjured (Clutch Chest Chance, v0.8.10).
+set-option AchillesTendon "Clutch Chest Chance" 1
 set-option AchillesTendon "Bleed-Out Enabled" false
 set-option AchillesTendon "Ground Attacks" false
 set-option AchillesTendon "Screaming" false

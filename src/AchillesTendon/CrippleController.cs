@@ -48,6 +48,9 @@ namespace AchillesTendon
         // Kneel Chance, rolled per crawling NPC when its tendon is cut.
         private readonly HashSet<Creature> kneel = new HashSet<Creature>();
 
+        // Clutch Chest Chance, rolled per sitting crawler when its tendon is cut: these lie back plainly.
+        private readonly HashSet<Creature> plainLying = new HashSet<Creature>();
+
         // Diagnosis of the fast turn after a hit from behind (Debug Logging, TURN lines): when the watch
         // started and the yaw seen in the last frame.
         private readonly Dictionary<Creature, float> turnWatch = new Dictionary<Creature, float>();
@@ -81,10 +84,18 @@ namespace AchillesTendon
                 {
                     kneel.Add(creature);
                 }
+                var clutchRoll = UnityEngine.Random.value;
+                var clutch = Chance.Hits(ModOptions.ClutchChestChance, clutchRoll);
+                if (!onKnees && !clutch)
+                {
+                    plainLying.Add(creature);
+                }
                 Crawl(creature, 1f);
                 ModLog.Verbose("COLLAPSE | " + GameAdapters.Label(creature) + " | tendon cut, down to the injured/crawl pose" + rolled
                     + " | " + (onKnees ? "kneel" : "sit") + " (roll " + kneelRoll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
-                    + ", kneel chance " + OptionSpecs.KneelChance.Label(ModOptions.KneelChance) + ")");
+                    + ", kneel chance " + OptionSpecs.KneelChance.Label(ModOptions.KneelChance) + ")"
+                    + (onKnees ? "" : " | " + (clutch ? "clutching chest" : "lying back") + " (roll " + clutchRoll.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)
+                        + ", clutch chest chance " + OptionSpecs.ClutchChestChance.Label(ModOptions.ClutchChestChance) + ")"));
                 if (onKnees)
                 {
                     FallForward(creature);
@@ -230,6 +241,7 @@ namespace AchillesTendon
                         crippled.Remove(creature);
                         poses.Remove(creature);
                         kneel.Remove(creature);
+                        plainLying.Remove(creature);
                         ModLog.Verbose("RELEASE | " + GameAdapters.Label(creature) + " | feature off, may stand up");
                         break;
                     case CrippleAction.Forget:
@@ -250,6 +262,7 @@ namespace AchillesTendon
                         crippled.Remove(creature);
                         poses.Remove(creature);
                         kneel.Remove(creature);
+                        plainLying.Remove(creature);
                         break;
                 }
             }
@@ -269,6 +282,7 @@ namespace AchillesTendon
             crippled.Clear();
             poses.Clear();
             kneel.Clear();
+            plainLying.Clear();
             crawling.Clear();
             meleeBefore.Clear();
             turnSpeedBefore.Clear();
@@ -314,7 +328,7 @@ namespace AchillesTendon
                 creature.brain.RemoveNoStandUpModifier(this);
             }
             creature.SetAnimatorHeightRatio(ModOptions.CrawlBodyHeight);
-            creature.animator.SetFloat(Brain.hashInjured, 1f);
+            creature.animator.SetFloat(Brain.hashInjured, CrippleRules.InjuredBlend(kneel.Contains(creature), !plainLying.Contains(creature)));
             creature.locomotion.SetAllSpeedModifiers(this, ModOptions.CrawlSpeed * speedFactor);
             creature.ragdoll.forcePhysic.Add(this);
             crawling.Add(creature);

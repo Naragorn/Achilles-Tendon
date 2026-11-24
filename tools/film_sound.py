@@ -74,7 +74,12 @@ def main():
     run, wav_path, rec_start = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), float(sys.argv[3])
     rms = loudness(wav_path)
     print(f"recording: {len(rms) / 100:.1f} s, loudest window RMS {max(rms, default=0):.0f}")
-    for log in sorted(run.glob("*/Player.log")):
+    logs = [log for log in sorted(run.glob("*/Player.log")) if log.stat().st_mtime >= rec_start]
+    if not logs:
+        # The harness did not run (e.g. another session's game was open): never touch an older run.
+        print(f"no film of this recording in {run}")
+        return
+    for log in logs:
         for name, start, stop in films(log):
             folder = log.parent
             film = folder / f"{name}.mp4"

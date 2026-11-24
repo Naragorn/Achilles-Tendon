@@ -1,0 +1,67 @@
+# Film 6: the two sitting poses (Clutch Chest Chance, v0.8.10), with sound:
+#   tools/film-with-sound.sh harness/showcase/films/film-6-lying.txt
+# 1. clutching the chest (the game's idle LayingInjured, Injured = 1), 2. lying back (Laying,
+# Injured = 0), both on a dummy that keeps still; 3. lying back on a fighter that crawls towards the
+# player, to see the crawl with Injured = 0. CRAWL POSE lines (Debug Logging) give the hips' height.
+wait-level
+# Headset pace (see film-1-sit.txt).
+frame-rate 90
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Heel Zones" false
+set-option AchillesTendon "Show Hit Markers" false
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Screaming" true
+player-invincible true
+
+# 1. Clutching the chest.
+set-option AchillesTendon "Clutch Chest Chance" 1
+spawn-npc HumanMale distance=2.5 facing=180 brain=HumanDummy
+wait 1.5
+record-start clutch fps=30 width=960 height=540 views=npc distance=2.6 rise=1.0 angle=90
+wait 0.5
+mark
+hit-npc LeftFoot type=Slash
+expect-log clutching chest (roll
+wait 6
+screenshot 01-clutch of=npc distance=2.4 height=1.0 angle=90
+record-stop
+hit-npc Head type=Pierce damage=500
+expect-npc state Dead within=2
+wait 2
+
+# 2. Lying back.
+set-option AchillesTendon "Clutch Chest Chance" 0
+spawn-npc HumanMale distance=2.5 angle=-60 facing=180 brain=HumanDummy
+wait 1.5
+record-start lying-back fps=30 width=960 height=540 views=npc distance=2.6 rise=1.0 angle=90
+wait 0.5
+mark
+hit-npc LeftFoot type=Slash
+expect-log lying back (roll
+wait 6
+screenshot 02-lying-back of=npc distance=2.4 height=1.0 angle=90
+record-stop
+hit-npc Head type=Pierce damage=500
+expect-npc state Dead within=2
+wait 2
+
+# 3. Lying back, crawling towards the player.
+# Cut at once: a fighter turns to the player within a second (step3-e, run 20261124-150347).
+spawn-npc HumanMale distance=3.5 angle=60 facing=180 brain=HumanMedium container=CivilianMeleeSword
+mark
+hit-npc LeftFoot type=Slash
+expect-log lying back (roll
+record-start lying-back-crawl fps=30 width=960 height=540 views=npc distance=2.8 rise=1.1 angle=90
+wait 8
+screenshot 03-lying-back-crawl of=npc distance=2.6 height=1.0 angle=90
+record-stop
+expect-no-log Exception
+set-option AchillesTendon "Clutch Chest Chance" 0.5
+quit

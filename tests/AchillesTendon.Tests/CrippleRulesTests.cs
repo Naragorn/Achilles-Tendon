@@ -200,5 +200,31 @@ namespace AchillesTendon.Tests
         {
             Assert.Contains(OptionSpecs.InstantDeathChance, OptionSpecs.All);
         }
+        [Fact]
+        public void A_sitting_crawler_that_clutches_its_chest_gets_the_injured_idle()
+        {
+            Assert.Equal(1f, CrippleRules.InjuredBlend(kneeling: false, clutchChest: true));
+        }
+
+        [Fact]
+        public void A_sitting_crawler_that_does_not_clutch_lies_back_plainly()
+        {
+            Assert.Equal(0f, CrippleRules.InjuredBlend(kneeling: false, clutchChest: false));
+        }
+
+        [Fact]
+        public void A_kneeler_keeps_the_injured_blend_it_was_tested_with()
+        {
+            Assert.Equal(1f, CrippleRules.InjuredBlend(kneeling: true, clutchChest: false));
+            Assert.Equal(1f, CrippleRules.InjuredBlend(kneeling: true, clutchChest: true));
+        }
+
+        [Fact]
+        public void Half_of_the_sitting_crawlers_clutch_their_chest_by_default()
+        {
+            Assert.Equal(0.5f, OptionSpecs.ClutchChestChance.Default);
+            Assert.Equal("50 %", OptionSpecs.ClutchChestChance.Label(0.5f));
+            Assert.Contains(OptionSpecs.ClutchChestChance, OptionSpecs.All);
+        }
     }
 }

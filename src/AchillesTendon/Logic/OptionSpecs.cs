@@ -111,6 +111,11 @@ namespace AchillesTendon.Logic
         public static readonly FloatOptionSpec KneelChance =
             new FloatOptionSpec("Kneel Chance", 0f, 1f, 0.05f, 0.3f, OptionUnit.Percent);
 
+        // Sitting crawlers only: the game's idle pose LayingInjured (Injured = 1, clutches the chest) or
+        // Laying (Injured = 0); 50 % each (Nadi, 2026-11-24: "wir würfeln 50% zwischen beiden lying").
+        public static readonly FloatOptionSpec ClutchChestChance =
+            new FloatOptionSpec("Clutch Chest Chance", 0f, 1f, 0.05f, 0.5f, OptionUnit.Percent);
+
         public static readonly FloatOptionSpec CrawlSpeed =
             new FloatOptionSpec("Crawl Speed", 0.05f, 1f, 0.05f, 0.3f, OptionUnit.Multiplier);
 
@@ -178,6 +183,7 @@ namespace AchillesTendon.Logic
             InstantDeathChance,
             LieFlatChance,
             KneelChance,
+            ClutchChestChance,
             CrawlSpeed,
             CrawlBodyHeight,
             CrawlStartSpeed,

@@ -84,44 +84,50 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float KneelChance = OptionSpecs.KneelChance.Default;
 
-        [ModOption("Crawl Speed", "Movement speed while crawling, relative to walking.", nameof(CrawlSpeedValues))]
+        [ModOption("Clutch Chest Chance", "Share of sitting crawlers that clutch their chest while they lie still; the others lie back plainly. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(ClutchChestChanceValues))]
         [ModOptionCategory(TendonCategory, 0)]
         [ModOptionOrder(10)]
+        [ModOptionSlider]
+        public static float ClutchChestChance = OptionSpecs.ClutchChestChance.Default;
+
+        [ModOption("Crawl Speed", "Movement speed while crawling, relative to walking.", nameof(CrawlSpeedValues))]
+        [ModOptionCategory(TendonCategory, 0)]
+        [ModOptionOrder(11)]
         [ModOptionSlider]
         public static float CrawlSpeed = OptionSpecs.CrawlSpeed.Default;
 
         [ModOption("Crawl Body Height", "How low the crawling body is held. 0 = flat on the ground, 1 = standing.", nameof(CrawlBodyHeightValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(11)]
+        [ModOptionOrder(12)]
         [ModOptionSlider]
         public static float CrawlBodyHeight = OptionSpecs.CrawlBodyHeight.Default;
 
         [ModOption("Steady Crawl Pose", "Small twitches of the crawling NPC count as standing still, so it does not flip between sitting and crawling (which looks like sitting in the air). Off: the game decides alone.")]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(12)]
+        [ModOptionOrder(13)]
         public static bool SteadyCrawlPose = true;
 
         [ModOption("Crawl Start Speed", "Steady Crawl Pose: how fast the NPC must move before it switches from sitting to crawling.", nameof(CrawlStartSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(13)]
+        [ModOptionOrder(14)]
         [ModOptionSlider]
         public static float CrawlStartSpeed = OptionSpecs.CrawlStartSpeed.Default;
 
         [ModOption("Crawl Stop Speed", "Steady Crawl Pose: below this speed a crawling NPC sits down again. Keep it below Crawl Start Speed.", nameof(CrawlStopSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(14)]
+        [ModOptionOrder(15)]
         [ModOptionSlider]
         public static float CrawlStopSpeed = OptionSpecs.CrawlStopSpeed.Default;
 
         [ModOption("Leg Strength", "How hard the legs of a crawling NPC follow its animation. x1 = the game's own value. Higher: it sits down faster after crawling instead of hanging on its shins.", nameof(LegStrengthValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(15)]
+        [ModOptionOrder(16)]
         [ModOptionSlider]
         public static float LegStrength = OptionSpecs.LegStrength.Default;
 
         [ModOption("Crawl Turn Speed", "How fast a crawling or kneeling NPC turns towards you, in percent of the game's own turn speed. 100 % = the game's speed: a half turn in about 0.2 s, as fast as a standing NPC.", nameof(CrawlTurnSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(16)]
+        [ModOptionOrder(17)]
         [ModOptionSlider]
         public static float CrawlTurnSpeed = OptionSpecs.CrawlTurnSpeed.Default;
 
@@ -282,6 +288,7 @@ namespace AchillesTendon
         public static ModOptionParameter[] LieFlatChanceValues() => ToParameters(OptionSpecs.LieFlatChance);
 
         public static ModOptionParameter[] KneelChanceValues() => ToParameters(OptionSpecs.KneelChance);
+        public static ModOptionParameter[] ClutchChestChanceValues() => ToParameters(OptionSpecs.ClutchChestChance);
 
         public static ModOptionParameter[] CrawlSpeedValues() => ToParameters(OptionSpecs.CrawlSpeed);
 
