@@ -173,7 +173,7 @@ How: DMCS owns the meter. Achilles calls `DMCS.Adrenaline.AddExternal(float amou
 
 **Beta zip (2026-11-24, Nadi: "pack mal ne zip als beta für leute zum testen"):** `tools/package.sh beta` builds Release and packs `release/AchillesTendon-<ModVersion>-beta.zip` (the `AchillesTendon` folder with DLL and manifest, no pdb, plus README.md); it refuses uncommitted changes in `src` or README.md. The DLL's debug entry named the local pdb path (`/run/media/nadi/...`); `PathMap` in the csproj maps the project folder to `AchillesTendon`, and the script stops if a DLL still names `/run/` or `/home/`.
 
-**v0.8.10 test runs (2026-11-24):** unit tests 293/293; full default suite run 20261124-220750: 15/16 PASS, smoke FAIL only on its option count (expected 39, the mod now has 40 with Clutch Chest Chance); count raised, smoke alone PASS (run 20261124-221739).
+**v0.8.10 test runs (2026-11-24):** unit tests 293/293; full default suite run 20261124-220750: 15/16 PASS, smoke FAIL only on its option count (expected 39, the mod now has 40 with Clutch Chest Chance); count raised, smoke alone PASS (run 20261124-221741).
 
 **v0.8.9 test runs (2026-11-24):** unit tests 287/287; full default suite run 20261124-150347: 15/16 PASS, `step3-e-crawl` FAIL: its second NPC (lie flat case) was a fighter (`HumanMedium`) that turned toward the player in the 0.12 s between spawn and cut, so the cut came from the front (`miss (AttackAngleTooFrontal)`, angleFromBehind 130.3 deg); a race in the scenario, unrelated to the cry. That NPC is now a `HumanDummy`; `step3-e-crawl` alone PASS (run 20261124-151406).
 
