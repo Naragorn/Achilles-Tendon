@@ -37,6 +37,16 @@ namespace AchillesTendon.Logic
             return compatOn && amount > 0f ? amount : 0f;
         }
 
+        /// <summary>
+        /// Whether the killing hit is the hit that cut the tendon. The game reuses a weapon's
+        /// CollisionInstance objects (CollisionHandler.collisions, decompiled 1.3.2), so the same
+        /// object alone is not enough: the cut that kills at once does so within its own frame.
+        /// </summary>
+        public static bool IsCrippleHit(bool sameObject, int crippleFrame, int killFrame)
+        {
+            return sameObject && crippleFrame == killFrame;
+        }
+
         /// <summary>Adrenaline for the player killing an NPC that was already crippled.</summary>
         public static float KillGain(KillInput input)
         {

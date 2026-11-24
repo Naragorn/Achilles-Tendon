@@ -1,0 +1,35 @@
+# Hit markers have no collider, also when made by a real weapon contact. The marker is made in
+# onCreatureHit, which the game raises inside CollisionHandler.OnCollisionEnter (a Unity contact
+# callback); there Unity refuses DestroyImmediate, so up to v0.8.7 the marker kept its SphereCollider
+# and weapons bumped into it (Windows run 2026-11-23: 113x "Target physics material not found
+# [/AchillesTendon.HitMarker]"). hit-npc cannot show it (Creature.Damage runs outside the callback);
+# player-stab hits through the game's own weapon collision. Found by the ThroatBalls session.
+# Not in the default run (harness/*.txt): real physics on a fallen body, and a stab misses the leg in
+# about 1 of 4 runs (3 of 4 PASS, 2026-11-24). Run it alone: tools/harness.sh harness/physics/hit-marker-collider.txt
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Show Hit Markers" true
+set-option AchillesTendon "Heel Zone Size" 0.2
+set-option AchillesTendon "Max Hit Angle" 180
+set-option AchillesTendon "Bleed-Out Enabled" false
+player-grab SwordShortCommon
+spawn-npc HumanMale distance=2 angle=0 facing=180 brain=HumanDummy
+wait 1
+# Down it first (a blunt push, no leg hit): a standing NPC's foot is out of the sword's reach.
+hit-npc Torso velocity=1.5 push=3
+wait 1.5
+mark
+# Two stabs: the fallen body lies a bit differently each run, and one stab in about five misses.
+# Not three: by the third the sword had once stuck in the body and left the hand (run 20261124-092145).
+player-stab LeftFoot
+wait 1
+player-stab LeftFoot
+wait 2
+# Any leg hit places a marker (green or red); only leg hits log a zone distance.
+expect-log zone dist=0.
+expect-no-log immediately is not permitted
+expect-no-log [/AchillesTendon.HitMarker]
+quit

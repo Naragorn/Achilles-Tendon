@@ -17,14 +17,14 @@ namespace AchillesTendon
         public const string HeelCutSource = "AchillesHeelCut";
         public const string CrippledKillSource = "AchillesCrippledKill";
 
-        /// <summary>The hit that cut each crippled NPC's tendon: killing with that same hit is no execution.</summary>
-        private readonly Dictionary<Creature, CollisionInstance> crippleHits = new Dictionary<Creature, CollisionInstance>();
+        /// <summary>The hit that cut each crippled NPC's tendon, and its frame: killing with that same hit is no execution.</summary>
+        private readonly Dictionary<Creature, (CollisionInstance Hit, int Frame)> crippleHits = new Dictionary<Creature, (CollisionInstance Hit, int Frame)>();
 
         private bool loggedMissing;
 
         public void OnCrippled(Creature creature, CollisionInstance hit)
         {
-            crippleHits[creature] = hit;
+            crippleHits[creature] = (hit, UnityEngine.Time.frameCount);
             Give(DmcsCompatRules.HeelCutGain(ModOptions.DmcsAdrenaline, ModOptions.HeelCutAdrenaline), HeelCutSource, creature);
         }
 
@@ -41,15 +41,25 @@ namespace AchillesTendon
         {
             crippleHits.TryGetValue(creature, out var crippleHit);
             crippleHits.Remove(creature);
+            var sameObject = hit != null && ReferenceEquals(hit, crippleHit.Hit);
+            var killFrame = UnityEngine.Time.frameCount;
+            var isCrippleHit = DmcsCompatRules.IsCrippleHit(sameObject, crippleHit.Frame, killFrame);
+            // Not CollisionInstance.IsDoneByPlayer(): for a punch or kick it asks the player's own
+            // lastInteractionCreature (decompiled 1.3.2), so a fist kill would not count.
+            var byPlayer = KilledByPlayer(hit);
+            if (wasCrippled)
+            {
+                ModLog.Verbose("KILL | " + GameAdapters.Label(creature) + " | by player=" + byPlayer
+                    + " | same hit object as the cut=" + sameObject + " | frames cut=" + crippleHit.Frame + " kill=" + killFrame
+                    + " | the cut itself=" + isCrippleHit);
+            }
             var gain = DmcsCompatRules.KillGain(new KillInput
             {
                 CompatOn = ModOptions.DmcsAdrenaline,
                 TargetIsPlayer = creature.isPlayer,
                 WasCrippled = wasCrippled,
-                KillIsCrippleHit = hit != null && ReferenceEquals(hit, crippleHit),
-                // Not CollisionInstance.IsDoneByPlayer(): for a punch or kick it asks the player's own
-                // lastInteractionCreature (decompiled 1.3.2), so a fist kill would not count.
-                DoneByPlayer = KilledByPlayer(hit),
+                KillIsCrippleHit = isCrippleHit,
+                DoneByPlayer = byPlayer,
                 Amount = ModOptions.CrippledKillAdrenaline,
             });
             Give(gain, CrippledKillSource, creature);

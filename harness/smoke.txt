@@ -48,6 +48,7 @@ option-exists AchillesTendon "Debug Logging" category=Debug type=Boolean save=tr
 expect-option AchillesTendon "Achilles Tendon Enabled" true
 expect-option AchillesTendon "Stand Up When Disabled" true
 expect-option AchillesTendon "Instant Death Chance" 0.5
+expect-option AchillesTendon "Heel Zone Size" 0.1
 expect-option AchillesTendon "Lie Flat Chance" 0.05
 expect-option AchillesTendon "Kneel Chance" 0.3
 expect-option AchillesTendon "Crawl Speed" 0.3

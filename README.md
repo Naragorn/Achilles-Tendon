@@ -4,7 +4,7 @@ A Blade & Sorcery mod about one precise cut. Slice an enemy's Achilles tendon an
 
 Achilles in Greek myth and Krishna in Indian myth both fell to a single strike at their one weak spot. This mod gives your enemies that weak spot. Skill beats raw force.
 
-> **Work in progress (v0.8.7).** Everything below passes automated in-game tests but has not been played in a headset yet. Crawling and ground attacks may still look rough.
+> **Work in progress (v0.8.8).** Everything below passes automated in-game tests but has not been played in a headset yet. Crawling and ground attacks may still look rough.
 
 ## What it does
 
@@ -34,7 +34,7 @@ After an update, press the reset button on the mod's page. The game saves each o
 | Option | Default | Range | What it does |
 |---|---|---|---|
 | Achilles Tendon Enabled | on | | Turns the mod on or off. |
-| Heel Zone Size | 8 cm | 2-20 cm | Radius of the hit zone at the heel. |
+| Heel Zone Size | 10 cm | 2-20 cm | Radius of the hit zone at the heel. |
 | Heel Zone Back Offset | 4 cm | 0-15 cm | How far behind the ankle the zone sits. |
 | Heel Zone Height Offset | 3 cm | -5 to 15 cm | How far above the ankle the zone sits. |
 | Max Hit Angle | 110° | 30-180° | How far from straight behind you can cut. 0 = only from behind, 90 = side, 180 = anywhere. |

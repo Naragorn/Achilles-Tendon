@@ -20,6 +20,28 @@ namespace AchillesTendon.Tests
             Amount = 35f,
         };
 
+        // The game keeps a fixed set of CollisionInstance objects per weapon and reuses them
+        // (CollisionHandler.collisions, NewHit, decompiled 1.3.2): a later kill with the same
+        // blade can be the very object of the cut. Only the same object in the same frame is
+        // the cut itself (Windows run 2026-11-23 21:43:54: a chest stab on a crawler gave no +35).
+        [Fact]
+        public void Same_hit_object_in_the_same_frame_is_the_cripple_hit()
+        {
+            Assert.True(DmcsCompatRules.IsCrippleHit(sameObject: true, crippleFrame: 500, killFrame: 500));
+        }
+
+        [Fact]
+        public void Same_hit_object_reused_in_a_later_frame_is_a_new_hit()
+        {
+            Assert.False(DmcsCompatRules.IsCrippleHit(sameObject: true, crippleFrame: 500, killFrame: 1580));
+        }
+
+        [Fact]
+        public void Another_hit_object_is_never_the_cripple_hit()
+        {
+            Assert.False(DmcsCompatRules.IsCrippleHit(sameObject: false, crippleFrame: 500, killFrame: 500));
+        }
+
         [Fact]
         public void Heel_cut_gives_its_amount()
         {

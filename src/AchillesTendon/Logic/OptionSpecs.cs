@@ -88,8 +88,9 @@ namespace AchillesTendon.Logic
     /// <summary>Every numeric Mod Menu option of the mod. No magic numbers elsewhere.</summary>
     public static class OptionSpecs
     {
+        // 10 cm (Nadi, 2026-11-24): a Windows run had a heel cut 9.5 cm from the centre that missed at 8 cm.
         public static readonly FloatOptionSpec HeelZoneSize =
-            new FloatOptionSpec("Heel Zone Size", 0.02f, 0.2f, 0.01f, 0.08f, OptionUnit.Centimeters);
+            new FloatOptionSpec("Heel Zone Size", 0.02f, 0.2f, 0.01f, 0.1f, OptionUnit.Centimeters);
 
         public static readonly FloatOptionSpec HeelZoneBackOffset =
             new FloatOptionSpec("Heel Zone Back Offset", 0f, 0.15f, 0.01f, 0.04f, OptionUnit.Centimeters);

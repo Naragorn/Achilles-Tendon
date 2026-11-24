@@ -1,0 +1,88 @@
+# DMCS compat: the player cuts the tendon and later kills the crawler with the SAME blade, through
+# the game's own weapon collision (BasHarness player-stab). The game keeps a fixed set of
+# CollisionInstance objects per weapon and reuses them (CollisionHandler.collisions + NewHit,
+# decompiled 1.3.2), so the kill can arrive in the very object of the cut. Up to v0.8.7 Achilles
+# then took the kill for the cut itself and gave no execution adrenaline (Windows run 2026-11-23
+# 21:43:54: a chest stab on a crawler, no +35). hit-npc cannot show this: it makes a new hit each time.
+# Needs DMCS loaded too:
+#   DMCS_MOD=../DMCS/src/DMCS/bin/Release/net472 tools/harness.sh harness/compat/dmcs-same-blade.txt
+# The zone and the angle are opened wide on purpose: this case is about the kill, not the aim.
+# Flaky by nature (real physics on a fallen body): of 7 runs after the last layout change, 1 red and
+# 1 green ran through; the others failed on the aim (no stab reached the leg) or because the sword
+# stuck in the body and left the player's hand. A run that gets through shows the cause directly:
+# v0.8.7 run 20261124-091459: the stab killed the crawler, no AchillesCrippledKill;
+# v0.8.8 run 20261124-091704: "KILL | ... | same hit object as the cut=True | frames cut=10096
+# kill=24999 | the cut itself=False", then +35.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Heel Zone Size" 0.2
+set-option AchillesTendon "Max Hit Angle" 180
+# The stab lands on the shin, about 0.23 m from the normal zone centre (probe run 20261124-090655):
+# the centre moves 15 cm up the shin.
+set-option AchillesTendon "Heel Zone Back Offset" 0
+set-option AchillesTendon "Heel Zone Height Offset" 0.15
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+set-option AchillesTendon "Bleed-Out Enabled" false
+# The crawler keeps still: its swings knocked the sword out of the player's hand once (run 20261124-091618).
+set-option AchillesTendon "Ground Fighting Enabled" false
+set-option AchillesTendon "DMCS Adrenaline" true
+set-option AchillesTendon "Heel Cut Adrenaline" 20
+set-option AchillesTendon "Crippled Kill Adrenaline" 35
+set-option DMCS "Adrenaline Enabled" true
+set-option DMCS "Debug Logging" true
+set-option DMCS "Adrenaline Per Hit" 0
+set-option DMCS "Adrenaline Meter Max" 300
+
+player-grab SwordShortCommon
+spawn-npc HumanMale distance=2 angle=0 facing=180 brain=HumanDummy
+wait 1
+
+# Down it first (a blunt push, no leg hit): a standing NPC's foot is out of the sword's reach.
+hit-npc Torso velocity=1.5 push=3
+expect-npc state Destabilized within=2
+wait 1.5
+
+# The cut: a stab at the left foot with the held sword; up to three, as the fallen body lies a bit
+# differently each run and one stab in about five misses the leg (stabs after the cut change nothing).
+mark
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+expect-log [AchillesTendon] HEEL HIT
+expect-log [AchillesTendon] COLLAPSE
+expect-log [AchillesTendon] DMCS | AchillesHeelCut +20
+wait 2
+
+# The kill: the same sword into the same leg until it dies. No weakening hit-npc: after the cut it
+# had 33-48 health, and a fixed hit-npc killed it before the stab twice (runs 20261124-091001..091300).
+# A stab does about 4-11 damage; stabs into the dead body change nothing. A stab at the sitting
+# crawler's torso missed (tip 0.48 m off, run 20261124-090752).
+mark
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+player-stab LeftFoot
+wait 0.5
+expect-npc state Dead within=3
+expect-log [AchillesTendon] DMCS | AchillesCrippledKill +35
+expect-log | Applied
+quit

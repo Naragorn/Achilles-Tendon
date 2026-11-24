@@ -155,8 +155,14 @@ namespace AchillesTendon
         {
             var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.name = name;
-            // Immediately, so the marker never takes part in a physics step.
-            Object.DestroyImmediate(sphere.GetComponent<Collider>());
+            // Hit markers are made inside the game's contact callback (onCreatureHit runs in
+            // CollisionHandler.OnCollisionEnter), where Unity refuses DestroyImmediate and the
+            // collider stayed: weapons bumped into the marker (Windows run 2026-11-23, 113x
+            // "Target physics material not found [/AchillesTendon.HitMarker]"). Disabled at once,
+            // so it never takes part in a physics step, and removed at the end of the frame.
+            var collider = sphere.GetComponent<Collider>();
+            collider.enabled = false;
+            Object.Destroy(collider);
             var material = MaterialFor(color);
             if (material != null)
             {

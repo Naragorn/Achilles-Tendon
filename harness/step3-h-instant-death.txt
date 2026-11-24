@@ -17,8 +17,8 @@ set-option AchillesTendon "Ground Fighting Enabled" true
 set-option AchillesTendon "Lie Flat Chance" 0
 player-invincible true
 
-# 1. Default 50 %.
-expect-option AchillesTendon "Instant Death Chance" 0.5
+# 1. Default 50 %: checked in harness/smoke.txt. Not here: in a full run the options of earlier
+#    scenarios carry over (one prefix per run), and step3-g pins the chance to 0 (run 20261124-093514).
 
 # 2. 100 %: a fighter, cut from behind with the player's sword: dead at once, with the game's dying animation.
 set-option AchillesTendon "Instant Death Chance" 1
