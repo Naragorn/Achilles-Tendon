@@ -1,0 +1,72 @@
+# Step 4, collapse cry (Nadi, 2026-11-24): when the tendon is cut and the NPC goes down, it cries
+# out with its own death sound ("death"), always, without an option. Before, the only sound was the
+# first ground-fight scream 6 ms after the cut, the voice's "hit" pain sound that the game also plays
+# on every hit (Windows run 2026-11-23 21:43:40 / 21:44:42), so going down sounded like any hit.
+# VOICE lines (Debug Logging) list every line the voice tries to play for 4 s after the cut: the
+# death sound must play, and no "hit" may follow before one Scream Interval.
+wait-level
+set-option AchillesTendon "Achilles Tendon Enabled" true
+set-option AchillesTendon "Instant Death Chance" 0
+set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
+set-option AchillesTendon "Debug Logging" true
+set-option AchillesTendon "Max Hit Angle" 110
+set-option AchillesTendon "Lie Flat Chance" 0
+set-option AchillesTendon "Kneel Chance" 0
+set-option AchillesTendon "Bleed-Out Enabled" false
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Ground Attacks" false
+set-option AchillesTendon "Screaming" true
+set-option AchillesTendon "Scream Interval" 3
+
+# 1. Crawler, screams on: the death cry at the cut, the first scream only after 3 s.
+spawn-npc HumanMale distance=1.5 facing=180 brain=HumanDummy
+wait 2
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE |
+expect-log [AchillesTendon] COLLAPSE CRY |
+expect-log | dialog=death
+expect-log | dialog=death | Success
+wait 2.5
+expect-no-log | dialog=hit |
+expect-no-log [AchillesTendon] SCREAM
+wait 1.5
+expect-log [AchillesTendon] SCREAM
+expect-no-log Exception
+hit-npc Head type=Pierce damage=500
+expect-npc state Dead within=2
+wait 1
+
+# Each NPC is killed before the next case, so its screams do not count there.
+# 2. Ground Fighting off (no screams at all): the cry still plays.
+set-option AchillesTendon "Ground Fighting Enabled" false
+spawn-npc HumanMale distance=1.5 angle=90 facing=180 brain=HumanDummy
+wait 2
+mark
+hit-npc LeftFoot type=Slash
+expect-log [AchillesTendon] COLLAPSE CRY |
+expect-log | dialog=death | Success
+wait 3
+expect-no-log [AchillesTendon] SCREAM
+hit-npc Head type=Pierce damage=500
+expect-npc state Dead within=2
+wait 1
+
+# 3. Lying flat: the cry plays too.
+set-option AchillesTendon "Ground Fighting Enabled" true
+set-option AchillesTendon "Lie Flat Chance" 1
+spawn-npc HumanMale distance=1.5 angle=-90 facing=180 brain=HumanDummy
+wait 2
+mark
+hit-npc LeftFoot type=Slash
+expect-log held on the ground (roll
+expect-log [AchillesTendon] COLLAPSE CRY |
+expect-log | dialog=death | Success
+expect-no-log Exception
+
+set-option AchillesTendon "Lie Flat Chance" 0.05
+set-option AchillesTendon "Kneel Chance" 0.3
+set-option AchillesTendon "Bleed-Out Enabled" true
+set-option AchillesTendon "Ground Attacks" true
+set-option AchillesTendon "Scream Interval" 6
+quit

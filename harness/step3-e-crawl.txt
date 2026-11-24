@@ -56,7 +56,9 @@ mark
 
 # Lie Flat Chance 100 %: the next cut NPC is knocked down and held flat.
 set-option AchillesTendon "Lie Flat Chance" 1
-spawn-npc HumanMale distance=2 angle=60 facing=180 brain=HumanMedium
+# A dummy: a fighter turned toward the player (already in combat) within the 0.12 s between spawn
+# and cut, and the cut came from the front (run 20261124-150347: angleFromBehind=130.3, miss).
+spawn-npc HumanMale distance=2 angle=60 facing=180 brain=HumanDummy
 npc-grab SwordShortCommon
 hit-npc LeftFoot type=Slash
 expect-log held on the ground (roll

@@ -40,13 +40,15 @@ namespace AchillesTendon
         private readonly List<Creature> scratch = new List<Creature>();
 
         /// <summary>Called when the tendon is cut (the NPC may not stand in a melee stance yet).</summary>
-        public void Start(Creature creature)
+        public void Start(Creature creature, float time)
         {
             if (fighters.ContainsKey(creature))
             {
                 return;
             }
-            var fighter = new Fighter();
+            // The cut plays the collapse cry (CollapseCry) on the same voice; a scream at once would
+            // cut it off, so the first scream waits one Scream Interval.
+            var fighter = new Fighter { LastScreamTime = time };
             var source = CaptureAttackClips(creature, fighter.AttackClips);
             var roll = Random.value;
             fighter.IsAttacker = GroundFightRules.IsAttacker(ModOptions.GroundAttackChance, roll);

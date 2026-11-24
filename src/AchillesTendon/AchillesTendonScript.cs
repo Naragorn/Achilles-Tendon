@@ -19,6 +19,7 @@ namespace AchillesTendon
         private readonly BleedController bleed = new BleedController();
         private readonly GroundFightController groundFight = new GroundFightController();
         private readonly DmcsAdrenaline dmcs = new DmcsAdrenaline();
+        private readonly CollapseCry cry = new CollapseCry();
 
         public override void ScriptLoaded(ModManager.ModData modData)
         {
@@ -42,6 +43,7 @@ namespace AchillesTendon
             cripple.ReleaseAll();
             bleed.Clear();
             groundFight.Clear();
+            cry.Clear();
             ModLog.Info("Disabled");
         }
 
@@ -54,6 +56,7 @@ namespace AchillesTendon
             cripple.ReleaseAll();
             bleed.Clear();
             groundFight.Clear();
+            cry.Clear();
         }
 
         public override void ScriptUpdate()
@@ -81,6 +84,14 @@ namespace AchillesTendon
             catch (Exception ex)
             {
                 ModLog.Error("Ground fight update failed: " + ex);
+            }
+            try
+            {
+                cry.Update(UnityEngine.Time.time);
+            }
+            catch (Exception ex)
+            {
+                ModLog.Error("Collapse cry update failed: " + ex);
             }
             try
             {
@@ -230,8 +241,9 @@ namespace AchillesTendon
                     return;
                 }
                 // Captured before the collapse: the attack clips come from the standing stance.
-                groundFight.Start(creature);
+                groundFight.Start(creature, UnityEngine.Time.time);
                 cripple.Cripple(creature);
+                cry.Play(creature, UnityEngine.Time.time);
                 // Tracked even with Bleed-Out off: it is paused then and starts when turned on.
                 bleed.Start(creature, part, hit.contactPoint);
                 dmcs.OnCrippled(creature, hit);

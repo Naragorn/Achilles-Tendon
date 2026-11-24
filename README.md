@@ -4,13 +4,13 @@ A Blade & Sorcery mod about one precise cut. Slice an enemy's Achilles tendon an
 
 Achilles in Greek myth and Krishna in Indian myth both fell to a single strike at their one weak spot. This mod gives your enemies that weak spot. Skill beats raw force.
 
-> **Work in progress (v0.8.8).** Everything below passes automated in-game tests but has not been played in a headset yet. Crawling and ground attacks may still look rough.
+> **Work in progress (v0.8.9).** Everything below passes automated in-game tests but has not been played in a headset yet. Crawling and ground attacks may still look rough.
 
 ## What it does
 
 - **The cut.** Slash or stab the back of an enemy's heel, from behind or the side. Blunt hits and hits from the front don't count. Held weapons, thrown blades and spells all work.
 - **Instant death.** Half of all cuts kill on the spot. The enemy drops with the game's own death animation, and it counts as your kill.
-- **Down for good.** The survivors never stand up again. Each one rolls its own pose: most sit down and crawl on their back, some (30 %) fall to their knees and fight on kneeling, and a few (5 %) fall flat and lie still.
+- **Down for good.** The survivors cry out with their death sound as they go down and never stand up again. Each one rolls its own pose: most sit down and crawl on their back, some (30 %) fall to their knees and fight on kneeling, and a few (5 %) fall flat and lie still.
 - **Slow to turn.** Crawling and kneeling enemies turn toward you at a quarter of the normal speed, so you can circle them.
 - **Still dangerous.** They scream and crawl after you, and most of them (75 %) swing at you when you get close. The rest only crawl and scream. You can't tell which is which.
 - **Bleeding out.** Blood drips from the cut heel, heavier toward the end. They crawl slower, scream less, start gasping and die after 45 seconds. You can finish them sooner as usual.
