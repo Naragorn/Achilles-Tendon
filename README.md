@@ -4,7 +4,7 @@ A Blade & Sorcery mod about one precise cut. Slice an enemy's Achilles tendon an
 
 Achilles in Greek myth and Krishna in Indian myth both fell to a single strike at their one weak spot. This mod gives your enemies that weak spot. Skill beats raw force.
 
-> **Work in progress (v0.8.10).** Everything below passes automated in-game tests but has not been played in a headset yet. Crawling and ground attacks may still look rough.
+> **Work in progress (v0.8.11).** Everything below passes automated in-game tests but has not been played in a headset yet. Crawling and ground attacks may still look rough.
 
 ## What it does
 
@@ -15,11 +15,11 @@ Achilles in Greek myth and Krishna in Indian myth both fell to a single strike a
 - **Still dangerous.** They scream and crawl after you, and most of them (75 %) swing at you when you get close. The rest only crawl and scream. You can't tell which is which.
 - **Bleeding out.** Blood drips from the cut heel, heavier toward the end. They crawl slower, scream less, start gasping and die after 45 seconds. You can finish them sooner as usual.
 - **Only your cuts count.** Enemies cutting each other's heels, or yours, do nothing.
-- **Your rules.** Every feature has a toggle or slider in the Mod Menu, and changes apply live. Turn the mod off and crippled enemies get back up.
+- **Your rules.** The main features have a toggle or slider in the Mod Menu, fine-tuning sits under Advanced, and changes apply live. Turn the mod off and crippled enemies get back up.
 - **Practice aids.** Show the heel zones as spheres and mark every leg hit green (heel) or red (miss).
 - **DMCS.** With Dark Messiah Combat Systems installed, heel cuts fill its Adrenaline meter. See [DMCS compat](#dmcs-compat).
 
-All numbers are defaults. You can change every one of them in the Mod Menu.
+All numbers are defaults. You can change them in the Mod Menu.
 
 ## Install
 
@@ -35,55 +35,32 @@ After an update, press the reset button on the mod's page. The game saves each o
 |---|---|---|---|
 | Achilles Tendon Enabled | on | | Turns the mod on or off. |
 | Heel Zone Size | 10 cm | 2-20 cm | Radius of the hit zone at the heel. |
-| Heel Zone Back Offset | 4 cm | 0-15 cm | How far behind the ankle the zone sits. |
-| Heel Zone Height Offset | 3 cm | -5 to 15 cm | How far above the ankle the zone sits. |
 | Max Hit Angle | 110° | 30-180° | How far from straight behind you can cut. 0 = only from behind, 90 = side, 180 = anywhere. |
-| Allowed Damage Types | Slash and Pierce | Slash and Pierce, Slash only, Pierce only | Which hits cut the tendon. Blunt never does. |
-| Stand Up When Disabled | on | | Crippled enemies get back up when you turn the mod off. |
 | Instant Death Chance | 50 % | 0-100 % | Share of cuts that kill on the spot. |
 | Lie Flat Chance | 5 % | 0-100 % | Share of crippled enemies that lie flat instead of crawling. |
 | Kneel Chance | 30 % | 0-100 % | Share of crawlers that kneel and fight on instead. |
-| Clutch Chest Chance | 50 % | 0-100 % | Share of sitting crawlers that clutch their chest. The others lie back. |
 | Crawl Speed | x0.3 | x0.05-x1 | Crawling speed compared to walking. |
-| Crawl Body Height | x0.2 | x0-x0.6 | How low the crawling body stays. 0 = flat, 1 = standing. |
-| Steady Crawl Pose | on | | Small twitches count as standing still, so the enemy doesn't flicker between sitting and crawling. |
-| Crawl Start Speed | 0.4 | 0.1-1 | Speed at which a sitting enemy starts to crawl. |
-| Crawl Stop Speed | 0.1 | 0.05-0.5 | Speed below which a crawler sits down again. |
-| Leg Strength | x4 | x1-x10 | How firmly the legs follow the crawl animation. |
-| Crawl Turn Speed | 25 % | 10-100 % | How fast crawlers and kneelers turn toward you. 100 % = the game's normal speed. |
 
 ### Bleed-Out
 
 | Option | Default | Range | What it does |
 |---|---|---|---|
-| Bleed-Out Enabled | on | | Off pauses the bleeding, on resumes it. |
+| Bleed-Out Enabled | on | | Off pauses the bleeding, on resumes it. The blood follows the game's own blood setting. |
 | Bleed-Out Duration | 45 s | 10-180 s | Time from the cut to death. |
-| Blood Effects | on | | Blood drips from the heel, heavier toward the end. |
-| Blood Pulse Interval | 2 s | 0.5-10 s | Time between drips. |
 | Weakening | on | | They crawl slower, scream less and gasp near the end. |
-| Weakest Crawl Speed | 25 % | 5-100 % | Crawl speed at the moment of death, as a share of Crawl Speed. |
-| Scream Slowdown | x3 | x1-x5 | How much longer the pauses between screams get by the end. |
-| Gasping From | 75 % | 50-100 % | Point of the bleed-out where screams turn into gasping. |
 
 ### Ground Fighting
 
 | Option | Default | Range | What it does |
 |---|---|---|---|
-| Ground Fighting Enabled | on | | Crippled enemies scream and fight from the ground. |
-| Ground Attacks | on | | Crawlers and kneelers swing at you. Enemies lying flat never do. |
 | Ground Attack Chance | 75 % | 0-100 % | Share of crippled enemies that fight back. |
-| Ground Attack Range | 1.8 m | 0.5-4 m | How close you must be before they swing. |
-| Ground Attack Interval | 3 s | 1-10 s | Time between swings. |
 | Screaming | on | | Pain cries. |
-| Scream Interval | 6 s | 2-30 s | Time between screams. |
 
 ### DMCS Compat
 
 | Option | Default | Range | What it does |
 |---|---|---|---|
 | DMCS Adrenaline | on | | Fills DMCS's Adrenaline meter. Does nothing without DMCS. |
-| Heel Cut Adrenaline | 20 | 0-100 | Points per heel cut. |
-| Crippled Kill Adrenaline | 35 | 0-100 | Points for killing an enemy that was already crippled. |
 
 ### Debug
 
@@ -92,6 +69,33 @@ After an update, press the reset button on the mod's page. The game saves each o
 | Debug Logging | off | | Writes heel hits, falls and bleeding to the game log. |
 | Show Heel Zones | off | | Draws each enemy's heel zone as a sphere. |
 | Show Hit Markers | off | | Marks each leg hit: green = heel, red = miss. |
+
+### Advanced
+
+Fine-tuning most players never need. The defaults are what the mod was tested with.
+
+| Option | Default | Range | What it does |
+|---|---|---|---|
+| Heel Zone Back Offset | 4 cm | 0-15 cm | How far behind the ankle the zone sits. |
+| Heel Zone Height Offset | 3 cm | -5 to 15 cm | How far above the ankle the zone sits. |
+| Stand Up When Disabled | on | | Crippled enemies get back up when you turn the mod off. |
+| Clutch Chest Chance | 50 % | 0-100 % | Share of sitting crawlers that clutch their chest. The others lie back. |
+| Crawl Body Height | x0.2 | x0-x0.6 | How low the crawling body stays. 0 = flat, 1 = standing. |
+| Crawl Start Speed | 0.4 | 0.1-1 | Speed at which a sitting enemy starts to crawl. |
+| Crawl Stop Speed | 0.1 | 0.05-0.5 | Speed below which a crawler sits down again. |
+| Leg Strength | x4 | x1-x10 | How firmly the legs follow the crawl animation. |
+| Crawl Turn Speed | 25 % | 10-100 % | How fast crawlers and kneelers turn toward you. 100 % = the game's normal speed. |
+| Blood Pulse Interval | 2 s | 0.5-10 s | Time between drips. |
+| Weakest Crawl Speed | 25 % | 5-100 % | Crawl speed at the moment of death, as a share of Crawl Speed. |
+| Scream Slowdown | x3 | x1-x5 | How much longer the pauses between screams get by the end. |
+| Gasping From | 75 % | 50-100 % | Point of the bleed-out where screams turn into gasping. |
+| Ground Fighting Enabled | on | | Crippled enemies scream and fight from the ground. |
+| Ground Attacks | on | | Crawlers and kneelers swing at you. Enemies lying flat never do. |
+| Ground Attack Range | 1.8 m | 0.5-4 m | How close you must be before they swing. |
+| Ground Attack Interval | 3 s | 1-10 s | Time between swings. |
+| Scream Interval | 6 s | 2-30 s | Time between screams. |
+| Heel Cut Adrenaline | 20 | 0-100 | Points per heel cut. |
+| Crippled Kill Adrenaline | 35 | 0-100 | Points for killing an enemy that was already crippled. |
 | Hit Marker Duration | 5 s | 1-30 s | How long a marker stays. |
 
 ## DMCS compat

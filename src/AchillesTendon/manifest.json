@@ -2,6 +2,6 @@
   "Name": "Heel of Achilles",
   "Description": "Cutting an enemy's Achilles tendon makes them fall - like Achilles (heel) and Krishna (sole of the foot), felled by one precise strike at their only weak point. Work in progress: heel cut knocks NPCs down for good and they bleed out; crawl pose with the game's own injured animations, upper-body swings from the ground, screams.",
   "Author": "Nadi",
-  "ModVersion": "0.8.10",
+  "ModVersion": "0.8.11",
   "GameVersion": "1.0.0.0"
 }

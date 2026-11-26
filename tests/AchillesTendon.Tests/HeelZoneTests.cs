@@ -37,28 +37,15 @@ namespace AchillesTendon.Tests
 
     public class DamageTypeFilterTests
     {
+        // Only a blade cuts a tendon: slash and pierce, never blunt (Allowed Damage Types removed, v0.8.11).
         [Theory]
-        [InlineData(AllowedDamageTypes.SlashAndPierce, HitDamageType.Slash, true)]
-        [InlineData(AllowedDamageTypes.SlashAndPierce, HitDamageType.Pierce, true)]
-        [InlineData(AllowedDamageTypes.SlashAndPierce, HitDamageType.Blunt, false)]
-        [InlineData(AllowedDamageTypes.SlashAndPierce, HitDamageType.Other, false)]
-        [InlineData(AllowedDamageTypes.SlashOnly, HitDamageType.Slash, true)]
-        [InlineData(AllowedDamageTypes.SlashOnly, HitDamageType.Pierce, false)]
-        [InlineData(AllowedDamageTypes.SlashOnly, HitDamageType.Blunt, false)]
-        [InlineData(AllowedDamageTypes.PierceOnly, HitDamageType.Pierce, true)]
-        [InlineData(AllowedDamageTypes.PierceOnly, HitDamageType.Slash, false)]
-        [InlineData(AllowedDamageTypes.PierceOnly, HitDamageType.Other, false)]
-        public void IsAllowed(AllowedDamageTypes allowed, HitDamageType hit, bool expected)
+        [InlineData(HitDamageType.Slash, true)]
+        [InlineData(HitDamageType.Pierce, true)]
+        [InlineData(HitDamageType.Blunt, false)]
+        [InlineData(HitDamageType.Other, false)]
+        public void IsAllowed(HitDamageType hit, bool expected)
         {
-            Assert.Equal(expected, DamageTypeFilter.IsAllowed(allowed, hit));
-        }
-
-        [Fact]
-        public void Default_enum_value_is_SlashAndPierce()
-        {
-            // The game's mod menu cannot match an enum default and falls back to
-            // index 0, so the intended default must be the first member.
-            Assert.Equal(AllowedDamageTypes.SlashAndPierce, default(AllowedDamageTypes));
+            Assert.Equal(expected, DamageTypeFilter.IsAllowed(hit));
         }
     }
 

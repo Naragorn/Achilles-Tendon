@@ -6,7 +6,6 @@ wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Stand Up When Disabled" true
-set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Lie Flat Chance" 1

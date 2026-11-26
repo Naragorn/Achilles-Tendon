@@ -22,8 +22,9 @@ namespace AchillesTendon
         private const string GroundCategory = "Ground Fighting";
         private const string DmcsCategory = "DMCS Compat";
         private const string DebugCategory = "Debug";
+        private const string AdvancedCategory = "Advanced";
 
-        // ---- Achilles Tendon ------------------------------------------------
+        // ---- Achilles Tendon ---------------------------------------------
 
         // The game saves options by name per mod, so each feature's on/off toggle
         // needs a unique name; a plain "Enabled" in every category would collide.
@@ -38,100 +39,37 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float HeelZoneSize = OptionSpecs.HeelZoneSize.Default;
 
-        [ModOption("Heel Zone Back Offset", "How far behind the ankle the heel zone sits.", nameof(HeelZoneBackOffsetValues))]
+        [ModOption("Max Hit Angle", "How far from straight behind you may stand. 0 = only directly behind, 90 = side, 180 = anywhere.", nameof(MaxHitAngleValues))]
         [ModOptionCategory(TendonCategory, 0)]
         [ModOptionOrder(2)]
         [ModOptionSlider]
-        public static float HeelZoneBackOffset = OptionSpecs.HeelZoneBackOffset.Default;
-
-        [ModOption("Heel Zone Height Offset", "How far above the ankle the heel zone sits.", nameof(HeelZoneHeightOffsetValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(3)]
-        [ModOptionSlider]
-        public static float HeelZoneHeightOffset = OptionSpecs.HeelZoneHeightOffset.Default;
-
-        [ModOption("Max Hit Angle", "How far from straight behind you may stand. 0 = only directly behind, 90 = side, 180 = anywhere.", nameof(MaxHitAngleValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(4)]
-        [ModOptionSlider]
         public static float MaxHitAngle = OptionSpecs.MaxHitAngle.Default;
-
-        [ModOption("Allowed Damage Types", "Which damage types can cut the tendon. Blunt never does.")]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(5)]
-        public static AllowedDamageTypes AllowedDamageTypes = AllowedDamageTypes.SlashAndPierce;
-
-        [ModOption("Stand Up When Disabled", "When Achilles Tendon is turned off, NPCs with a cut tendon get up again. Off: they stay down.")]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(6)]
-        public static bool StandUpWhenDisabled = true;
 
         [ModOption("Instant Death Chance", "Share of heel cuts that kill at once: the NPC drops with the game's own death animation and counts as your kill (focus, DMCS adrenaline). The others are crippled. Rolled when the tendon is cut. 0 % = never.", nameof(InstantDeathChanceValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(7)]
+        [ModOptionOrder(3)]
         [ModOptionSlider]
         public static float InstantDeathChance = OptionSpecs.InstantDeathChance.Default;
 
         [ModOption("Lie Flat Chance", "Share of crippled NPCs that fall as a ragdoll and lie still; the others crawl with the game's own injured animations. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(LieFlatChanceValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(8)]
+        [ModOptionOrder(4)]
         [ModOptionSlider]
         public static float LieFlatChance = OptionSpecs.LieFlatChance.Default;
 
         [ModOption("Kneel Chance", "Share of crawling NPCs that fall forward onto their knees and fight on kneeling upright; the others sit down and crawl on their back. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(KneelChanceValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(9)]
+        [ModOptionOrder(5)]
         [ModOptionSlider]
         public static float KneelChance = OptionSpecs.KneelChance.Default;
 
-        [ModOption("Clutch Chest Chance", "Share of sitting crawlers that clutch their chest while they lie still; the others lie back plainly. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(ClutchChestChanceValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(10)]
-        [ModOptionSlider]
-        public static float ClutchChestChance = OptionSpecs.ClutchChestChance.Default;
-
         [ModOption("Crawl Speed", "Movement speed while crawling, relative to walking.", nameof(CrawlSpeedValues))]
         [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(11)]
+        [ModOptionOrder(6)]
         [ModOptionSlider]
         public static float CrawlSpeed = OptionSpecs.CrawlSpeed.Default;
 
-        [ModOption("Crawl Body Height", "How low the crawling body is held. 0 = flat on the ground, 1 = standing.", nameof(CrawlBodyHeightValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(12)]
-        [ModOptionSlider]
-        public static float CrawlBodyHeight = OptionSpecs.CrawlBodyHeight.Default;
-
-        [ModOption("Steady Crawl Pose", "Small twitches of the crawling NPC count as standing still, so it does not flip between sitting and crawling (which looks like sitting in the air). Off: the game decides alone.")]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(13)]
-        public static bool SteadyCrawlPose = true;
-
-        [ModOption("Crawl Start Speed", "Steady Crawl Pose: how fast the NPC must move before it switches from sitting to crawling.", nameof(CrawlStartSpeedValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(14)]
-        [ModOptionSlider]
-        public static float CrawlStartSpeed = OptionSpecs.CrawlStartSpeed.Default;
-
-        [ModOption("Crawl Stop Speed", "Steady Crawl Pose: below this speed a crawling NPC sits down again. Keep it below Crawl Start Speed.", nameof(CrawlStopSpeedValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(15)]
-        [ModOptionSlider]
-        public static float CrawlStopSpeed = OptionSpecs.CrawlStopSpeed.Default;
-
-        [ModOption("Leg Strength", "How hard the legs of a crawling NPC follow its animation. x1 = the game's own value. Higher: it sits down faster after crawling instead of hanging on its shins.", nameof(LegStrengthValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(16)]
-        [ModOptionSlider]
-        public static float LegStrength = OptionSpecs.LegStrength.Default;
-
-        [ModOption("Crawl Turn Speed", "How fast a crawling or kneeling NPC turns towards you, in percent of the game's own turn speed. 100 % = the game's speed: a half turn in about 0.2 s, as fast as a standing NPC.", nameof(CrawlTurnSpeedValues))]
-        [ModOptionCategory(TendonCategory, 0)]
-        [ModOptionOrder(17)]
-        [ModOptionSlider]
-        public static float CrawlTurnSpeed = OptionSpecs.CrawlTurnSpeed.Default;
-
-        // ---- Bleed-Out ------------------------------------------------------
+        // ---- Bleed-Out ---------------------------------------------------
 
         [ModOption("Bleed-Out Enabled", "NPCs with a cut tendon bleed out and die after Bleed-Out Duration. Off: the bleeding pauses (it goes on when turned back on).")]
         [ModOptionCategory(BleedCategory, 1)]
@@ -144,101 +82,32 @@ namespace AchillesTendon
         [ModOptionSlider]
         public static float BleedOutDuration = OptionSpecs.BleedOutDuration.Default;
 
-        [ModOption("Blood Effects", "Blood drips from the cut heel, growing stronger towards the end. The game's own blood setting still applies.")]
-        [ModOptionCategory(BleedCategory, 1)]
-        [ModOptionOrder(2)]
-        public static bool BloodEffects = true;
-
-        [ModOption("Blood Pulse Interval", "Seconds between blood drips (and bleed log lines with Debug Logging).", nameof(BloodPulseIntervalValues))]
-        [ModOptionCategory(BleedCategory, 1)]
-        [ModOptionOrder(3)]
-        [ModOptionSlider]
-        public static float BloodPulseInterval = OptionSpecs.BleedPulseInterval.Default;
-
         [ModOption("Weakening", "The NPC gets weaker as it bleeds: it crawls slower, screams less often and near the end only breathes heavily. Off: full strength until death.")]
         [ModOptionCategory(BleedCategory, 1)]
-        [ModOptionOrder(4)]
+        [ModOptionOrder(2)]
         public static bool Weakening = true;
 
-        [ModOption("Weakest Crawl Speed", "Crawl speed reached at the moment of death, in percent of Crawl Speed. 100 % = no slowdown.", nameof(WeakestCrawlSpeedValues))]
-        [ModOptionCategory(BleedCategory, 1)]
-        [ModOptionOrder(5)]
-        [ModOptionSlider]
-        public static float WeakestCrawlSpeed = OptionSpecs.WeakestCrawlSpeed.Default;
-
-        [ModOption("Scream Slowdown", "How much longer the pause between screams is at the moment of death. x1 = no slowdown.", nameof(ScreamSlowdownValues))]
-        [ModOptionCategory(BleedCategory, 1)]
-        [ModOptionOrder(6)]
-        [ModOptionSlider]
-        public static float ScreamSlowdown = OptionSpecs.ScreamSlowdown.Default;
-
-        [ModOption("Gasping From", "From this point of the bleed-out on, screams turn into heavy breathing. 100 % = never.", nameof(GaspingFromValues))]
-        [ModOptionCategory(BleedCategory, 1)]
-        [ModOptionOrder(7)]
-        [ModOptionSlider]
-        public static float GaspingFrom = OptionSpecs.GaspingFrom.Default;
-
-        // ---- Ground Fighting (step 4, experimental) --------------------------
-
-        [ModOption("Ground Fighting Enabled", "NPCs with a cut tendon fight on from the ground: screams, and crawling NPCs swing at you. Off: they only crawl or lie there.")]
-        [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(0)]
-        public static bool GroundFightingEnabled = true;
-
-        [ModOption("Ground Attacks", "A crawling NPC swings its weapon at you with its upper body when you are in reach (its own attack animations; needs a weapon). NPCs lying flat do not swing. A crawling NPC never uses its own melee AI, so with this off it does not attack.")]
-        [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(1)]
-        public static bool GroundAttacks = true;
+        // ---- Ground Fighting ---------------------------------------------
 
         [ModOption("Ground Attack Chance", "Share of crippled NPCs that fight from the ground; the others only crawl and scream. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(GroundAttackChanceValues))]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(2)]
+        [ModOptionOrder(0)]
         [ModOptionSlider]
         public static float GroundAttackChance = OptionSpecs.GroundAttackChance.Default;
 
-        [ModOption("Ground Attack Range", "How close you must be for a lying NPC to swing at you.", nameof(GroundAttackRangeValues))]
-        [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(3)]
-        [ModOptionSlider]
-        public static float GroundAttackRange = OptionSpecs.GroundAttackRange.Default;
-
-        [ModOption("Ground Attack Interval", "Seconds between two swings from the ground.", nameof(GroundAttackIntervalValues))]
-        [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(4)]
-        [ModOptionSlider]
-        public static float GroundAttackInterval = OptionSpecs.GroundAttackInterval.Default;
-
         [ModOption("Screaming", "A lying NPC cries out in pain now and then.")]
         [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(5)]
+        [ModOptionOrder(1)]
         public static bool Screaming = true;
 
-        [ModOption("Scream Interval", "Seconds between two screams.", nameof(ScreamIntervalValues))]
-        [ModOptionCategory(GroundCategory, 2)]
-        [ModOptionOrder(6)]
-        [ModOptionSlider]
-        public static float ScreamInterval = OptionSpecs.ScreamInterval.Default;
-
-        // ---- DMCS Compat ----------------------------------------------------
+        // ---- DMCS Compat -------------------------------------------------
 
         [ModOption("DMCS Adrenaline", "With DMCS installed: cutting a tendon and killing a crawling NPC with a cut tendon fill DMCS's Adrenaline meter. Without DMCS this does nothing.")]
         [ModOptionCategory(DmcsCategory, 3)]
         [ModOptionOrder(0)]
         public static bool DmcsAdrenaline = true;
 
-        [ModOption("Heel Cut Adrenaline", "Adrenaline points for each heel cut that cripples an NPC (DMCS: a hit gives 5, a full meter is 100 by default).", nameof(HeelCutAdrenalineValues))]
-        [ModOptionCategory(DmcsCategory, 3)]
-        [ModOptionOrder(1)]
-        [ModOptionSlider]
-        public static float HeelCutAdrenaline = OptionSpecs.HeelCutAdrenaline.Default;
-
-        [ModOption("Crippled Kill Adrenaline", "Adrenaline points when you kill an NPC that was already crawling or lying with a cut tendon (any of your hits; bleeding out gives nothing).", nameof(CrippledKillAdrenalineValues))]
-        [ModOptionCategory(DmcsCategory, 3)]
-        [ModOptionOrder(2)]
-        [ModOptionSlider]
-        public static float CrippledKillAdrenaline = OptionSpecs.CrippledKillAdrenaline.Default;
-
-        // ---- Debug ----------------------------------------------------------
+        // ---- Debug -------------------------------------------------------
 
         [ModOption("Debug Logging", "Logs every player hit on an NPC with part, angle, damage type and verdict, plus collapse/release, bleed-out pulses and a one-line note for skipped hits, to the game log.")]
         [ModOptionCategory(DebugCategory, 4)]
@@ -255,9 +124,130 @@ namespace AchillesTendon
         [ModOptionOrder(2)]
         public static bool ShowHitMarkers = false;
 
-        [ModOption("Hit Marker Duration", "How long a hit marker stays visible.", nameof(HitMarkerDurationValues))]
-        [ModOptionCategory(DebugCategory, 4)]
+        // ---- Advanced ----------------------------------------------------
+        // Fine-tuning and fixes most players never touch (Nadi, 2026-11-26), grouped by feature.
+        // Names unchanged: the game saves each value by mod and option name, not by category.
+
+        [ModOption("Heel Zone Back Offset", "How far behind the ankle the heel zone sits.", nameof(HeelZoneBackOffsetValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(0)]
+        [ModOptionSlider]
+        public static float HeelZoneBackOffset = OptionSpecs.HeelZoneBackOffset.Default;
+
+        [ModOption("Heel Zone Height Offset", "How far above the ankle the heel zone sits.", nameof(HeelZoneHeightOffsetValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(1)]
+        [ModOptionSlider]
+        public static float HeelZoneHeightOffset = OptionSpecs.HeelZoneHeightOffset.Default;
+
+        [ModOption("Stand Up When Disabled", "When Achilles Tendon is turned off, NPCs with a cut tendon get up again. Off: they stay down.")]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(2)]
+        public static bool StandUpWhenDisabled = true;
+
+        [ModOption("Clutch Chest Chance", "Share of sitting crawlers that clutch their chest while they lie still; the others lie back plainly. Rolled once per NPC when its tendon is cut, so a change applies to the next cut.", nameof(ClutchChestChanceValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
         [ModOptionOrder(3)]
+        [ModOptionSlider]
+        public static float ClutchChestChance = OptionSpecs.ClutchChestChance.Default;
+
+        [ModOption("Crawl Body Height", "How low the crawling body is held. 0 = flat on the ground, 1 = standing.", nameof(CrawlBodyHeightValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(4)]
+        [ModOptionSlider]
+        public static float CrawlBodyHeight = OptionSpecs.CrawlBodyHeight.Default;
+
+        [ModOption("Crawl Start Speed", "How fast a crawling NPC must move before it switches from sitting to crawling.", nameof(CrawlStartSpeedValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(5)]
+        [ModOptionSlider]
+        public static float CrawlStartSpeed = OptionSpecs.CrawlStartSpeed.Default;
+
+        [ModOption("Crawl Stop Speed", "Below this speed a crawling NPC sits down again. Keep it below Crawl Start Speed.", nameof(CrawlStopSpeedValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(6)]
+        [ModOptionSlider]
+        public static float CrawlStopSpeed = OptionSpecs.CrawlStopSpeed.Default;
+
+        [ModOption("Leg Strength", "How hard the legs of a crawling NPC follow its animation. x1 = the game's own value. Higher: it sits down faster after crawling instead of hanging on its shins.", nameof(LegStrengthValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(7)]
+        [ModOptionSlider]
+        public static float LegStrength = OptionSpecs.LegStrength.Default;
+
+        [ModOption("Crawl Turn Speed", "How fast a crawling or kneeling NPC turns towards you, in percent of the game's own turn speed. 100 % = the game's speed: a half turn in about 0.2 s, as fast as a standing NPC.", nameof(CrawlTurnSpeedValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(8)]
+        [ModOptionSlider]
+        public static float CrawlTurnSpeed = OptionSpecs.CrawlTurnSpeed.Default;
+
+        [ModOption("Blood Pulse Interval", "Seconds between blood drips (and bleed log lines with Debug Logging).", nameof(BloodPulseIntervalValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(9)]
+        [ModOptionSlider]
+        public static float BloodPulseInterval = OptionSpecs.BleedPulseInterval.Default;
+
+        [ModOption("Weakest Crawl Speed", "Crawl speed reached at the moment of death, in percent of Crawl Speed. 100 % = no slowdown.", nameof(WeakestCrawlSpeedValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(10)]
+        [ModOptionSlider]
+        public static float WeakestCrawlSpeed = OptionSpecs.WeakestCrawlSpeed.Default;
+
+        [ModOption("Scream Slowdown", "How much longer the pause between screams is at the moment of death. x1 = no slowdown.", nameof(ScreamSlowdownValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(11)]
+        [ModOptionSlider]
+        public static float ScreamSlowdown = OptionSpecs.ScreamSlowdown.Default;
+
+        [ModOption("Gasping From", "From this point of the bleed-out on, screams turn into heavy breathing. 100 % = never.", nameof(GaspingFromValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(12)]
+        [ModOptionSlider]
+        public static float GaspingFrom = OptionSpecs.GaspingFrom.Default;
+
+        [ModOption("Ground Fighting Enabled", "NPCs with a cut tendon fight on from the ground: screams, and crawling NPCs swing at you. Off: they only crawl or lie there.")]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(13)]
+        public static bool GroundFightingEnabled = true;
+
+        [ModOption("Ground Attacks", "A crawling NPC swings its weapon at you with its upper body when you are in reach (its own attack animations; needs a weapon). NPCs lying flat do not swing. A crawling NPC never uses its own melee AI, so with this off it does not attack.")]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(14)]
+        public static bool GroundAttacks = true;
+
+        [ModOption("Ground Attack Range", "How close you must be for a lying NPC to swing at you.", nameof(GroundAttackRangeValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(15)]
+        [ModOptionSlider]
+        public static float GroundAttackRange = OptionSpecs.GroundAttackRange.Default;
+
+        [ModOption("Ground Attack Interval", "Seconds between two swings from the ground.", nameof(GroundAttackIntervalValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(16)]
+        [ModOptionSlider]
+        public static float GroundAttackInterval = OptionSpecs.GroundAttackInterval.Default;
+
+        [ModOption("Scream Interval", "Seconds between two screams.", nameof(ScreamIntervalValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(17)]
+        [ModOptionSlider]
+        public static float ScreamInterval = OptionSpecs.ScreamInterval.Default;
+
+        [ModOption("Heel Cut Adrenaline", "Adrenaline points for each heel cut that cripples an NPC (DMCS: a hit gives 5, a full meter is 100 by default).", nameof(HeelCutAdrenalineValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(18)]
+        [ModOptionSlider]
+        public static float HeelCutAdrenaline = OptionSpecs.HeelCutAdrenaline.Default;
+
+        [ModOption("Crippled Kill Adrenaline", "Adrenaline points when you kill an NPC that was already crawling or lying with a cut tendon (any of your hits; bleeding out gives nothing).", nameof(CrippledKillAdrenalineValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(19)]
+        [ModOptionSlider]
+        public static float CrippledKillAdrenaline = OptionSpecs.CrippledKillAdrenaline.Default;
+
+        [ModOption("Hit Marker Duration", "How long a hit marker stays visible.", nameof(HitMarkerDurationValues))]
+        [ModOptionCategory(AdvancedCategory, 5)]
+        [ModOptionOrder(20)]
         [ModOptionSlider]
         public static float HitMarkerDuration = OptionSpecs.HitMarkerDuration.Default;
 
@@ -269,7 +259,6 @@ namespace AchillesTendon
                 ZoneBackOffset = HeelZoneBackOffset,
                 ZoneHeightOffset = HeelZoneHeightOffset,
                 MaxHitAngle = MaxHitAngle,
-                AllowedDamageTypes = AllowedDamageTypes,
             };
         }
 

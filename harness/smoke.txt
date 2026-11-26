@@ -4,46 +4,56 @@
 # Checks the defaults, so it must be the first scenario of a run (fresh prefix);
 # scenarios in one run share the prefix and the game keeps option values.
 wait-level
-expect-log [ModManager][ModOption][AchillesTendon] Loaded 40 ModOptions
+expect-log [ModManager][ModOption][AchillesTendon] Loaded 37 ModOptions
 expect-log [AchillesTendon] Loaded Heel of Achilles
 expect-log [ModManager][ThunderScript][AchillesTendon] Loaded ThunderScript: AchillesTendon.AchillesTendonScript
 expect-log [AchillesTendon] Enabled, listening to EventManager.onCreatureHit
 
-# Achilles Tendon group (step 3 adds Stand Up When Disabled)
+# Every option with its category (v0.8.11: 16 in the feature groups, 21 fine-tuning options in Advanced;
+# Allowed Damage Types, Blood Effects and Steady Crawl Pose removed, Nadi 2026-11-26)
+# Achilles Tendon
 option-exists AchillesTendon "Achilles Tendon Enabled" category="Achilles Tendon" type=Boolean save=true
-option-exists AchillesTendon "Stand Up When Disabled" category="Achilles Tendon" type=Boolean save=true tooltip="get up again"
+option-exists AchillesTendon "Heel Zone Size" category="Achilles Tendon" type=Single save=true
+option-exists AchillesTendon "Max Hit Angle" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Instant Death Chance" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Lie Flat Chance" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Kneel Chance" category="Achilles Tendon" type=Single save=true
-option-exists AchillesTendon "Clutch Chest Chance" category="Achilles Tendon" type=Single save=true
 option-exists AchillesTendon "Crawl Speed" category="Achilles Tendon" type=Single save=true
-option-exists AchillesTendon "Crawl Body Height" category="Achilles Tendon" type=Single save=true
-option-exists AchillesTendon "Steady Crawl Pose" category="Achilles Tendon" type=Boolean save=true
-option-exists AchillesTendon "Crawl Start Speed" category="Achilles Tendon" type=Single save=true
-option-exists AchillesTendon "Crawl Stop Speed" category="Achilles Tendon" type=Single save=true
-option-exists AchillesTendon "Leg Strength" category="Achilles Tendon" type=Single save=true
-option-exists AchillesTendon "Crawl Turn Speed" category="Achilles Tendon" type=Single save=true
-# Bleed-Out group (step 5)
+# Bleed-Out
 option-exists AchillesTendon "Bleed-Out Enabled" category="Bleed-Out" type=Boolean save=true
 option-exists AchillesTendon "Bleed-Out Duration" category="Bleed-Out" type=Single save=true
-option-exists AchillesTendon "Blood Effects" category="Bleed-Out" type=Boolean save=true
-option-exists AchillesTendon "Blood Pulse Interval" category="Bleed-Out" type=Single save=true
 option-exists AchillesTendon "Weakening" category="Bleed-Out" type=Boolean save=true
-option-exists AchillesTendon "Weakest Crawl Speed" category="Bleed-Out" type=Single save=true
-option-exists AchillesTendon "Scream Slowdown" category="Bleed-Out" type=Single save=true
-option-exists AchillesTendon "Gasping From" category="Bleed-Out" type=Single save=true
-# Ground Fighting group (step 4, experimental)
-option-exists AchillesTendon "Ground Fighting Enabled" category="Ground Fighting" type=Boolean save=true
-option-exists AchillesTendon "Ground Attacks" category="Ground Fighting" type=Boolean save=true
+# Ground Fighting
 option-exists AchillesTendon "Ground Attack Chance" category="Ground Fighting" type=Single save=true
-option-exists AchillesTendon "Ground Attack Range" category="Ground Fighting" type=Single save=true
-option-exists AchillesTendon "Ground Attack Interval" category="Ground Fighting" type=Single save=true
 option-exists AchillesTendon "Screaming" category="Ground Fighting" type=Boolean save=true
-option-exists AchillesTendon "Scream Interval" category="Ground Fighting" type=Single save=true
+# DMCS Compat
 option-exists AchillesTendon "DMCS Adrenaline" category="DMCS Compat" type=Boolean save=true
-option-exists AchillesTendon "Heel Cut Adrenaline" category="DMCS Compat" type=Single save=true
-option-exists AchillesTendon "Crippled Kill Adrenaline" category="DMCS Compat" type=Single save=true
+# Debug
 option-exists AchillesTendon "Debug Logging" category=Debug type=Boolean save=true
+option-exists AchillesTendon "Show Heel Zones" category=Debug type=Boolean save=true
+option-exists AchillesTendon "Show Hit Markers" category=Debug type=Boolean save=true
+# Advanced
+option-exists AchillesTendon "Heel Zone Back Offset" category=Advanced type=Single save=true
+option-exists AchillesTendon "Heel Zone Height Offset" category=Advanced type=Single save=true
+option-exists AchillesTendon "Stand Up When Disabled" category=Advanced type=Boolean save=true tooltip="get up again"
+option-exists AchillesTendon "Clutch Chest Chance" category=Advanced type=Single save=true
+option-exists AchillesTendon "Crawl Body Height" category=Advanced type=Single save=true
+option-exists AchillesTendon "Crawl Start Speed" category=Advanced type=Single save=true
+option-exists AchillesTendon "Crawl Stop Speed" category=Advanced type=Single save=true
+option-exists AchillesTendon "Leg Strength" category=Advanced type=Single save=true
+option-exists AchillesTendon "Crawl Turn Speed" category=Advanced type=Single save=true
+option-exists AchillesTendon "Blood Pulse Interval" category=Advanced type=Single save=true
+option-exists AchillesTendon "Weakest Crawl Speed" category=Advanced type=Single save=true
+option-exists AchillesTendon "Scream Slowdown" category=Advanced type=Single save=true
+option-exists AchillesTendon "Gasping From" category=Advanced type=Single save=true
+option-exists AchillesTendon "Ground Fighting Enabled" category=Advanced type=Boolean save=true
+option-exists AchillesTendon "Ground Attacks" category=Advanced type=Boolean save=true
+option-exists AchillesTendon "Ground Attack Range" category=Advanced type=Single save=true
+option-exists AchillesTendon "Ground Attack Interval" category=Advanced type=Single save=true
+option-exists AchillesTendon "Scream Interval" category=Advanced type=Single save=true
+option-exists AchillesTendon "Heel Cut Adrenaline" category=Advanced type=Single save=true
+option-exists AchillesTendon "Crippled Kill Adrenaline" category=Advanced type=Single save=true
+option-exists AchillesTendon "Hit Marker Duration" category=Advanced type=Single save=true
 
 # Defaults
 expect-option AchillesTendon "Achilles Tendon Enabled" true
@@ -55,14 +65,12 @@ expect-option AchillesTendon "Kneel Chance" 0.3
 expect-option AchillesTendon "Clutch Chest Chance" 0.5
 expect-option AchillesTendon "Crawl Speed" 0.3
 expect-option AchillesTendon "Crawl Body Height" 0.2
-expect-option AchillesTendon "Steady Crawl Pose" true
 expect-option AchillesTendon "Crawl Start Speed" 0.4
 expect-option AchillesTendon "Crawl Stop Speed" 0.1
 expect-option AchillesTendon "Leg Strength" 4
 expect-option AchillesTendon "Crawl Turn Speed" 0.25
 expect-option AchillesTendon "Bleed-Out Enabled" true
 expect-option AchillesTendon "Bleed-Out Duration" 45
-expect-option AchillesTendon "Blood Effects" true
 expect-option AchillesTendon "Blood Pulse Interval" 2
 expect-option AchillesTendon "Weakening" true
 expect-option AchillesTendon "Weakest Crawl Speed" 0.25

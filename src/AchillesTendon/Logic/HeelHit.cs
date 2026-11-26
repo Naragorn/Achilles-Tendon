@@ -9,18 +9,6 @@ namespace AchillesTendon.Logic
         Blunt,
     }
 
-    /// <summary>
-    /// Which damage types may cut the tendon. Shown as a dropdown in the Mod Menu.
-    /// Keep <see cref="SlashAndPierce"/> first: the game's mod menu cannot match an
-    /// enum default and always falls back to the first entry.
-    /// </summary>
-    public enum AllowedDamageTypes
-    {
-        SlashAndPierce = 0,
-        SlashOnly = 1,
-        PierceOnly = 2,
-    }
-
     /// <summary>Side of the leg that was hit, or None if the part is not a leg or foot.</summary>
     public enum LegSide
     {
@@ -66,8 +54,6 @@ namespace AchillesTendon.Logic
 
         /// <summary>Max angle in degrees between "straight behind the target" and the attacker.</summary>
         public float MaxHitAngle;
-
-        public AllowedDamageTypes AllowedDamageTypes;
     }
 
     /// <summary>One hit, as plain values taken from the game.</summary>
@@ -142,17 +128,10 @@ namespace AchillesTendon.Logic
 
     public static class DamageTypeFilter
     {
-        public static bool IsAllowed(AllowedDamageTypes allowed, HitDamageType hit)
+        /// <summary>Only a blade cuts a tendon: slash and pierce, never blunt.</summary>
+        public static bool IsAllowed(HitDamageType hit)
         {
-            switch (allowed)
-            {
-                case AllowedDamageTypes.SlashOnly:
-                    return hit == HitDamageType.Slash;
-                case AllowedDamageTypes.PierceOnly:
-                    return hit == HitDamageType.Pierce;
-                default:
-                    return hit == HitDamageType.Slash || hit == HitDamageType.Pierce;
-            }
+            return hit == HitDamageType.Slash || hit == HitDamageType.Pierce;
         }
     }
 
@@ -211,7 +190,7 @@ namespace AchillesTendon.Logic
             {
                 return HeelHitRejection.NoAnkle;
             }
-            if (!DamageTypeFilter.IsAllowed(settings.AllowedDamageTypes, input.DamageType))
+            if (!DamageTypeFilter.IsAllowed(input.DamageType))
             {
                 return HeelHitRejection.DamageTypeNotAllowed;
             }

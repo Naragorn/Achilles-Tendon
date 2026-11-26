@@ -7,7 +7,6 @@ wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Instant Death Chance" 0
 set-option AchillesTendon "Stand Up When Disabled" true
-set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Kneel Chance" 0
@@ -17,7 +16,6 @@ set-option AchillesTendon "Show Hit Markers" true
 set-option AchillesTendon "Hit Marker Duration" 10
 set-option AchillesTendon "Bleed-Out Enabled" true
 set-option AchillesTendon "Bleed-Out Duration" 30
-set-option AchillesTendon "Blood Effects" true
 set-option AchillesTendon "Blood Pulse Interval" 1
 set-option AchillesTendon "Weakening" true
 set-option AchillesTendon "Ground Fighting Enabled" true

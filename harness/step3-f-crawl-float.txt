@@ -1,12 +1,10 @@
 # Diagnosis of the "floating sit" in the crawl pose: pictures every 0.5 s while the
 # crawling NPC approaches, matched by time with the CRAWL POSE lines (Debug Logging:
 # animator state, transition, Speed, hips height). Ground Attacks off to isolate the pose.
-# Steady Crawl Pose on (default): the CRAWL POSE lines report gait=still/moving; then
-# off, live: gait=game (the game decides alone).
+# The steady crawl pose is always on (v0.8.11): the CRAWL POSE lines report gait=still/moving.
 wait-level
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Instant Death Chance" 0
-set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Lie Flat Chance" 0
@@ -64,10 +62,6 @@ screenshot f19 of=npc distance=2.5 height=0.6 angle=90
 wait 0.5
 screenshot f20 of=npc distance=2.5 height=0.6 angle=90
 expect-npc state Alive within=0.1
-set-option AchillesTendon "Steady Crawl Pose" false
-wait 1.5
-expect-log gait=game
-set-option AchillesTendon "Steady Crawl Pose" true
 set-option AchillesTendon "Bleed-Out Enabled" true
 set-option AchillesTendon "Screaming" true
 expect-no-log Exception

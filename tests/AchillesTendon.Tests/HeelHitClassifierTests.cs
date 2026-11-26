@@ -10,9 +10,7 @@ namespace AchillesTendon.Tests
         // Zone center for the default settings below: ankle + (0, 0.03, -0.04).
         private static readonly Vec3 ZoneCenter = new Vec3(0.1f, 0.11f, -0.04f);
 
-        private static HeelHitSettings Settings(
-            AllowedDamageTypes allowed = AllowedDamageTypes.SlashAndPierce,
-            float maxHitAngle = 110f)
+        private static HeelHitSettings Settings(float maxHitAngle = 110f)
         {
             return new HeelHitSettings
             {
@@ -20,7 +18,6 @@ namespace AchillesTendon.Tests
                 ZoneBackOffset = 0.04f,
                 ZoneHeightOffset = 0.03f,
                 MaxHitAngle = maxHitAngle,
-                AllowedDamageTypes = allowed,
             };
         }
 
@@ -68,7 +65,7 @@ namespace AchillesTendon.Tests
         }
 
         [Fact]
-        public void Pierce_on_the_heel_is_a_heel_hit_by_default()
+        public void Pierce_on_the_heel_is_a_heel_hit()
         {
             var input = HeelSlashFromBehind();
             input.DamageType = HitDamageType.Pierce;
@@ -139,25 +136,6 @@ namespace AchillesTendon.Tests
             Assert.Equal(HeelHitRejection.DamageTypeNotAllowed, result.Rejection);
             Assert.Equal(0f, result.DistanceToZoneCenter, 4);
             Assert.Equal(0f, result.AttackAngle, 3);
-        }
-
-        [Fact]
-        public void Pierce_is_rejected_when_only_slash_is_allowed()
-        {
-            var input = HeelSlashFromBehind();
-            input.DamageType = HitDamageType.Pierce;
-
-            Assert.Equal(
-                HeelHitRejection.DamageTypeNotAllowed,
-                HeelHitClassifier.Classify(input, Settings(AllowedDamageTypes.SlashOnly)).Rejection);
-        }
-
-        [Fact]
-        public void Slash_is_rejected_when_only_pierce_is_allowed()
-        {
-            Assert.Equal(
-                HeelHitRejection.DamageTypeNotAllowed,
-                HeelHitClassifier.Classify(HeelSlashFromBehind(), Settings(AllowedDamageTypes.PierceOnly)).Rejection);
         }
 
         [Fact]

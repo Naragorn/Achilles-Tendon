@@ -129,7 +129,8 @@ namespace AchillesTendon
                 + " | intensity=" + Format(step.PulseIntensity)
                 + " | weakening crawl=x" + Format2(weak.CrawlSpeedFactor) + " scream interval=x" + Format2(weak.ScreamIntervalFactor)
                 + (weak.Gasping ? " gasping" : string.Empty));
-            if (!ModOptions.BloodEffects || bleed.Part == null)
+            // Always on since v0.8.11; the effect is tagged sensitiveContent Blood, so the game's blood setting applies.
+            if (bleed.Part == null)
             {
                 return;
             }

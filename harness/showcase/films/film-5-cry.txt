@@ -9,7 +9,6 @@ wait-level
 frame-rate 90
 set-option AchillesTendon "Achilles Tendon Enabled" true
 set-option AchillesTendon "Instant Death Chance" 0
-set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Show Heel Zones" false
@@ -17,7 +16,6 @@ set-option AchillesTendon "Show Hit Markers" false
 set-option AchillesTendon "Lie Flat Chance" 0
 set-option AchillesTendon "Kneel Chance" 0
 set-option AchillesTendon "Bleed-Out Enabled" true
-set-option AchillesTendon "Blood Effects" true
 set-option AchillesTendon "Ground Fighting Enabled" true
 set-option AchillesTendon "Screaming" true
 set-option AchillesTendon "Scream Interval" 6

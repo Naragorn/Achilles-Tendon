@@ -6,7 +6,6 @@
 wait-level
 frame-rate 90
 set-option AchillesTendon "Achilles Tendon Enabled" true
-set-option AchillesTendon "Allowed Damage Types" SlashAndPierce
 set-option AchillesTendon "Max Hit Angle" 110
 set-option AchillesTendon "Debug Logging" true
 set-option AchillesTendon "Show Heel Zones" false

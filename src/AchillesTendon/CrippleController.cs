@@ -28,7 +28,7 @@ namespace AchillesTendon
         // Crawl Turn Speed: crawling NPCs whose locomotion.turnSpeed we lowered, with the game's value.
         private readonly Dictionary<Creature, float> turnSpeedBefore = new Dictionary<Creature, float>();
 
-        // Steady Crawl Pose: crawling NPCs that currently count as moving (CrawlGaitRules).
+        // Steady crawl pose: crawling NPCs that currently count as moving (CrawlGaitRules).
         private readonly HashSet<Creature> gaitMoving = new HashSet<Creature>();
         private readonly List<Creature> scratch = new List<Creature>();
 
@@ -349,7 +349,7 @@ namespace AchillesTendon
             }
         }
 
-        // Steady Crawl Pose, see CrawlGaitRules. Runs in ScriptUpdate, which the game calls
+        // Steady crawl pose (always on since v0.8.11), see CrawlGaitRules. Runs in ScriptUpdate, which the game calls
         // after every Creature.ManagedUpdate in the same frame (UpdateManager.Update, then
         // ThunderScriptLoop), so it overrides that frame's Speed/Strafe from
         // Creature.UpdateLocomotionAnimation. Decided on the raw local velocity the game
@@ -360,11 +360,6 @@ namespace AchillesTendon
             if (kneel.Contains(creature))
             {
                 KneelGait(creature);
-                return;
-            }
-            if (!ModOptions.SteadyCrawlPose)
-            {
-                gaitMoving.Remove(creature);
                 return;
             }
             var raw = RawGait(creature);
@@ -388,7 +383,7 @@ namespace AchillesTendon
 
         // Kneel pose: always the forward moving blend tree, never the idle states or
         // CrawlBackwards, which sit or lie on the back (CrawlGaitRules.KneelGait). Start/stop
-        // use the same hysteresis as Steady Crawl Pose.
+        // use the same hysteresis as the steady crawl pose.
         private void KneelGait(Creature creature)
         {
             var raw = RawGait(creature);
@@ -550,7 +545,7 @@ namespace AchillesTendon
                 + " | move=" + creature.currentLocomotion.horizontalSpeed.ToString("0.00", ci) + " m/s"
                 + " turn=" + creature.currentLocomotion.angularSpeed.ToString("0.0", ci) + " deg/s"
                 + " raw speed=" + RawGait(creature).x.ToString("0.00", ci) + " strafe=" + RawGait(creature).y.ToString("0.00", ci)
-                + " gait=" + (!ModOptions.SteadyCrawlPose ? "game" : gaitMoving.Contains(creature) ? "moving" : "still")
+                + " gait=" + (gaitMoving.Contains(creature) ? "moving" : "still")
                 + " | state=" + creature.state);
             ModLog.Verbose("CRAWL BODY | " + GameAdapters.Label(creature) + " | " + BodySupport(creature, ci));
         }

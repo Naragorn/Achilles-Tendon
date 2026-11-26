@@ -26,7 +26,8 @@ Blade & Sorcery (VR) mod built with the official B&S SDK (Unity + C#, `ThunderRo
 - Changes must apply **live** without restarting the game or reloading the level. Toggling a feature off mid-fight must cleanly stop it (e.g. stop bleed-out coroutines, let crippled NPCs stand again if desired).
 - Settings must persist between sessions (via the mod options system's own saving, or a JSON fallback if not supported).
 - Global extras per mod: `Debug Logging` toggle (logs heel hits, angle checks, collapse, bleed-out ticks to the console) and a `Reset to Defaults` option if the SDK supports buttons.
-- Sub-effects get their own toggles too, e.g. `Blood Effects`, `Screaming`, `Crawling`, `Ground Attacks` each individually switchable.
+- Sub-effects get their own toggles too, e.g. `Screaming`, `Ground Attacks` each individually switchable.
+- **Menu slimmed (Nadi, 2026-11-26, v0.8.11):** the feature groups hold only what a player notices and may want different (16 options). Fine-tuning and fix values sit in a last category `Advanced` (21 options; names unchanged, since the game saves values by mod and option name). Removed for good: `Allowed Damage Types` (slash and pierce always cut, blunt never), `Blood Effects` (always on; the game's own blood setting applies), `Steady Crawl Pose` (always on). New tuning values go to `Advanced`, not to the feature groups.
 
 ---
 
@@ -47,7 +48,7 @@ Separate mod. Realistic crippling hit: a cut to the Achilles tendon takes the en
 - Disable the NPC's ability to stand (force ragdoll/destabilize state, block get-up) while keeping arms/AI attack active.
 - Bleed-out: coroutine applying damage over time + blood decals/particles.
 
-**Config:** `heelZoneSize`, `maxHitAngle`, `allowedDamageTypes`, `bleedOutDuration`, `groundFightingEnabled`, `applyToPlayer`.
+**Config:** `heelZoneSize`, `maxHitAngle`, `bleedOutDuration`, `groundFightingEnabled` (in `Advanced`). `allowedDamageTypes` removed (v0.8.11), `applyToPlayer` removed (v0.8.1).
 
 **Downed poses: current state (Nadi, 2026-11-17).** Three poses, rolled once per NPC when its tendon is cut (Mod Menu sliders, all 0-100 %):
 - **Sitting crawler** (the rest): the game's own injured/crawl animator states (low `Height`, `Injured = 1`); sits on its back, crawls forward or backward.
